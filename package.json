@@ -1,0 +1,27 @@
+{
+  "name": "org.khronos.unitygltf.interactivity",
+  "displayName": "UnityGLTF Interactivity",
+  "version": "0.5.0",
+  "unity": "2021.3",
+  "description": "Adds interactivity support for UnityGLTF. Loading interactive glTF files in other viewers requires support for the KHR_interactivity extension.",
+  "repository": {
+    "url": "https://github.com/KhronosGroup/UnityGLTF.git"
+  },
+  "keywords": [
+    "gltf",
+    "khronos",
+    "runtime",
+    "loader",
+    "import",
+    "export",
+    "interactivity",
+    "extension"
+  ],
+  "author": "Khronos Group",
+  "license": "MIT",
+  "dependencies": {
+    "com.unity.visualscripting": "1.9.4",
+    "org.khronos.unitygltf": "2.14.1"
+  },
+  "samples": []
+}

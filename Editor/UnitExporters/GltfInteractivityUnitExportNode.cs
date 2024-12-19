@@ -84,6 +84,12 @@ namespace UnityGLTF.Interactivity
                 data.typeRestriction = typeRestriction;
                 return this;
             }
+
+            public ValueInputSocketData SetValue(object value)
+            {
+                node.SetValueInSocket(data.Id, value);
+                return this;
+            }
         }
 
         public class ValueOutputSocketData

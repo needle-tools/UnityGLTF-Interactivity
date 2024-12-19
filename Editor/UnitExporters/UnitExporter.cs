@@ -380,6 +380,11 @@ namespace UnityGLTF.Interactivity.Export
 
             foreach (var n in nodeInputPortToSocketNameMapping)
             {
+                if (!n.Value.node.ValueSocketConnectionData.ContainsKey(n.Value.socketName))
+                {
+                    Debug.LogError("Node: " + n.Value.node.Schema.Type + " does not have a socket named: " + n.Value.socketName);
+                    continue;
+                }
                 n.Value.node.ValueSocketConnectionData[n.Value.socketName].Node = n.Key.node.Index;
                 n.Value.node.ValueSocketConnectionData[n.Value.socketName].Socket = n.Key.socketName;
             }

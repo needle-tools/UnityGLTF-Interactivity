@@ -13,6 +13,11 @@ namespace UnityGLTF.Interactivity
     using UnityGLTF;
     using UnityGLTF.Plugins;
 
+    public interface IInteractivityExport
+    {
+        void OnInteractivityExport(GltfInteractivityExportContext context, ref GltfInteractivityNode[] nodes);
+    }
+
     public class GltfInteractivityExportContext: GLTFExportPluginContext
     {
         // TODO: Clear all these values once the scene export is done
@@ -427,6 +432,18 @@ namespace UnityGLTF.Interactivity
             return newExportGraph;
         }
         
+        private void TriggerInterfaceExportCallbacks(ref GltfInteractivityNode[] nodes)
+        {
+            foreach (var root in exporter.RootTransforms)
+            {
+                var interfaces = root.GetComponentsInChildren<IInteractivityExport>(true);
+                foreach (var callback in interfaces)
+                {
+                    callback.OnInteractivityExport(this, ref nodes);
+                }                
+            }
+        }
+        
         /// <summary>
         /// Called after the scene has been exported to add interactivity data.
         ///
@@ -467,6 +484,8 @@ namespace UnityGLTF.Interactivity
                     exportNode.Value.ResolveConnections();
             }
 
+            TriggerInterfaceExportCallbacks(ref nodesToSerialize);
+            
             CheckForImplicitValueConversions(ref nodesToSerialize);
             
             PostIndexTopologicalSort(ref nodesToSerialize);  

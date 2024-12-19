@@ -54,6 +54,55 @@ namespace UnityGLTF.Interactivity
         
         public Dictionary<string, string> MetaData = new Dictionary<string, string>();
         
+        public void SetFlowOut(string socketId, GltfInteractivityNode targetNode, string targetSocketId)
+        {
+            if (FlowSocketConnectionData.TryGetValue(socketId, out var socket))
+            {
+                socket.Node = targetNode.Index;
+                socket.Socket = targetSocketId;
+            }
+            else
+            {
+                Debug.LogError($"Socket {socketId} not found in node {Schema.Type}");
+            }
+        }
+        
+        public void SetValueInSocketSource(string socketId,  GltfInteractivityNode sourceNode, string sourceSocketId, TypeRestriction typeRestriction = null)
+        {
+            if (ValueSocketConnectionData.TryGetValue(socketId, out var socket))
+            {
+                socket.Node = sourceNode.Index;
+                socket.Socket = sourceSocketId;
+                socket.Value = null;
+                socket.Type = -1;
+                if (typeRestriction != null)
+                    socket.typeRestriction = typeRestriction;
+            }
+            else
+            {
+                Debug.LogError($"Socket {socketId} not found in node {Schema.Type}");
+            }
+        }
+
+        public void SetValueInSocket(string socketId, object value, TypeRestriction typeRestriction = null)
+        {
+            if (ValueSocketConnectionData.TryGetValue(socketId, out var socket))
+            {
+                socket.Node = null;
+                socket.Socket = null;
+                socket.Value = value;
+                if (value != null)
+                    socket.Type =  GltfInteractivityTypeMapping.TypeIndex(value.GetType());
+                
+                if (typeRestriction != null)
+                    socket.typeRestriction = typeRestriction;
+            }
+            else
+            {
+                Debug.LogError($"Socket {socketId} not found in node {Schema.Type}");
+            }
+        }
+        
         public GltfInteractivityNode(GltfInteractivityNodeSchema schema)
         {
             Schema = schema;

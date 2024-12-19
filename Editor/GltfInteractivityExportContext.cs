@@ -15,9 +15,27 @@ namespace UnityGLTF.Interactivity
 
     public interface IInteractivityExport
     {
-        void OnInteractivityExport(GltfInteractivityExportContext context, ref GltfInteractivityNode[] nodes);
+        void OnInteractivityExport(GltfInteractivityExportContext context, GltfInteractivityExportNodes nodes);
     }
 
+    public class GltfInteractivityExportNodes
+    {
+        public readonly List<GltfInteractivityNode> nodes = new List<GltfInteractivityNode>();
+
+        public GltfInteractivityNode CreateNode(GltfInteractivityNodeSchema schema)
+        {
+            var newNode = new GltfInteractivityNode(schema);
+            nodes.Add(newNode);
+            newNode.Index = nodes.Count - 1;
+            return newNode;
+        }
+        
+        internal GltfInteractivityExportNodes(GltfInteractivityNode[] nodes)
+        {
+            this.nodes.AddRange(nodes);
+        }
+    }
+    
     public class GltfInteractivityExportContext: GLTFExportPluginContext
     {
         // TODO: Clear all these values once the scene export is done
@@ -434,14 +452,18 @@ namespace UnityGLTF.Interactivity
         
         private void TriggerInterfaceExportCallbacks(ref GltfInteractivityNode[] nodes)
         {
+            GltfInteractivityExportNodes nodesExport = new GltfInteractivityExportNodes(nodes);
+            
             foreach (var root in exporter.RootTransforms)
             {
                 var interfaces = root.GetComponentsInChildren<IInteractivityExport>(true);
                 foreach (var callback in interfaces)
                 {
-                    callback.OnInteractivityExport(this, ref nodes);
+                    callback.OnInteractivityExport(this, nodesExport);
                 }                
             }
+
+            nodes = nodesExport.nodes.ToArray();
         }
         
         /// <summary>

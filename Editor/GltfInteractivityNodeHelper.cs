@@ -9,7 +9,7 @@ namespace UnityGLTF.Interactivity
     using UnityEngine;
     using Unity.VisualScripting;
 
-    internal static class GltfInteractivityNodeHelper
+    public static class GltfInteractivityNodeHelper
     {
         
         public static Dictionary<IUnit, UnitExporter> GetTranslatableNodes(

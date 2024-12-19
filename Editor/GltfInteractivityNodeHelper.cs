@@ -59,7 +59,7 @@ namespace UnityGLTF.Interactivity
         public static readonly string IdPointerMeshIndex = "meshIndex";
         public static readonly string IdPointerMaterialIndex = "materialIndex";
 
-        public static void AddPointerConfig(GltfInteractivityUnitExporterNode node, string pointer)
+        public static void AddPointerConfig(GltfInteractivityNode node, string pointer)
         {
             var pointerConfig = node.ConfigurationData[Pointer_SetNode.IdPointer];
             pointerConfig.Value = pointer; 
@@ -85,9 +85,9 @@ namespace UnityGLTF.Interactivity
             return false;
         }
         
-        public static void AddPointerTemplateValueInput(GltfInteractivityUnitExporterNode node, string pointerId, int? index = null)
+        public static void AddPointerTemplateValueInput(GltfInteractivityNode node, string pointerId, int? index = null)
         {
-            node.ValueSocketConnectionData.Add(pointerId, new GltfInteractivityUnitExporterNode.ValueSocketData()
+            node.ValueSocketConnectionData.Add(pointerId, new GltfInteractivityNode.ValueSocketData()
             {
                 Id = pointerId,
                 Value = index

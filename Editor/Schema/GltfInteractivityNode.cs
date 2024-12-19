@@ -80,8 +80,12 @@ namespace UnityGLTF.Interactivity
             }
             foreach (var  descriptor in Schema.OutputValueSockets)
             {
-                OutValueSocket.Add(descriptor.Id,
-                    new ValueOutSocket { Id = descriptor.Id, expectedType = descriptor.expectedType });
+                if (descriptor.SupportedTypes.Length == 1 && descriptor.expectedType == null)
+                    OutValueSocket.Add(descriptor.Id,
+                        new ValueOutSocket { Id = descriptor.Id, expectedType = ExpectedType.GtlfType(descriptor.SupportedTypes[0])});
+                else
+                    OutValueSocket.Add(descriptor.Id,
+                        new ValueOutSocket { Id = descriptor.Id, expectedType = descriptor.expectedType });
             }
 
             foreach (GltfInteractivityNodeSchema.FlowSocketDescriptor descriptor in Schema.OutputFlowSockets)

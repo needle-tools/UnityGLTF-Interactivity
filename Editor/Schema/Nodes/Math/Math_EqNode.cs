@@ -21,14 +21,14 @@ namespace UnityGLTF.Interactivity.Schema
                 {
                     Id = IdValueA,
                     Description = "",
-                    SupportedTypes = new string[]{"float","float2","float3","float4","bool"},
+                    SupportedTypes = new string[]{"int", "float","float2","float3","float4","bool"},
                     typeRestriction = TypeRestriction.SameAsInputPort(IdValueB)
                 },
                 new InputValueSocketDescriptor()
                 {
                     Id = IdValueB,
                     Description = "",
-                    SupportedTypes = new string[]{"float","float2","float3","float4","bool"},
+                    SupportedTypes = new string[]{"int", "float","float2","float3","float4","bool"},
                     typeRestriction = TypeRestriction.SameAsInputPort(IdValueA)
                 }
             };

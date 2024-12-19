@@ -189,7 +189,7 @@ namespace UnityGLTF.Interactivity
                 if (nodeIndex >= 0 && nodeIndex < allNodes.Length)
                 {
                     var inputSourceNode = allNodes[nodeIndex];
-                    if (inputSourceNode.OutValueSocketConnectionData.TryGetValue(socketData.Socket,
+                    if (inputSourceNode.OutValueSocket.TryGetValue(socketData.Socket,
                             out var sourceNodeOutSocketData))
                     {
                         if (sourceNodeOutSocketData.expectedType != null)
@@ -781,8 +781,8 @@ namespace UnityGLTF.Interactivity
             {
                 foreach (var valueSocket in node.ValueSocketConnectionData)
                 {
-                    node.InValueSocketConnectionData.TryGetValue(valueSocket.Key, out var socketRestriction);
-                    
+                    node.ValueSocketConnectionData.TryGetValue(valueSocket.Key, out var socketRestriction);
+              
                     if (valueSocket.Value.Node == null && valueSocket.Value.Value == null)
                     {
                         // Try to handle nulls

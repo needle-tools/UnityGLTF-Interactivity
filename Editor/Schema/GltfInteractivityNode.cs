@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityGLTF.Interactivity.Export;
 
 namespace UnityGLTF.Interactivity
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Newtonsoft.Json.Linq;
@@ -46,12 +48,9 @@ namespace UnityGLTF.Interactivity
             new Dictionary<string, FlowSocketData>();
         public Dictionary<string, ValueSocketData> ValueSocketConnectionData =
             new Dictionary<string, ValueSocketData>();
-
-        // Will not be serialized into Gltf, just informations for type traversal
-        public Dictionary<string, GltfInteractivityNodeSchema.InputValueSocketDescriptor> InValueSocketConnectionData =
-            new Dictionary<string, GltfInteractivityNodeSchema.InputValueSocketDescriptor>();
-        public Dictionary<string, GltfInteractivityNodeSchema.OutValueSocketDescriptor> OutValueSocketConnectionData =
-            new Dictionary<string, GltfInteractivityNodeSchema.OutValueSocketDescriptor>();
+        
+        public Dictionary<string, ValueOutSocket> OutValueSocket =
+            new Dictionary<string, ValueOutSocket>();
         
         public Dictionary<string, string> MetaData = new Dictionary<string, string>();
         
@@ -76,17 +75,13 @@ namespace UnityGLTF.Interactivity
                 {
                     Id = descriptor.Id,
                     Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(descriptor.SupportedTypes[0]),
-                    
+                    typeRestriction = descriptor.typeRestriction
                 });
-            }
-            
-            foreach (var descriptor in Schema.InputValueSockets)
-            {
-                InValueSocketConnectionData.Add(descriptor.Id, descriptor);
             }
             foreach (var  descriptor in Schema.OutputValueSockets)
             {
-                OutValueSocketConnectionData.Add(descriptor.Id, descriptor);
+                OutValueSocket.Add(descriptor.Id,
+                    new ValueOutSocket { Id = descriptor.Id, expectedType = descriptor.expectedType });
             }
 
             foreach (GltfInteractivityNodeSchema.FlowSocketDescriptor descriptor in Schema.OutputFlowSockets)
@@ -189,7 +184,7 @@ namespace UnityGLTF.Interactivity
                 return $"Id: \"{Id}\", Node: {(Node.HasValue ? Node.Value.ToString() : "null")}, Socket: \"{Socket}\"";
             }
         }
-
+        
         public class EventValues : BaseData
         {
             public int Type = -1;
@@ -298,6 +293,12 @@ namespace UnityGLTF.Interactivity
             }    
         }
 
+        public class ValueOutSocket
+        {
+            public string Id;
+            public ExpectedType expectedType;
+        }
+        
         /// <summary>
         /// Describes value data for the node.
         ///
@@ -309,6 +310,8 @@ namespace UnityGLTF.Interactivity
         {
             public int Type = -1;
             public object Value = null;
+            
+            public TypeRestriction typeRestriction = null;
 
             public JObject SerializeObject()
             {

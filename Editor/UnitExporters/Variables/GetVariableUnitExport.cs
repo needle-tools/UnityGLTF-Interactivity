@@ -23,7 +23,7 @@ namespace UnityGLTF.Interactivity.Export
             
             var variableIndex = unitExporter.exportContext.AddVariableIfNeeded(unit);
             var varType = unitExporter.exportContext.variables[variableIndex].Type;
-            node.OutValueSocketConnectionData[Variable_GetNode.IdOutputValue].expectedType = ExpectedType.GtlfType(varType);
+            node.OutValueSocket[Variable_GetNode.IdOutputValue].expectedType = ExpectedType.GtlfType(varType);
             
             node.ConfigurationData["variable"].Value = variableIndex;
             

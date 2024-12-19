@@ -26,9 +26,10 @@ namespace UnityGLTF.Interactivity.Export
                 var equalNode = unitExporter.CreateNode(new Math_EqNode());
                 
                 unitExporter.MapInputPortToSocketName(unit.selector, Math_EqNode.IdValueA, equalNode);
+
+                equalNode.ValueIn("a").SetType(TypeRestriction.LimitToInt);
+                equalNode.ValueIn("b").SetType(TypeRestriction.LimitToInt);
                 
-                equalNode.InValueSocketConnectionData[Math_EqNode.IdValueA].typeRestriction = TypeRestriction.LimitToInt;
-                equalNode.InValueSocketConnectionData[Math_EqNode.IdValueB].typeRestriction = TypeRestriction.LimitToInt;
                 equalNode.ValueSocketConnectionData[Math_EqNode.IdValueB].Value = (int)unit.branches[i].Key;
                 equalNode.ValueSocketConnectionData[Math_EqNode.IdValueB].Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
                 

@@ -30,7 +30,7 @@ namespace UnityGLTF.Interactivity.Export
            var unit = unitExporter.unit as Unity.VisualScripting.GetMember;
            
            var getPosition = unitExporter.CreateNode(new Pointer_GetNode());
-           getPosition.OutValueSocketConnectionData[Pointer_GetNode.IdValue].expectedType = ExpectedType.GtlfType("float3");
+           getPosition.OutValueSocket[Pointer_GetNode.IdValue].expectedType = ExpectedType.GtlfType("float3");
            unitExporter.MapValueOutportToSocketName(unit.value, Pointer_GetNode.IdValue, getPosition);
 
            if (GltfInteractivityNodeHelper.IsMainCameraInInput(unit))

@@ -69,7 +69,7 @@ namespace UnityGLTF.Interactivity.Export
             // event from being propagated up the hierarchy.
             node.ConfigurationData["stopPropagation"].Value = false;
 
-            unitExporter.MapOutFlowConnectionWhenValid(triggerOutput, "out", node);
+            node.MapOutFlowConnectionWhenValid(triggerOutput, "out");
             
             // Resolve PointerEventData in out connections
             
@@ -87,8 +87,7 @@ namespace UnityGLTF.Interactivity.Export
                         if (memberStr == "PointerEventData.pointerEnter"
                             || memberStr == "PointerEventData.pointerClick")
                         {
-                            unitExporter.MapValueOutportToSocketName(getMember.value,
-                                Event_OnSelectNode.IdValueSelectedNodeIndex, node);
+                            node.MapValueOutportToSocketName(getMember.value, Event_OnSelectNode.IdValueSelectedNodeIndex);
                         }
                         // else if (memberStr == "PointerEventData.position")
                         // {

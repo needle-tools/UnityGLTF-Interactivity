@@ -46,7 +46,7 @@ namespace UnityGLTF.Interactivity.Export
                 getVarNode.ConfigurationData["variable"].Value = variableIndex;
                 unitExporter.MapValueOutportToSocketName(unit.output, Variable_GetNode.IdOutputValue, getVarNode);
 
-                node.OutValueSocketConnectionData[Variable_GetNode.IdOutputValue].expectedType = ExpectedType.GtlfType(variableType);
+                node.OutValueSocket[Variable_GetNode.IdOutputValue].expectedType = ExpectedType.GtlfType(variableType);
             }
             else
             if (!unit.input.hasDefaultValue && unit.input.hasValidConnection && unit.output.hasValidConnection)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityGLTF.Interactivity.Schema;
@@ -30,7 +31,7 @@ namespace UnityGLTF.Interactivity.Export
            var unit = unitExporter.unit as Unity.VisualScripting.GetMember;
            
            var getRotation = unitExporter.CreateNode(new Pointer_GetNode());
-           getRotation.OutValueSocketConnectionData[Pointer_GetNode.IdValue].expectedType = ExpectedType.GtlfType("float4");
+           getRotation.OutValueSocket[Pointer_GetNode.IdValue].expectedType = ExpectedType.GtlfType("float4");
            unitExporter.MapValueOutportToSocketName(unit.value, Pointer_GetNode.IdValue, getRotation);
            
            if (GltfInteractivityNodeHelper.IsMainCameraInInput(unit))

@@ -23,7 +23,7 @@ namespace UnityGLTF.Interactivity.Export
         }
     }
     
-    [OutputSocketDefine("a", 0)]
+    [InputSocketDefine("a", 0)]
     [OutputSocketDefine("value", 0)]
     public class GenericGetMemberMathUnit_1In_1Out : GenericGetMemberUnitExport
     {

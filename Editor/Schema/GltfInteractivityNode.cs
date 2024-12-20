@@ -210,8 +210,6 @@ namespace UnityGLTF.Interactivity
                     return null;
                 }
                 
-                Type = GltfInteractivityTypeMapping.TypeIndex(Value.GetType());
-                
                 var jObject = new JObject
                 {
                     new JProperty("id", Id),

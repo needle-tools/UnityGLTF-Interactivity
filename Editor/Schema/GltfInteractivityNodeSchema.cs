@@ -82,6 +82,11 @@ namespace UnityGLTF.Interactivity
         {
             return new TypeRestriction { limitToType = type };
         }
+        
+        public static TypeRestriction LimitToType(int typeIndex)
+        {
+            return new TypeRestriction { limitToType = GltfInteractivityTypeMapping.TypesMapping[typeIndex].GltfSignature};
+        }
 
         public static TypeRestriction LimitToBool
         {

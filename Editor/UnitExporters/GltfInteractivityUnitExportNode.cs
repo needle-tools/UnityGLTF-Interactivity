@@ -109,9 +109,10 @@ namespace UnityGLTF.Interactivity
                 return this;
             }
             
-            public void MapToPort(IUnitOutputPort outputPort)
+            public ValueOutputSocketData MapToPort(IUnitOutputPort outputPort)
             {
                 node.MapValueOutportToSocketName(outputPort, socket.Id);
+                return this;
             }
         }
             

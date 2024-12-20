@@ -48,19 +48,19 @@ namespace UnityGLTF.Interactivity.Export
             socketRules_mix_float2.AddExpectedType("value", ExpectedType.Float2);
             socketRules_mix_float2.AddTypeRestriction("a", TypeRestriction.LimitToFloat2);
             socketRules_mix_float2.AddTypeRestriction("b", TypeRestriction.LimitToFloat2);
-            socketRules_mix_float2.AddTypeRestriction("c", TypeRestriction.LimitToFloat);
+            socketRules_mix_float2.AddTypeRestriction("c", TypeRestriction.LimitToFloat2);
 
             var socketRules_mix_float3 = new GenericSocketRules();
             socketRules_mix_float3.AddExpectedType("value", ExpectedType.Float3);
             socketRules_mix_float3.AddTypeRestriction("a", TypeRestriction.LimitToFloat3);
             socketRules_mix_float3.AddTypeRestriction("b", TypeRestriction.LimitToFloat3);
-            socketRules_mix_float3.AddTypeRestriction("c", TypeRestriction.LimitToFloat);
+            socketRules_mix_float3.AddTypeRestriction("c", TypeRestriction.LimitToFloat3);
 
             var socketRules_mix_float4 = new GenericSocketRules();
             socketRules_mix_float4.AddExpectedType("value", ExpectedType.Float4);
             socketRules_mix_float4.AddTypeRestriction("a", TypeRestriction.LimitToFloat4);
             socketRules_mix_float4.AddTypeRestriction("b", TypeRestriction.LimitToFloat4);
-            socketRules_mix_float4.AddTypeRestriction("c", TypeRestriction.LimitToFloat);
+            socketRules_mix_float4.AddTypeRestriction("c", TypeRestriction.LimitToFloat4);
 
 
             

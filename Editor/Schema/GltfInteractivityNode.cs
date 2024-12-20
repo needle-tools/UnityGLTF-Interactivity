@@ -112,9 +112,6 @@ namespace UnityGLTF.Interactivity
                 ConfigurationData.Add(descriptor.Id, new ConfigData()
                 {
                     Id = descriptor.Id,
-                    Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(descriptor.Type),
-                    // TODO: add support for default values
-                    //          Value = descriptor.DefaultValue
                 });
             }
 
@@ -199,21 +196,19 @@ namespace UnityGLTF.Interactivity
         public class ConfigData : BaseData
         {
             // data field holds index in list of types supported in the extension
-            public int Type;
             public object Value = null;
 
             public JObject SerializeObject()
             {
                 if (Value == null)
                 {
-                    Debug.LogError($"{nameof(Value)} is null for ConfigData: {Id} of type {Type}");
+                    Debug.LogError($"{nameof(Value)} is null for ConfigData: {Id} ");
                     return null;
                 }
                 
                 var jObject = new JObject
                 {
                     new JProperty("id", Id),
-                    new JProperty("type", Type),
                 };
                 ValueSerializer.Serialize(Value, jObject);
                 return jObject;

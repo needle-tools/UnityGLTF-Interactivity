@@ -634,12 +634,6 @@ namespace UnityGLTF.Interactivity
                         if (outSocket.Value.expectedType.typeIndex != null)
                             usedTypeIndices.Add(outSocket.Value.expectedType.typeIndex.Value);
                     }
-
-                foreach (var config in node.ConfigurationData.Where(c => c.Value.Value != null))
-                {
-                    config.Value.Type = GltfInteractivityTypeMapping.TypeIndex(config.Value.Value.GetType());
-                    usedTypeIndices.Add(config.Value.Type);
-                }
             }
             
             // Create used Type Mapping List and mark the new indices
@@ -655,9 +649,6 @@ namespace UnityGLTF.Interactivity
                 foreach (var valueSocket in node.ValueSocketConnectionData)
                     if (valueSocket.Value.Value != null && valueSocket.Value.Type != -1)
                         valueSocket.Value.Type = typesIndexReplacement[valueSocket.Value.Type];
-                
-                foreach (var config in node.ConfigurationData.Where( c => c.Value.Value != null && c.Value.Type != -1))
-                    config.Value.Type = typesIndexReplacement[config.Value.Type];
             }
             
             foreach (var variable in variables.Where( v => v.Type != -1))

@@ -66,13 +66,15 @@ namespace UnityGLTF.Interactivity
         // The list of custom events that can be sent/received in the behavior graph.
         public CustomEvent[] CustomEvents = { };
 
+        public GltfInteractivityTypeMapping.TypeMapping[] Types = GltfInteractivityTypeMapping.TypesMapping;
+        
         public JProperty Serialize()
         {
             JObject jo = new JObject
             {
                 new JProperty("types",
                     new JArray(
-                        from type in GltfInteractivityTypeMapping.TypesMapping
+                        from type in Types
                         select type.SerializeObject())),
                 new JProperty("variables",
                     new JArray(
@@ -110,7 +112,7 @@ namespace UnityGLTF.Interactivity
         public class Variable
         {
             public string Id = string.Empty;
-            public int Type;
+            public int Type = -1;
             public object Value;
 
             public JObject SerializeObject()

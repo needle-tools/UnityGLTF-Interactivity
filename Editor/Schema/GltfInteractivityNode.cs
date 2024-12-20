@@ -284,10 +284,6 @@ namespace UnityGLTF.Interactivity
             {
                 if (value != null)
                 {
-                    // TODO not sure if doing it implicitly here is the right choice, but it leads to having
-                    // always the correct type in the JSON, matching the value
-                    valueObject["type"] = GltfInteractivityTypeMapping.TypeIndex(value.GetType());
-
                     if (value is Color color)
                     {
                         valueObject.Add(new JProperty("value", new JArray(color.r, color.g, color.b, color.a)));

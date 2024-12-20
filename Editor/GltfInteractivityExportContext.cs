@@ -529,6 +529,7 @@ namespace UnityGLTF.Interactivity
             GltfInteractivityExtension extension = new GltfInteractivityExtension();
             extension.Nodes = nodesToSerialize;
             
+            extension.Types = CollectAndFilterUsedTypes(nodesToSerialize);
             extension.Variables = variables.ToArray();
             extension.CustomEvents = customEvents.ToArray();
             
@@ -593,6 +594,64 @@ namespace UnityGLTF.Interactivity
             
             // Resort nodesToSerialize
             Array.Sort(nodesToSerialize, (a, b) => a.Index.CompareTo(b.Index));
+        }
+
+        private GltfInteractivityTypeMapping.TypeMapping[] CollectAndFilterUsedTypes(GltfInteractivityNode[] nodes)
+        {
+            var types = new List<GltfInteractivityTypeMapping.TypeMapping>();
+            
+            // key = old index, value = new index
+            var typesIndexReplacement = new Dictionary<int, int>();
+            var usedTypeIndices = new HashSet<int>();
+
+            // Collect used Types
+            foreach (var variable in variables.Where(v => v.Type == -1 && v.Value != null))
+            {
+                var typeIndex = GltfInteractivityTypeMapping.TypeIndex(variable.Value.GetType());
+                variable.Type = typeIndex;
+                usedTypeIndices.Add(typeIndex);
+            }
+            
+            foreach (var variable in variables.Where(v => v.Type != -1))
+                    usedTypeIndices.Add(variable.Type);
+            
+            foreach (var node in nodes)
+            {
+                foreach (var valueSocket in node.ValueSocketConnectionData)
+                    if (valueSocket.Value.Value != null)
+                    {
+                        if (valueSocket.Value.Type == -1)
+                            valueSocket.Value.Type = GltfInteractivityTypeMapping.TypeIndex(valueSocket.Value.GetType());
+                        usedTypeIndices.Add(valueSocket.Value.Type);
+                    }
+                
+                foreach (var outSocket in node.OutValueSocket)
+                    if (outSocket.Value.expectedType != null)
+                    {
+                        if (outSocket.Value.expectedType.typeIndex != null)
+                            usedTypeIndices.Add(outSocket.Value.expectedType.typeIndex.Value);
+                    }
+            }
+            
+            // Create used Type Mapping List and mark the new indices
+            foreach (var typeIndex in usedTypeIndices.OrderBy( t => t))
+            {
+                types.Add(GltfInteractivityTypeMapping.TypesMapping[typeIndex]);
+                typesIndexReplacement.Add(typeIndex, types.Count-1);
+            }
+            
+            // Replace the old type indices with the new ones
+            foreach (var variable in variables.Where( v => v.Type != -1))
+                variable.Type = typesIndexReplacement[variable.Type];
+            
+            foreach (var node in nodes)
+            {
+                foreach (var valueSocket in node.ValueSocketConnectionData)
+                    if (valueSocket.Value.Value != null && valueSocket.Value.Type != -1)
+                        valueSocket.Value.Type = typesIndexReplacement[valueSocket.Value.Type];
+            }
+            
+            return types.ToArray();
         }
         
         private static LinkedList<IUnit> TopologicalSort(IEnumerable<IUnit> nodes)

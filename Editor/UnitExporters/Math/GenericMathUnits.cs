@@ -46,10 +46,6 @@ namespace UnityGLTF.Interactivity.Export
             socketRules_InputABisSame_SameOutTypeAsInputA.AddTypeRestriction("a", TypeRestriction.SameAsInputPort("b"));
             socketRules_InputABisSame_SameOutTypeAsInputA.AddTypeRestriction("b", TypeRestriction.SameAsInputPort("a"));
             
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnit_3In_1Out("math/mix", typeof(ScalarLerp), socketRules_InputABisSame_SameOutTypeAsInputA));
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnit_3In_1Out("math/mix", typeof(Vector2Lerp), socketRules_InputABisSame_SameOutTypeAsInputA));
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnit_3In_1Out("math/mix", typeof(Vector3Lerp), socketRules_InputABisSame_SameOutTypeAsInputA));
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnit_3In_1Out("math/mix", typeof(Vector4Lerp), socketRules_InputABisSame_SameOutTypeAsInputA));
             UnitExporterRegistry.RegisterExporter(new GenericMathUnit_3In_1Out("math/select", typeof(SelectUnitExport), socketRules_InputABisSame_SameOutTypeAsInputA));
         }
         

@@ -505,6 +505,8 @@ namespace UnityGLTF.Interactivity
                 foreach (var exportNode in graph.nodes)
                     exportNode.Value.ResolveConnections();
             }
+            
+            RemoveUnconnectedNodes(ref nodesToSerialize);
 
             TriggerInterfaceExportCallbacks(ref nodesToSerialize);
             
@@ -617,6 +619,82 @@ namespace UnityGLTF.Interactivity
             }
 
             return sorted;
+        }
+
+        private static void RemoveUnconnectedNodes(ref GltfInteractivityNode[] allNodes)
+        {
+            var nodes = new List<GltfInteractivityNode>(allNodes);
+            var visited = new HashSet<int>(nodes.Count);
+            var nodesToRemove = new List<GltfInteractivityNode>();
+           
+            //Collect which nodes has connections
+            foreach (var node in nodes)
+            {
+                if (node.ValueSocketConnectionData.Count > 0)
+                {
+                    foreach (var valueSocket in node.ValueSocketConnectionData)
+                    {
+                        if (valueSocket.Value.Node != null && valueSocket.Value.Node != -1)
+                        {
+                            visited.Add(valueSocket.Value.Node.Value);
+                            visited.Add(node.Index);
+                        }
+                    }
+                }
+
+                if (node.FlowSocketConnectionData.Count > 0)
+                {
+                    foreach (var flowSocket in node.FlowSocketConnectionData)
+                    {
+                        if (flowSocket.Value.Node != null && flowSocket.Value.Node != -1)
+                        {
+                            visited.Add(flowSocket.Value.Node.Value);
+                            visited.Add(node.Index);
+                        }
+                    }
+                }
+            }
+
+            foreach (var node in nodes)
+            {
+                if (!visited.Contains(node.Index))
+                    nodesToRemove.Add(node);
+            }
+            
+            foreach (var node in nodesToRemove)
+            {
+                var indexToRemove = nodes.IndexOf(node);
+                if (indexToRemove == nodes.Count - 1)
+                {
+                    // Just remove, no other indices are affected
+                    nodes.RemoveAt(indexToRemove);
+                    continue;
+                }
+                
+                nodes.RemoveAt(indexToRemove);
+                // Move last node to the removed node index
+                nodes.Insert(indexToRemove, nodes.Last());
+                nodes.RemoveAt(nodes.Count - 1);
+              
+                int replaceIndex = nodes[indexToRemove].Index;
+                nodes[indexToRemove].Index = node.Index;
+                // Replace old index with new index of the inserted node
+                foreach (var n in nodes)
+                {
+                    foreach (var valueSocket in n.ValueSocketConnectionData)
+                    {
+                        if (valueSocket.Value.Node == replaceIndex)
+                            valueSocket.Value.Node = node.Index;
+                    }
+                    foreach (var flowSocket in n.FlowSocketConnectionData)
+                    {
+                        if (flowSocket.Value.Node == replaceIndex)
+                            flowSocket.Value.Node = node.Index;
+                    }
+                }
+            }
+            
+            allNodes = nodes.ToArray();
         }
         
         private static void Visit(int node, GltfInteractivityNode[] allNodes, LinkedList<int> sorted, Dictionary<int, bool> visited)

@@ -529,7 +529,11 @@ namespace UnityGLTF.Interactivity
             GltfInteractivityExtension extension = new GltfInteractivityExtension();
             extension.Nodes = nodesToSerialize;
             
-            extension.Types = CollectAndFilterUsedTypes(nodesToSerialize);
+            // Deactivated for now - not working in Authoring Tool, and also waiting for Spec Discussions about Types
+            //extension.Types = CollectAndFilterUsedTypes(nodesToSerialize);
+            
+            extension.Types = GltfInteractivityTypeMapping.TypesMapping;
+            
             extension.Variables = variables.ToArray();
             extension.CustomEvents = customEvents.ToArray();
             

@@ -17,6 +17,7 @@ namespace UnityGLTF.Interactivity.Export
         {
             GetMemberUnitExport.RegisterMemberExporter(typeof(Time), nameof(Time.deltaTime), new TimeUnitExports(Event_OnTickNode.IdOutTimeSinceLastTick));
             GetMemberUnitExport.RegisterMemberExporter(typeof(Time), nameof(Time.realtimeSinceStartup), new TimeUnitExports(Event_OnTickNode.IdOutTimeSinceStart));
+            GetMemberUnitExport.RegisterMemberExporter(typeof(Time), nameof(Time.time), new TimeUnitExports(Event_OnTickNode.IdOutTimeSinceStart));
             GetMemberUnitExport.RegisterMemberExporter(typeof(Time), nameof(Time.timeSinceLevelLoad), new TimeUnitExports(Event_OnTickNode.IdOutTimeSinceStart));
         }
 

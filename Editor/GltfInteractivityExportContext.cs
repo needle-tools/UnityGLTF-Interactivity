@@ -513,6 +513,8 @@ namespace UnityGLTF.Interactivity
             
             CheckForImplicitValueConversions(ref nodesToSerialize);
             
+            CheckForCircularFlows(ref nodesToSerialize);
+            
             PostIndexTopologicalSort(ref nodesToSerialize);  
 
             StringBuilder sb = new StringBuilder();
@@ -689,6 +691,68 @@ namespace UnityGLTF.Interactivity
             }
 
             return sorted;
+        }
+
+        private void CheckForCircularFlows(ref GltfInteractivityNode[] allNodes)
+        {
+            var nodes = new List<GltfInteractivityNode>(allNodes);
+            var visited = new Dictionary<int, bool>(allNodes.Length);
+            
+            bool Visit(int node, GltfInteractivityNode[] allNodes)
+            {
+                bool alreadyVisited = false;
+                
+                if (visited.TryGetValue(node, out alreadyVisited))
+                {
+                    if (alreadyVisited)
+                        return true;
+                }
+                
+                if (!alreadyVisited)
+                {
+                    visited[node] = true;
+
+                    // Get the dependencies from incoming connections and ignore self-references
+                    var currentNode = allNodes[node];
+                    foreach (var connection in currentNode.FlowSocketConnectionData)
+                    {
+                        if (connection.Value.Node != null && connection.Value.Node.HasValue && connection.Value.Node.Value < allNodes.Length)
+                        {
+                            if (Visit(connection.Value.Node.Value, allNodes))
+                            {
+                                // Add Events because of cyclic dependency
+                                var eventId = AddEventWithIdIfNeeded($"CyclicDependency{connection.Value.Node.ToString()}from{node.ToString()}");
+                       
+                                var triggerEventNode = new GltfInteractivityNode(new Event_SendNode());
+                                triggerEventNode.Index = nodes.Count;
+                                triggerEventNode.ConfigurationData["event"].Value = eventId;
+                                nodes.Add(triggerEventNode);
+                                
+                                var receiveEventNode = new GltfInteractivityNode(new Event_ReceiveNode());
+                                receiveEventNode.Index = nodes.Count;
+                                receiveEventNode.ConfigurationData["event"].Value = eventId;
+                                nodes.Add(receiveEventNode);
+
+                                var receiveFlowOut = receiveEventNode.FlowSocketConnectionData[Event_ReceiveNode.IdFlowOut];
+                                receiveFlowOut.Node = connection.Value.Node;
+                                receiveFlowOut.Socket = connection.Value.Socket;    
+
+                                connection.Value.Node = triggerEventNode.Index;
+                                connection.Value.Socket = Event_SendNode.IdFlowIn;
+                            }
+                        }
+                    }
+
+                    visited[node] = false;
+                }
+
+                return false;
+            }
+            
+            foreach (var node in allNodes)
+                Visit(node.Index, allNodes);
+
+            allNodes = nodes.ToArray();
         }
 
         private static void RemoveUnconnectedNodes(ref GltfInteractivityNode[] allNodes)

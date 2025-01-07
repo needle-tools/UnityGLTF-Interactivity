@@ -28,7 +28,10 @@ namespace UnityGLTF.Interactivity.Export
         public static bool HasMemberConvert(Type declaringType, string memberName)
         {
             if (string.IsNullOrEmpty(memberName)) return false;
-            return _memberExportRegister.ContainsKey($"{declaringType.FullName}.{memberName}");
+            if (_memberExportRegister.ContainsKey($"{declaringType.FullName}.{memberName}"))
+                return true;
+            
+            return GetMemberGenericStaticValueExporter.CanBeExported(declaringType, memberName);
         }
 
         public IUnitExporter GetExporter(IUnit unit)
@@ -53,6 +56,22 @@ namespace UnityGLTF.Interactivity.Export
     public class GetMemberGenericStaticValueExporter: IUnitExporter
     {
         public Type unitType { get; }
+
+        public static bool CanBeExported(Type declaringType, string memberName)
+        {
+            var field = declaringType.GetField(memberName);
+            if (field != null)
+                return field.GetValue(null) != null;
+            else
+            {
+                var property = declaringType.GetProperty(memberName);
+                if (property == null)
+                    return false;
+
+                return property.GetValue(null) != null;
+            }
+        }
+        
         public void InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as GetMember;

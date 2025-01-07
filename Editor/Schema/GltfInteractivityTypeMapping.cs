@@ -20,7 +20,7 @@ namespace UnityGLTF.Interactivity
         public static readonly TypeMapping[] TypesMapping =
         {
             new TypeMapping("bool",  new [] {typeof(bool)}),
-            new TypeMapping("int", new [] {typeof(int), typeof(long), typeof(GameObject), typeof(Material)}),
+            new TypeMapping("int", new [] {typeof(int), typeof(long), typeof(GameObject), typeof(Material), typeof(Transform)}),
             new TypeMapping("float", new [] {typeof(float), typeof(double)}),
             new TypeMapping("float2", new [] {typeof(Vector2)}),
             new TypeMapping("float3", new [] {typeof(Vector3)}),

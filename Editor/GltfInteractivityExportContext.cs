@@ -328,7 +328,8 @@ namespace UnityGLTF.Interactivity
             GltfInteractivityExtension.CustomEvent newEvent = new GltfInteractivityExtension.CustomEvent();
             newEvent.Id = id;
 
-            newEvent.Values = arguments;
+            if (arguments != null)
+                newEvent.Values = arguments;
 
             customEvents.Add(newEvent);
             return customEvents.Count - 1;

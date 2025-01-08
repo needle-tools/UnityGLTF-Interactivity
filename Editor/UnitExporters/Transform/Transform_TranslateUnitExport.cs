@@ -20,15 +20,11 @@ namespace UnityGLTF.Interactivity.Export
         {
            var unit = unitExporter.unit as Unity.VisualScripting.InvokeMember;
            
-           var getTranslation = unitExporter.CreateNode(new Pointer_GetNode());
-           
-           unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-               unit.target, getTranslation,
-               "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/translation");
-           
+           TransformHelpers.GetLocalPosition(unitExporter, unit.target, out var positionOutput);
            var add = unitExporter.CreateNode(new Math_AddNode());
-     
-           unitExporter.MapInputPortToSocketName(Pointer_GetNode.IdValue, getTranslation, Math_AddNode.IdValueB, add);
+           add.ValueIn(Math_AddNode.IdValueB).ConnectToSource(positionOutput);
+           
+           
            if (unit.valueInputs.Skip(1).First().type == typeof(Vector3))
            {
                // translate value is a vector3
@@ -54,19 +50,8 @@ namespace UnityGLTF.Interactivity.Export
                }
            }
            //TODO: translate of non self
-           
-           var setTranslation = unitExporter.CreateNode(new Pointer_SetNode());
-           
-           unitExporter.MapInputPortToSocketName(unit.enter, Pointer_SetNode.IdFlowIn, setTranslation);
-           unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Pointer_SetNode.IdFlowOut, setTranslation);
-           
-           unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-               unit.target, setTranslation,
-               "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/translation");
 
-           unitExporter.MapInputPortToSocketName(Math_AddNode.IdOut, add, Pointer_SetNode.IdValue, setTranslation);
-           
-           unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Pointer_SetNode.IdFlowOut, setTranslation);
+           TransformHelpers.SetLocalPosition(unitExporter, unit.target,  add.FirstValueOut(), unit.enter, unit.exit);
         }
     }
 }

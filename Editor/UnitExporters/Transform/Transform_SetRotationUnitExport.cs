@@ -28,18 +28,10 @@ namespace UnityGLTF.Interactivity.Export
             // TODO: World Space conversion
             
            var unit = unitExporter.unit as Unity.VisualScripting.SetMember;
+           TransformHelpers.SetLocalRotation(unitExporter, unit.target, unit.input, unit.assign, unit.assigned);
            
-           var setRotation = unitExporter.CreateNode(new Pointer_SetNode());
-           
-           unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-              unit.target, setRotation,
-               "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation");
-           
-           
-           unitExporter.MapInputPortToSocketName(unit.assign, Pointer_SetNode.IdFlowIn, setRotation);
-           unitExporter.MapOutFlowConnectionWhenValid(unit.assigned, Pointer_SetNode.IdFlowOut, setRotation);
-           unitExporter.MapInputPortToSocketName(unit.input, Pointer_SetNode.IdValue, setRotation);
-
+           if (unit.chainable && unit.output.hasValidConnection)
+               unitExporter.ByPassValue(unit.input, unit.output);
         }
     }
 }

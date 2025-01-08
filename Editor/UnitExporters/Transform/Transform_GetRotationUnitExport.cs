@@ -29,20 +29,7 @@ namespace UnityGLTF.Interactivity.Export
             // TODO: World Space conversion
             
            var unit = unitExporter.unit as Unity.VisualScripting.GetMember;
-           
-           var getRotation = unitExporter.CreateNode(new Pointer_GetNode());
-           getRotation.OutValueSocket[Pointer_GetNode.IdValue].expectedType = ExpectedType.GtlfType("float4");
-           unitExporter.MapValueOutportToSocketName(unit.value, Pointer_GetNode.IdValue, getRotation);
-           
-           if (GltfInteractivityNodeHelper.IsMainCameraInInput(unit))
-           {
-               GltfInteractivityNodeHelper.AddPointerConfig(getRotation, "/activeCamera/rotation");
-               return;
-           }
-           unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-               unit.target, getRotation,
-               "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation");
-           
+           TransformHelpers.GetLocalRotation(unitExporter, unit.target, unit.value);
         }
     }
 }

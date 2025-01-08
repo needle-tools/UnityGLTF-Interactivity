@@ -58,7 +58,11 @@ namespace UnityGLTF.Interactivity
             {
             }
             
-   
+            public FlowInSocketData MapToControlInput(ControlInput controlInput)
+            {
+                node.MapInputPortToSocketName(controlInput, data.Id);
+                return this;
+            }
         }
         
         public class ValueInputSocketData : ExportSocketData<ValueSocketData>
@@ -131,7 +135,7 @@ namespace UnityGLTF.Interactivity
         public FlowInSocketData FlowIn(string socketName)
         {
             // TODO
-            var socket = new FlowInSocketData(this, FlowSocketConnectionData[socketName]);
+            var socket = new FlowInSocketData(this, new FlowSocketData { Id = socketName});
             return socket;
         }
         

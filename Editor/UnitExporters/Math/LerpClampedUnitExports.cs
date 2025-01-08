@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -60,7 +59,6 @@ namespace UnityGLTF.Interactivity.Export
 
             unitExporter.ByPassFlow(unit.enter, unit.exit);
          }
-        
     }
 
     public class LerpClampedUnitExports : IUnitExporter

@@ -835,7 +835,7 @@ namespace UnityGLTF.Interactivity
         {
             bool inProcess;
             bool alreadyVisited = visited.TryGetValue(node, out inProcess);
-
+            
             if (alreadyVisited)
             {
                 if (inProcess)
@@ -905,7 +905,7 @@ namespace UnityGLTF.Interactivity
                 sorted.AddLast(node);
             }
         }
-
+        
         private GltfInteractivityNode[] AddTypeConversion(GltfInteractivityNode targetNode, int conversionNodeIndex, string targetInputSocket, int fromType, int toType)
         {
             List<GltfInteractivityNode> newNodes = new List<GltfInteractivityNode>();

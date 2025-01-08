@@ -189,7 +189,7 @@ namespace UnityGLTF.Interactivity
         public OutValueSocketDescriptor[] OutputValueSockets {get; set;}
         
         public MetaDataEntry[] MetaDatas {get; protected set;}
-
+        
         public GltfInteractivityNodeSchema()
         {
             Type = string.Empty;

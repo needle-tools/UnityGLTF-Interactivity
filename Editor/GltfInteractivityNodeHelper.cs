@@ -68,6 +68,11 @@ namespace UnityGLTF.Interactivity
         public static bool IsMainCameraInInput(IUnit unit)
         {
             var target = unit.inputs.FirstOrDefault( i => i.key == "target");
+            return IsMainCameraInInput(target as ValueInput);
+        }
+        
+        public static bool IsMainCameraInInput(ValueInput target)
+        {
             if (target == null)
                 return false;
             

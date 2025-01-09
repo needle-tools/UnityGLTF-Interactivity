@@ -95,8 +95,10 @@ namespace UnityGLTF.Interactivity
             node.ValueSocketConnectionData.Add(pointerId, new GltfInteractivityNode.ValueSocketData()
             {
                 Id = pointerId,
-                Value = index
-            });          
+                Value = index,
+                Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"),
+                typeRestriction = TypeRestriction.LimitToInt,
+            });
         }
         
         // Get the index of a named property that has been exported to GLTF

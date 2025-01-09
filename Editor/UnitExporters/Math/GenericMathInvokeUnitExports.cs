@@ -164,7 +164,8 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Log), new GenericInvokeMathInvokeUnit1In1Out("math/log", socketRules_SameOutTypeAsInputA));
             InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Log10), new GenericInvokeMathInvokeUnit1In1Out("math/log10", socketRules_SameOutTypeAsInputA));
             InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Sqrt), new GenericInvokeMathInvokeUnit1In1Out("math/sqrt", socketRules_SameOutTypeAsInputA));
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Pow), new GenericInvokeMathInvokeUnit1In1Out("math/pow", socketRules_SameOutTypeAsInputA));
+            
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Pow), new GenericInvokeMathInvokeUnit2In1Out("math/pow", socketRules_SameOutTypeAsInputA));
 
             InvokeUnitExport.RegisterInvokeExporter(typeof(Vector3), nameof(Vector3.Magnitude), new GenericInvokeMathInvokeUnit1In1Out("math/length", socketRules_OutFloat));
             InvokeUnitExport.RegisterInvokeExporter(typeof(Vector4), nameof(Vector4.Magnitude), new GenericInvokeMathInvokeUnit1In1Out("math/length", socketRules_OutFloat));
@@ -180,6 +181,21 @@ namespace UnityGLTF.Interactivity.Export
 
             InvokeUnitExport.RegisterInvokeExporter(typeof(float), nameof(float.IsNaN), new GenericInvokeMathInvokeUnit1In1Out("math/isnan", socketRules_OutBool));
             InvokeUnitExport.RegisterInvokeExporter(typeof(float), nameof(float.IsInfinity), new GenericInvokeMathInvokeUnit1In1Out("math/isinf", socketRules_OutBool));
+            
+            // These don't exist as Units but we still want generic export nodes for them
+            new GenericInvokeMathInvokeUnit1In1Out("math/trunc", socketRules_SameOutTypeAsInputA);
+            new GenericInvokeMathInvokeUnit1In1Out("math/fract", socketRules_SameOutTypeAsInputA);
+            new GenericInvokeMathInvokeUnit1In1Out("math/neg", socketRules_SameOutTypeAsInputA);
+            
+            new GenericInvokeMathInvokeUnit1In1Out("math/sinh", socketRules_SameOutTypeAsInputA);
+            new GenericInvokeMathInvokeUnit1In1Out("math/cosh", socketRules_SameOutTypeAsInputA);
+            new GenericInvokeMathInvokeUnit1In1Out("math/tanh", socketRules_SameOutTypeAsInputA);
+            new GenericInvokeMathInvokeUnit1In1Out("math/asinh", socketRules_SameOutTypeAsInputA);
+            new GenericInvokeMathInvokeUnit1In1Out("math/acosh", socketRules_SameOutTypeAsInputA);
+            new GenericInvokeMathInvokeUnit1In1Out("math/atanh", socketRules_SameOutTypeAsInputA);
+            
+            new GenericInvokeMathInvokeUnit1In1Out("math/log2", socketRules_SameOutTypeAsInputA);
+            new GenericInvokeMathInvokeUnit1In1Out("math/cbrt", socketRules_SameOutTypeAsInputA);
         }
         
         public GenericInvokeMathInvokeUnit1In1Out(string gltfNodeType, GenericSocketRules socketRules = null) : base(gltfNodeType, socketRules)

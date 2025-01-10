@@ -18,16 +18,9 @@ namespace UnityGLTF.Interactivity.Export
         public void InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as GetVariable;
-            
-            var node = unitExporter.CreateNode(new Variable_GetNode());
-            
             var variableIndex = unitExporter.exportContext.AddVariableIfNeeded(unit);
-            var varType = unitExporter.exportContext.variables[variableIndex].Type;
-            node.OutValueSocket[Variable_GetNode.IdOutputValue].expectedType = ExpectedType.GtlfType(varType);
-            
-            node.ConfigurationData["variable"].Value = variableIndex;
-            
-            unitExporter.MapValueOutportToSocketName(unit.value, Variable_GetNode.IdOutputValue, node); 
+            VariablesHelpers.GetVariable(unitExporter, variableIndex, out var valueSocket);
+            valueSocket.MapToPort(unit.value);
         }
     }
 }

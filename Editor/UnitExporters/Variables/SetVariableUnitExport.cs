@@ -33,7 +33,8 @@ namespace UnityGLTF.Interactivity.Export
             unitExporter.MapInputPortToSocketName(unit.assign, Variable_SetNode.IdFlowIn, node);
 
             bool inputIsLiteral = !unit.input.hasDefaultValue && unit.input.hasValidConnection &&
-                                  unit.input.connections.First().source.unit is Literal;
+                                  (unit.input.connections.First().source.unit is Literal 
+                                  || unit.input.connections.First().source.unit is Null);
                  
             
             if ( (inputIsLiteral || (unit.input.hasDefaultValue  && !unit.input.hasValidConnection && !unit.input.hasAnyConnection)) && unit.output.hasValidConnection)
@@ -46,7 +47,7 @@ namespace UnityGLTF.Interactivity.Export
                 getVarNode.ConfigurationData["variable"].Value = variableIndex;
                 unitExporter.MapValueOutportToSocketName(unit.output, Variable_GetNode.IdOutputValue, getVarNode);
 
-                node.OutValueSocket[Variable_GetNode.IdOutputValue].expectedType = ExpectedType.GtlfType(variableType);
+                getVarNode.OutValueSocket[Variable_GetNode.IdOutputValue].expectedType = ExpectedType.GtlfType(variableType);
             }
             else
             if (!unit.input.hasDefaultValue && unit.input.hasValidConnection && unit.output.hasValidConnection)

@@ -92,10 +92,73 @@ namespace UnityGLTF.Interactivity
             internal Dictionary<IUnitInputPort, IUnitInputPort> bypasses = new Dictionary<IUnitInputPort, IUnitInputPort>();
             public List<ExportGraph> subGraphs = new List<ExportGraph>();
         }
+
+        public class VariableBasedList
+        {
+            public readonly GltfInteractivityExportContext Context;
+            public readonly int Capacity;
+            public readonly int StartIndex = 0;
+            public readonly int EndIndex = 0;
+            public readonly string ListId;
+            public readonly int CountVarId;
+            public readonly int CapacityVarId;
+            public readonly int ListIndex;
+            public readonly int CurrentIndexVarId;
+            public readonly int ValueToSetVarId;
+
+            public GltfInteractivityUnitExporterNode.ValueOutputSocketData getCountNodeSocket;
+            public GltfInteractivityUnitExporterNode.ValueOutputSocketData getValueNodeSocket;
+            public GltfInteractivityUnitExporterNode.FlowInSocketData setValueFlowIn;
+            public Unit listCreatorUnit;
+            public ExportGraph listCreatorGraph;
+            
+            public VariableBasedList(GltfInteractivityExportContext context, string listId, int capacity, int gltfType)
+            {
+                Capacity = capacity;
+                Context = context;
+                ListId = listId;
+                
+                CurrentIndexVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_CurrentIndex", 0, VariableKind.Scene, GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"));
+                ValueToSetVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_ValueToSet", 0, VariableKind.Scene, GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"));
+                
+                ListIndex = Context.variables.Count;
+                
+                CountVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_Count", 0, VariableKind.Scene, GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"));
+                CapacityVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_Capacity", Capacity, VariableKind.Scene, GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"));
+                
+                StartIndex = -1;
+                EndIndex = -1;
+                for (int i = 0; i < capacity; i++)
+                {
+                    EndIndex = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_{i}", null, VariableKind.Scene, gltfType);
+                    if (StartIndex == -1)
+                        StartIndex = EndIndex;
+                }
+            }
+
+            public void ClearList()
+            {
+                Context.variables[CountVarId].Value = 0;
+            }
+            
+            public void AddItem(object value)
+            {
+                if (Context.variables[CountVarId].Value is int count)
+                {
+                    if (count >= Capacity)
+                        throw new ArgumentException("List is full");
+                    
+                    Context.variables[StartIndex + count].Value = value;
+                    Context.variables[CountVarId].Value = count + 1;
+                }
+            }
+
+        }
         
         internal Dictionary<InputPortGraph, InputPortGraph> graphBypasses = new Dictionary<InputPortGraph, InputPortGraph>(new InputportGraphComparer());
         internal Dictionary<(IUnitInputPort port, SubgraphUnit subGraph), (IUnitInputPort port, ExportGraph graph)> bypassesSubGraphs = new Dictionary<(IUnitInputPort, SubgraphUnit), (IUnitInputPort, ExportGraph)>();
         private List<ExportGraph> addedGraphs = new List<ExportGraph>();
+        private List<VariableBasedList> addedVariableBasedLists = new List<VariableBasedList>();
         
         internal ExportGraph currentGraphProcessing { get; private set; } = null;
         
@@ -104,6 +167,21 @@ namespace UnityGLTF.Interactivity
         public GltfInteractivityExportContext(GltfInteractivityExportPlugin plugin)
         {
             this.plugin = plugin;
+        }
+
+        public VariableBasedList GetListByCreator(IUnit listCreatorUnit)
+        {
+            return addedVariableBasedLists
+                .FirstOrDefault(l => l.listCreatorUnit == listCreatorUnit && l.listCreatorGraph == currentGraphProcessing);
+        }
+        
+        public VariableBasedList CreateNewVariableBasedList(int capacity, int gltfType, string listId = null)
+        {
+            if (string.IsNullOrEmpty(listId))
+                listId = Guid.NewGuid().ToString();
+            var newVariableBasedList = new VariableBasedList(this, listId, capacity, gltfType);
+            addedVariableBasedLists.Add(newVariableBasedList);
+            return newVariableBasedList;
         }
 
         /// <summary>

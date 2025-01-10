@@ -81,6 +81,8 @@ namespace UnityGLTF.Interactivity.Export
             if (GltfInteractivityNodeHelper.IsMainCameraInInput(target))
             {
                 GltfInteractivityNodeHelper.AddPointerConfig(getRotation, "/activeCamera/rotation");
+                QuaternionHelpers.Invert(unitExporter, convertedRotation, out var invertedRotation);
+                value = invertedRotation;
                 return;
             }
 

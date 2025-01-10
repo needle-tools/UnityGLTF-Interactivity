@@ -122,12 +122,21 @@ namespace UnityGLTF.Interactivity
             
         public ValueInputSocketData ValueIn(string socketName)
         {
+            if (!ValueSocketConnectionData.ContainsKey(socketName))
+            {
+               ValueSocketConnectionData.Add(socketName, new ValueSocketData { Id = socketName });
+            }
+            
             var socket = new ValueInputSocketData(this, ValueSocketConnectionData[socketName]);
             return socket;
         }
         
         public FlowOutSocketData FlowOut(string socketName)
         {
+            if (!FlowSocketConnectionData.ContainsKey(socketName))
+            {
+                FlowSocketConnectionData.Add(socketName, new FlowSocketData { Id = socketName });
+            }
             var socket = new FlowOutSocketData(this, FlowSocketConnectionData[socketName]);
             return socket;
         }
@@ -141,6 +150,11 @@ namespace UnityGLTF.Interactivity
         
         public ValueOutputSocketData ValueOut(string value)
         {
+            if (!OutValueSocket.ContainsKey(value))
+            {
+                OutValueSocket.Add(value, new ValueOutSocket { Id = value });
+            }
+
             return new ValueOutputSocketData(this, OutValueSocket[value]);
         }
         

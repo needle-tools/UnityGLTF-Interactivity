@@ -85,6 +85,7 @@ namespace UnityGLTF.Interactivity
         
         public class ExportGraph
         {
+            public GameObject gameObject = null;
             public ExportGraph parentGraph = null;
             public FlowGraph graph;
             public Dictionary<IUnit, UnitExporter> nodes = new Dictionary<IUnit, UnitExporter>();
@@ -296,22 +297,19 @@ namespace UnityGLTF.Interactivity
                 targetValueInput = customEvent.target;
             else
                 throw new ArgumentException("Event Unit type not supported: " + eventUnit.GetType().Name);
-            
+
+            string id = null; 
             target = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(targetValueInput, eventUnit.defaultValues, this);
-            if (target == null)
+            if (target != null)
             {
-                Debug.LogError("Target not found for event: " + eventId);
-                return -1;
+                var targetIndex = exporter.GetTransformIndex(target.transform);
+               // id = $"node_{targetIndex}_{eventId}";
             }
-            
-            var targetIndex = exporter.GetTransformIndex(target.transform);
-            if (targetIndex == -1)
+
+            if (id == null)
             {
-                Debug.LogError("Target not found for event: " + eventId);
-                return -1;
+                id = eventId;
             }
-            
-            var id = $"node_{targetIndex}_{eventId}";
             
             return AddEventWithIdIfNeeded(id, arguments);
         }
@@ -432,6 +430,7 @@ namespace UnityGLTF.Interactivity
         internal ExportGraph AddGraph(FlowGraph graph)
         {
             var newExportGraph = new ExportGraph();
+            newExportGraph.gameObject = ActiveScriptMachine.gameObject;
             newExportGraph.parentGraph = currentGraphProcessing;
             newExportGraph.graph = graph;
             addedGraphs.Add(newExportGraph);

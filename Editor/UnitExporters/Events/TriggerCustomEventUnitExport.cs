@@ -19,13 +19,18 @@ namespace UnityGLTF.Interactivity.Export
 
         public void InitializeInteractivityNodes(UnitExporter unitExporter)
         {
-            GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Event_SendNode());
             var customEvent = unitExporter.unit as TriggerCustomEvent;
-    
+
+            GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Event_SendNode());
+            
             unitExporter.MapInputPortToSocketName(customEvent.name, Event_SendNode.IdEvent, node);
             unitExporter.MapInputPortToSocketName(customEvent.enter, Event_SendNode.IdFlowIn, node);
             
+            node.ValueIn("targetNodeIndex").MapToInputPort(customEvent.target).SetType(TypeRestriction.LimitToInt);
+            
             var args = new List<GltfInteractivityUnitExporterNode.EventValues>();
+            args.Add( new GltfInteractivityUnitExporterNode.EventValues { Id = "targetNodeIndex", Type = GltfInteractivityTypeMapping.TypeIndex("int") });
+            
             foreach (var arg in customEvent.arguments)
             {
                 var argId = arg.key;
@@ -44,6 +49,11 @@ namespace UnityGLTF.Interactivity.Export
 
             }
             var index = unitExporter.exportContext.AddEventIfNeeded(customEvent, args.ToArray());
+            if (index == -1)
+            {
+                unitExporter.IsTranslatable = false;
+                return;
+            }
             node.ConfigurationData["event"].Value = index;
             
             unitExporter.exportContext.OnBeforeSerialization += (GltfInteractivityNode[] nodes) =>

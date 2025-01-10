@@ -149,9 +149,12 @@ namespace UnityGLTF.Interactivity
             else if (value.hasValidConnection && value.connections.First().source.unit is GetVariable getVariable)
             {
                 // If there is a connection, then we can return the value of the literal
-                var getVarValue = exportContext.GetVariableValueRaw(getVariable, out _, out _);
+                var getVarValue = exportContext.GetVariableValueRaw(getVariable, out _, out var varType);
                 if (getVariable != null && getVarValue is GameObject gameObject) 
                     return gameObject;
+
+                if (varType != null)
+                    return null;
                 
                 Debug.LogError("Could not get the default value of the GetVariable node: " + getVariable.ToString());
                 return null;

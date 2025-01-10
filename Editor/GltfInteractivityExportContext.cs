@@ -534,6 +534,8 @@ namespace UnityGLTF.Interactivity
             // Deactivated for now - not working in Authoring Tool, and also waiting for Spec Discussions about Types
             //extension.Types = CollectAndFilterUsedTypes(nodesToSerialize);
             
+            ValidateData(nodesToSerialize);
+            
             extension.Types = GltfInteractivityTypeMapping.TypesMapping;
             
             extension.Variables = variables.ToArray();
@@ -1103,6 +1105,92 @@ namespace UnityGLTF.Interactivity
 
             nodes = newNodeList.ToArray();
         }
-        
+
+        private void ValidateData(GltfInteractivityNode[] nodes)
+        {
+            var sb = new StringBuilder();
+            
+            void NodeAppendLine(GltfInteractivityNode node, string message)
+            {
+                sb.AppendLine($"Node Index {node.Index} with Schema={node.Schema.Type}: {message}");
+            }
+            
+            foreach (var node in nodes)
+            {
+                foreach (var valueSocket in node.ValueSocketConnectionData)
+                {
+                    if (valueSocket.Value.Node == null)
+                    {
+                        if (valueSocket.Value.Value == null)
+                            NodeAppendLine(node, $"Socket {valueSocket.Key} has no connection and no Value");
+                        else if (valueSocket.Value.Type == -1)
+                            NodeAppendLine(node, $"Socket {valueSocket.Key} has invalid Type (-1). Value-Type: {valueSocket.Value.Value.GetType().Name}");
+                    }
+                    else if (valueSocket.Value.Node == -1)
+                    {
+                        NodeAppendLine(node, $"Socket {valueSocket.Key} has invalid Node Index (-1)");
+                    }
+                }
+                
+                foreach (var flowSocket in node.FlowSocketConnectionData)
+                {
+                    if (flowSocket.Value.Node == -1)
+                    {
+                        NodeAppendLine(node, $"Flow Socket {flowSocket.Key} has invalid Node Index (-1)");
+                    }
+                }
+
+                if (node.Schema.Type == Pointer_SetNode.TypeName || node.Schema.Type == Pointer_GetNode.TypeName)
+                {
+                    if (node.ValueSocketConnectionData.TryGetValue(GltfInteractivityNodeHelper.IdPointerNodeIndex, out var valueSocket))
+                    {
+                        if (valueSocket.Value != null && valueSocket.Node == null && (int)valueSocket.Value == -1)
+                            NodeAppendLine(node, $"Node Pointer Node has invalid nodeIndex Value: -1");
+                    }
+                }
+                
+                if (node.Schema.Type == Variable_SetNode.TypeName || node.Schema.Type == Variable_GetNode.TypeName)
+                {
+                    if (node.ConfigurationData.TryGetValue(Variable_SetNode.IdConfigVarIndex, out var varConfig))
+                    {
+                        if (varConfig.Value == null)
+                            NodeAppendLine(node, $"Variable Node has no Variable Index");
+                        if (varConfig.Value != null && (int)varConfig.Value == -1)
+                            NodeAppendLine(node, $"Variable Node has invalid Variable Index: -1");
+                    }
+                }
+
+                if (node.Schema.Type == Event_ReceiveNode.TypeName || node.Schema.Type == Event_SendNode.TypeName)
+                {
+                    if (node.ConfigurationData.TryGetValue("event", out var varConfig))
+                    {
+                        if (varConfig.Value == null)
+                            NodeAppendLine(node, $"Event Node has no Event Index");
+                        if (varConfig.Value != null && (int)varConfig.Value == -1)
+                            NodeAppendLine(node, $"Event Node has invalid Event Index: -1");
+                    }
+                }
+            }
+            
+            foreach (var variable in variables)
+            {
+                if (variable.Type == -1)
+                    sb.AppendLine($"Variable with Id >{variable.Id}< has invalid Type (-1)");
+            }
+            
+            foreach (var customEvent in customEvents)
+            {
+                foreach (var customEventValue in customEvent.Values)
+                {
+                    if (customEventValue.Type == -1)
+                        sb.AppendLine($"Custom Event with Id >{customEvent.Id}< with Value >{customEventValue.Id}< has invalid Value Type (-1)");
+                }
+            }
+            
+            if (sb.Length == 0)
+                return;
+            
+            Debug.LogError($"Validation Errors Found: "+ System.Environment.NewLine + sb.ToString());
+        }
     }
 }

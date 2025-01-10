@@ -461,6 +461,12 @@ namespace UnityGLTF.Interactivity.Export
                 return true;
             }
 
+            if (inputPort.hasValidConnection && inputPort.connections.First().source.unit is Null)
+            {
+                value = -1;
+                return true;
+            }
+            
             if (inputPort.hasValidConnection && inputPort.connections.First().source.unit is Literal literal)
             {
                 value = literal.value;

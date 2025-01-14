@@ -170,28 +170,32 @@ namespace UnityGLTF.Interactivity.Export
                         {
                             if (valueSocketData.Value == null)
                             {
-                                valueSocketData.Type = GltfInteractivityTypeMapping.TypeIndex(defaultValue.GetType());
-
                                 if (defaultValue is GameObject gameObject)
                                 {
                                     var gameObjectNodeIndex =
                                         exportContext.exporter.GetTransformIndex(gameObject.transform);
 
                                     valueSocketData.Value = gameObjectNodeIndex;
+                                    valueSocketData.Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
                                 }
                                 else if (defaultValue is Component component)
                                 {
                                     var gameObjectNodeIndex =
                                         exportContext.exporter.GetTransformIndex(component.transform);
                                     valueSocketData.Value = gameObjectNodeIndex;
+                                    valueSocketData.Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
                                 }
                                 else if (defaultValue is Material material)
                                 {
                                     var materialIndex = exportContext.exporter.ExportMaterial(material).Id;
                                     valueSocketData.Value = materialIndex;
+                                    valueSocketData.Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
                                 }
                                 else
+                                {
+                                    valueSocketData.Type = GltfInteractivityTypeMapping.TypeIndex(defaultValue.GetType());
                                     valueSocketData.Value = defaultValue;
+                                }
                             }
                         }
                         else if (inputPort.node.ConfigurationData.TryGetValue(inputPort.socketName,

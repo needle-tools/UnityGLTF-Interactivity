@@ -149,6 +149,36 @@ namespace UnityGLTF.Interactivity.Export
             if (!IsTranslatable)
                 _nodes.Clear();
         }
+
+        public void ConvertValue(object originalValue, out object convertedValue, out int typeIndex)
+        {
+            if (originalValue is GameObject gameObject)
+            {
+                var gameObjectNodeIndex =
+                    exportContext.exporter.GetTransformIndex(gameObject.transform);
+
+                convertedValue = gameObjectNodeIndex;
+                typeIndex = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
+            }
+            else if (originalValue is Component component)
+            {
+                var gameObjectNodeIndex =
+                    exportContext.exporter.GetTransformIndex(component.transform);
+                convertedValue = gameObjectNodeIndex;
+                typeIndex = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
+            }
+            else if (originalValue is Material material)
+            {
+                var materialIndex = exportContext.exporter.ExportMaterial(material).Id;
+                convertedValue = materialIndex;
+                typeIndex = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
+            }
+            else
+            {
+                typeIndex = GltfInteractivityTypeMapping.TypeIndex(originalValue.GetType());
+                convertedValue = originalValue;
+            }            
+        }
         
         public void ResolveDefaultAndLiterals()
         {
@@ -170,32 +200,9 @@ namespace UnityGLTF.Interactivity.Export
                         {
                             if (valueSocketData.Value == null)
                             {
-                                if (defaultValue is GameObject gameObject)
-                                {
-                                    var gameObjectNodeIndex =
-                                        exportContext.exporter.GetTransformIndex(gameObject.transform);
-
-                                    valueSocketData.Value = gameObjectNodeIndex;
-                                    valueSocketData.Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
-                                }
-                                else if (defaultValue is Component component)
-                                {
-                                    var gameObjectNodeIndex =
-                                        exportContext.exporter.GetTransformIndex(component.transform);
-                                    valueSocketData.Value = gameObjectNodeIndex;
-                                    valueSocketData.Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
-                                }
-                                else if (defaultValue is Material material)
-                                {
-                                    var materialIndex = exportContext.exporter.ExportMaterial(material).Id;
-                                    valueSocketData.Value = materialIndex;
-                                    valueSocketData.Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
-                                }
-                                else
-                                {
-                                    valueSocketData.Type = GltfInteractivityTypeMapping.TypeIndex(defaultValue.GetType());
-                                    valueSocketData.Value = defaultValue;
-                                }
+                                ConvertValue(defaultValue, out var convertedValue, out int typeIndex);
+                                valueSocketData.Value = convertedValue;
+                                valueSocketData.Type = typeIndex;
                             }
                         }
                         else if (inputPort.node.ConfigurationData.TryGetValue(inputPort.socketName,

@@ -53,11 +53,28 @@ namespace Editor.UnitExporters.Lists
         //
         //     list.getValueNodeSocket.MapToPort(valueOutput);
         // }
-
-        public static void GetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, ValueInput indexInput, out GltfInteractivityUnitExporterNode.ValueOutputSocketData valueOutput)
+        public static void GetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list,
+            GltfInteractivityUnitExporterNode.ValueOutputSocketData indexInput, out GltfInteractivityUnitExporterNode.ValueOutputSocketData valueOutput)
         {
+            GetItem(unitExporter, list, out var indexInputSocket, out valueOutput);
+            foreach (var indexSockets in indexInputSocket)
+                indexSockets.ConnectToSource(indexInput);
+        }
+        
+        public static void GetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list,
+            ValueInput indexInput, out GltfInteractivityUnitExporterNode.ValueOutputSocketData valueOutput)
+        {
+            GetItem(unitExporter, list, out var indexInputSocket, out valueOutput);
+            foreach (var indexSockets in indexInputSocket)
+                indexSockets.MapToInputPort(indexInput);
+        }
+
+        private static void GetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, out GltfInteractivityUnitExporterNode.ValueInputSocketData[] indexInput, out GltfInteractivityUnitExporterNode.ValueOutputSocketData valueOutput)
+        {
+            indexInput = null;
             // Get Values
             GltfInteractivityUnitExporterNode prevSelectNode = null;
+            indexInput = new GltfInteractivityUnitExporterNode.ValueInputSocketData[list.Capacity];
             int index = 0;
             int[] indices = new int[list.Capacity];
             for (int i = list.StartIndex; i <= list.EndIndex; i++)
@@ -65,7 +82,7 @@ namespace Editor.UnitExporters.Lists
                 indices[index] = index;
                 VariablesHelpers.GetVariable(unitExporter, i, out var valueOut);
                 var eq = unitExporter.CreateNode(new Math_EqNode());
-                eq.ValueIn("a").MapToInputPort(indexInput);
+                indexInput[index] = eq.ValueIn("a");
                 eq.ValueIn("b").SetValue(index);
                 eq.FirstValueOut().ExpectedType(ExpectedType.Int);
 

@@ -51,7 +51,7 @@ namespace UnityGLTF.Interactivity.Export
 
             AnimationClip clip = animationState.motion as AnimationClip;
             node.ValueSocketConnectionData[Animation_StartNode.IdValueEndtime].Value =
-                clip != null ? clip.length : float.PositiveInfinity;
+                (clip != null && !clip.isLooping) ? clip.length : float.PositiveInfinity;
             
             unitExporter.MapInputPortToSocketName(unit.enter, Animation_StartNode.IdFlowIn, node);
             // There should only be one output flow from the Animator.Play node

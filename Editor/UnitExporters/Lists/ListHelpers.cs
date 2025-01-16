@@ -12,14 +12,19 @@ namespace Editor.UnitExporters.Lists
     public static class ListHelpers
     {
 
-        public static void GetListCount(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, GltfInteractivityUnitExporterNode.ValueInputSocketData toInputSocket)
+        public static void GetListCount(GltfInteractivityExportContext.VariableBasedList list, GltfInteractivityUnitExporterNode.ValueInputSocketData toInputSocket)
         {
             toInputSocket.ConnectToSource(list.getCountNodeSocket);
         }
         
-        public static void GetListCount(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, ValueOutput mapToSocket)
+        public static void GetListCount(GltfInteractivityExportContext.VariableBasedList list, ValueOutput mapToSocket)
         {
             list.getCountNodeSocket.MapToPort(mapToSocket);
+        }
+
+        public static GltfInteractivityUnitExporterNode.ValueOutputSocketData GetListCountSocket(GltfInteractivityExportContext.VariableBasedList list)
+        {
+            return list.getCountNodeSocket;
         }
 
         public static void ClearList(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, ControlInput flowIn, ControlOutput flowOut)
@@ -69,7 +74,7 @@ namespace Editor.UnitExporters.Lists
                 indexSockets.MapToInputPort(indexInput);
         }
 
-        private static void GetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, out GltfInteractivityUnitExporterNode.ValueInputSocketData[] indexInput, out GltfInteractivityUnitExporterNode.ValueOutputSocketData valueOutput)
+        public static void GetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, out GltfInteractivityUnitExporterNode.ValueInputSocketData[] indexInput, out GltfInteractivityUnitExporterNode.ValueOutputSocketData valueOutput)
         {
             indexInput = null;
             // Get Values

@@ -56,7 +56,7 @@ namespace UnityGLTF.Interactivity.Export
             }
             node.ConfigurationData["event"].Value = index;
             
-            unitExporter.exportContext.OnBeforeSerialization += (GltfInteractivityNode[] nodes) =>
+            unitExporter.exportContext.OnBeforeSerialization += (List<GltfInteractivityNode> nodes) =>
             {
                 var customEvent = unitExporter.exportContext.customEvents[index];
 
@@ -66,7 +66,7 @@ namespace UnityGLTF.Interactivity.Export
                     if (eventValue == null || eventValue.Type != -1)
                         continue;
                     
-                    var argTypeIndex = unitExporter.exportContext.GetValueTypeForInput(nodes, node, argValue.Id);
+                    var argTypeIndex = unitExporter.exportContext.GetValueTypeForInput(node, argValue.Id);
                     eventValue.Type = argTypeIndex;
                 }
             };

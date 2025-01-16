@@ -30,9 +30,9 @@ namespace UnityGLTF.Interactivity
             return newNode;
         }
         
-        internal GltfInteractivityExportNodes(GltfInteractivityNode[] nodes)
+        internal GltfInteractivityExportNodes(List<GltfInteractivityNode> nodes)
         {
-            this.nodes.AddRange(nodes);
+            this.nodes = nodes;
         }
     }
     
@@ -48,7 +48,7 @@ namespace UnityGLTF.Interactivity
         internal List<GltfInteractivityExtension.CustomEvent> customEvents = new List<GltfInteractivityExtension.CustomEvent>();
         private List<UnitExporter> nodesToExport = new List<UnitExporter>();
         
-        public delegate void OnBeforeSerializationDelegate(GltfInteractivityNode[] nodes);
+        public delegate void OnBeforeSerializationDelegate(List<GltfInteractivityNode> nodes);
         public event OnBeforeSerializationDelegate OnBeforeSerialization;
         
         public class InputPortGraph 
@@ -159,7 +159,9 @@ namespace UnityGLTF.Interactivity
         internal Dictionary<(IUnitInputPort port, SubgraphUnit subGraph), (IUnitInputPort port, ExportGraph graph)> bypassesSubGraphs = new Dictionary<(IUnitInputPort, SubgraphUnit), (IUnitInputPort, ExportGraph)>();
         private List<ExportGraph> addedGraphs = new List<ExportGraph>();
         private List<VariableBasedList> addedVariableBasedLists = new List<VariableBasedList>();
-        
+               
+        private List<GltfInteractivityNode> nodesToSerialize = new List<GltfInteractivityNode>();
+
         internal ExportGraph currentGraphProcessing { get; private set; } = null;
         
         public GltfInteractivityExportPlugin plugin;
@@ -280,7 +282,7 @@ namespace UnityGLTF.Interactivity
             return varValue;
         }
 
-        public int GetValueTypeForInput(GltfInteractivityNode[] allNodes, GltfInteractivityNode node, string socketName)
+        public int GetValueTypeForInput(GltfInteractivityNode node, string socketName)
         {
             if (!node.ValueSocketConnectionData.TryGetValue(socketName, out var socketData))
                 return -1;
@@ -288,9 +290,9 @@ namespace UnityGLTF.Interactivity
             if (socketData.Node != null)
             {
                 var nodeIndex = socketData.Node.Value;
-                if (nodeIndex >= 0 && nodeIndex < allNodes.Length)
+                if (nodeIndex >= 0 && nodeIndex < nodesToSerialize.Count)
                 {
-                    var inputSourceNode = allNodes[nodeIndex];
+                    var inputSourceNode = nodesToSerialize[nodeIndex];
                     if (inputSourceNode.OutValueSocket.TryGetValue(socketData.Socket,
                             out var sourceNodeOutSocketData))
                     {
@@ -300,8 +302,7 @@ namespace UnityGLTF.Interactivity
                                 return sourceNodeOutSocketData.expectedType.typeIndex.Value;
 
                             if (sourceNodeOutSocketData.expectedType.fromInputPort != null)
-                                return GetValueTypeForInput(allNodes, inputSourceNode,
-                                    sourceNodeOutSocketData.expectedType.fromInputPort);
+                                return GetValueTypeForInput(inputSourceNode, sourceNodeOutSocketData.expectedType.fromInputPort);
                         }
                     }
                     
@@ -528,9 +529,9 @@ namespace UnityGLTF.Interactivity
             return newExportGraph;
         }
         
-        private void TriggerInterfaceExportCallbacks(ref GltfInteractivityNode[] nodes)
+        private void TriggerInterfaceExportCallbacks()
         {
-            GltfInteractivityExportNodes nodesExport = new GltfInteractivityExportNodes(nodes);
+            GltfInteractivityExportNodes nodesExport = new GltfInteractivityExportNodes(nodesToSerialize);
             
             foreach (var root in exporter.RootTransforms)
             {
@@ -540,8 +541,6 @@ namespace UnityGLTF.Interactivity
                     callback.OnInteractivityExport(this, nodesExport);
                 }                
             }
-
-            nodes = nodesExport.nodes.ToArray();
         }
         
         /// <summary>
@@ -567,9 +566,9 @@ namespace UnityGLTF.Interactivity
                 AddGraph(flowGraph);
             }
             
-            GltfInteractivityNode[] nodesToSerialize = nodesToExport.SelectMany(exportNode => exportNode.Nodes).ToArray();
+            nodesToSerialize = nodesToExport.SelectMany(exportNode => exportNode.Nodes).Cast<GltfInteractivityNode>().ToList();
 
-            for (int i = 0; i < nodesToSerialize.Length; i++)
+            for (int i = 0; i < nodesToSerialize.Count; i++)
                 nodesToSerialize[i].Index = i;
             
             foreach (var graph in addedGraphs)
@@ -584,15 +583,16 @@ namespace UnityGLTF.Interactivity
                     exportNode.Value.ResolveConnections();
             }
             
-            RemoveUnconnectedNodes(ref nodesToSerialize);
+            
+            RemoveUnconnectedNodes();
 
-            TriggerInterfaceExportCallbacks(ref nodesToSerialize);
+            TriggerInterfaceExportCallbacks();
             
-            CheckForImplicitValueConversions(ref nodesToSerialize);
+            CheckForImplicitValueConversions();
             
-            CheckForCircularFlows(ref nodesToSerialize);
+            CheckForCircularFlows();
             
-            PostIndexTopologicalSort(ref nodesToSerialize);  
+            PostIndexTopologicalSort();  
 
             StringBuilder sb = new StringBuilder();
             foreach (var g in graphBypasses)
@@ -607,12 +607,12 @@ namespace UnityGLTF.Interactivity
             OnBeforeSerialization = null;
             // Create the extension and add nodes to it
             GltfInteractivityExtension extension = new GltfInteractivityExtension();
-            extension.Nodes = nodesToSerialize;
+            extension.Nodes = nodesToSerialize.ToArray();
             
             // Deactivated for now - not working in Authoring Tool, and also waiting for Spec Discussions about Types
             //extension.Types = CollectAndFilterUsedTypes(nodesToSerialize);
             
-            ValidateData(nodesToSerialize);
+            ValidateData();
             
             extension.Types = GltfInteractivityTypeMapping.TypesMapping;
             
@@ -647,10 +647,10 @@ namespace UnityGLTF.Interactivity
             AfterSceneExport(exporter, gltfRoot, scriptMachines);
         }
 
-        private void PostIndexTopologicalSort(ref GltfInteractivityNode[] nodesToSerialize)
+        private void PostIndexTopologicalSort()
         {
             // Resort the nodes after resolving the connections
-            var sorted = PostTopologicalSort(nodesToSerialize);
+            var sorted = PostTopologicalSort();
             var newIndices = new Dictionary<int, int>(); // Key = Old Index, Value = New Index
             
             int newIndex = 0;
@@ -677,9 +677,9 @@ namespace UnityGLTF.Interactivity
                         flowSocket.Value.Node = newIndices[flowSocket.Value.Node.Value];
                 }
             }
-            
+
             // Resort nodesToSerialize
-            Array.Sort(nodesToSerialize, (a, b) => a.Index.CompareTo(b.Index));
+            nodesToSerialize.Sort((a, b) => a.Index.CompareTo(b.Index));
         }
 
         private GltfInteractivityTypeMapping.TypeMapping[] CollectAndFilterUsedTypes(GltfInteractivityNode[] nodes)
@@ -759,29 +759,26 @@ namespace UnityGLTF.Interactivity
             return sorted;
         }
 
-        private static LinkedList<int> PostTopologicalSort(GltfInteractivityNode[] nodes)
+        private LinkedList<int> PostTopologicalSort()
         {
             var sorted = new LinkedList<int>();
             var visited = new Dictionary<int, bool>();
 
-            foreach (var node in nodes)
+            foreach (var node in nodesToSerialize)
             {
-                Visit(node.Index, nodes, sorted, visited);
+                Visit(node.Index,sorted, visited);
             }
 
             return sorted;
         }
 
-        private void CheckForCircularFlows(ref GltfInteractivityNode[] allNodes)
+        private void CheckForCircularFlows()
         {
-            var nodes = new List<GltfInteractivityNode>(allNodes);
-            var visited = new Dictionary<int, bool>(allNodes.Length);
+            var visited = new Dictionary<int, bool>(nodesToSerialize.Count);
             
-            bool Visit(int node, GltfInteractivityNode[] allNodes)
+            bool Visit(int node)
             {
-                bool alreadyVisited = false;
-                
-                if (visited.TryGetValue(node, out alreadyVisited))
+                if (visited.TryGetValue(node, out var alreadyVisited))
                 {
                     if (alreadyVisited)
                         return true;
@@ -792,25 +789,25 @@ namespace UnityGLTF.Interactivity
                     visited[node] = true;
 
                     // Get the dependencies from incoming connections and ignore self-references
-                    var currentNode = allNodes[node];
+                    var currentNode = nodesToSerialize[node];
                     foreach (var connection in currentNode.FlowSocketConnectionData)
                     {
-                        if (connection.Value.Node != null && connection.Value.Node.HasValue && connection.Value.Node.Value < allNodes.Length)
+                        if (connection.Value.Node != null && connection.Value.Node.HasValue && connection.Value.Node.Value < nodesToSerialize.Count)
                         {
-                            if (Visit(connection.Value.Node.Value, allNodes))
+                            if (Visit(connection.Value.Node.Value))
                             {
                                 // Add Events because of cyclic dependency
                                 var eventId = AddEventWithIdIfNeeded($"CyclicDependency{connection.Value.Node.ToString()}from{node.ToString()}");
                        
                                 var triggerEventNode = new GltfInteractivityNode(new Event_SendNode());
-                                triggerEventNode.Index = nodes.Count;
+                                triggerEventNode.Index = nodesToSerialize.Count;
                                 triggerEventNode.ConfigurationData["event"].Value = eventId;
-                                nodes.Add(triggerEventNode);
+                                nodesToSerialize.Add(triggerEventNode);
                                 
                                 var receiveEventNode = new GltfInteractivityNode(new Event_ReceiveNode());
-                                receiveEventNode.Index = nodes.Count;
+                                receiveEventNode.Index = nodesToSerialize.Count;
                                 receiveEventNode.ConfigurationData["event"].Value = eventId;
-                                nodes.Add(receiveEventNode);
+                                nodesToSerialize.Add(receiveEventNode);
 
                                 var receiveFlowOut = receiveEventNode.FlowSocketConnectionData[Event_ReceiveNode.IdFlowOut];
                                 receiveFlowOut.Node = connection.Value.Node;
@@ -828,20 +825,18 @@ namespace UnityGLTF.Interactivity
                 return false;
             }
             
-            foreach (var node in allNodes)
-                Visit(node.Index, allNodes);
+            foreach (var node in nodesToSerialize.ToArray())
+                Visit(node.Index);
 
-            allNodes = nodes.ToArray();
         }
 
-        private static void RemoveUnconnectedNodes(ref GltfInteractivityNode[] allNodes)
+        private void RemoveUnconnectedNodes()
         {
-            var nodes = new List<GltfInteractivityNode>(allNodes);
-            var visited = new HashSet<int>(nodes.Count);
+            var visited = new HashSet<int>(nodesToSerialize.Count);
             var nodesToRemove = new List<GltfInteractivityNode>();
            
             //Collect which nodes has connections
-            foreach (var node in nodes)
+            foreach (var node in nodesToSerialize)
             {
                 if (node.ValueSocketConnectionData.Count > 0)
                 {
@@ -868,7 +863,7 @@ namespace UnityGLTF.Interactivity
                 }
             }
 
-            foreach (var node in nodes)
+            foreach (var node in nodesToSerialize)
             {
                 if (!visited.Contains(node.Index))
                     nodesToRemove.Add(node);
@@ -876,23 +871,23 @@ namespace UnityGLTF.Interactivity
             
             foreach (var node in nodesToRemove)
             {
-                var indexToRemove = nodes.IndexOf(node);
-                if (indexToRemove == nodes.Count - 1)
+                var indexToRemove = nodesToSerialize.IndexOf(node);
+                if (indexToRemove == nodesToSerialize.Count - 1)
                 {
                     // Just remove, no other indices are affected
-                    nodes.RemoveAt(indexToRemove);
+                    nodesToSerialize.RemoveAt(indexToRemove);
                     continue;
                 }
                 
-                nodes.RemoveAt(indexToRemove);
+                nodesToSerialize.RemoveAt(indexToRemove);
                 // Move last node to the removed node index
-                nodes.Insert(indexToRemove, nodes.Last());
-                nodes.RemoveAt(nodes.Count - 1);
+                nodesToSerialize.Insert(indexToRemove, nodesToSerialize.Last());
+                nodesToSerialize.RemoveAt(nodesToSerialize.Count - 1);
               
-                int replaceIndex = nodes[indexToRemove].Index;
-                nodes[indexToRemove].Index = node.Index;
+                int replaceIndex = nodesToSerialize[indexToRemove].Index;
+                nodesToSerialize[indexToRemove].Index = node.Index;
                 // Replace old index with new index of the inserted node
-                foreach (var n in nodes)
+                foreach (var n in nodesToSerialize)
                 {
                     foreach (var valueSocket in n.ValueSocketConnectionData)
                     {
@@ -906,11 +901,9 @@ namespace UnityGLTF.Interactivity
                     }
                 }
             }
-            
-            allNodes = nodes.ToArray();
         }
         
-        private static void Visit(int node, GltfInteractivityNode[] allNodes, LinkedList<int> sorted, Dictionary<int, bool> visited)
+        private void Visit(int node, LinkedList<int> sorted, Dictionary<int, bool> visited)
         {
             bool inProcess;
             bool alreadyVisited = visited.TryGetValue(node, out inProcess);
@@ -929,7 +922,7 @@ namespace UnityGLTF.Interactivity
 
                 // Get the dependencies from incoming connections and ignore self-references
                 HashSet<int> dependencies = new HashSet<int>();
-                var currentNode = allNodes[node];
+                var currentNode = nodesToSerialize[node];
                 foreach (var connection in currentNode.ValueSocketConnectionData)
                 {
                     if (connection.Value.Node != null && connection.Value.Node.HasValue)
@@ -940,7 +933,7 @@ namespace UnityGLTF.Interactivity
 
                 foreach (var dependency in dependencies)
                 {
-                    Visit(dependency, allNodes, sorted, visited);
+                    Visit(dependency, sorted, visited);
                 }
 
                 visited[node] = false;
@@ -1105,11 +1098,9 @@ namespace UnityGLTF.Interactivity
             return newNodes.ToArray();
         }
 
-        private void CheckForImplicitValueConversions(ref GltfInteractivityNode[] nodes)
+        private void CheckForImplicitValueConversions()
         {
-            List<GltfInteractivityNode> newNodeList = new List<GltfInteractivityNode>();
-            newNodeList.AddRange(nodes);
-            foreach (var node in nodes)
+            foreach (var node in nodesToSerialize.ToArray())
             {
                 foreach (var valueSocket in node.ValueSocketConnectionData)
                 {
@@ -1129,7 +1120,7 @@ namespace UnityGLTF.Interactivity
                             else if (socketRestriction.typeRestriction.fromInputPort != null)
                             {
                                 var fromInputPort = socketRestriction.typeRestriction.fromInputPort;
-                                var fromInputPortType = GetValueTypeForInput(nodes, node, fromInputPort);
+                                var fromInputPortType = GetValueTypeForInput(node, fromInputPort);
                                 if (fromInputPortType != -1)
                                 {
                                     valueSocket.Value.Value = GltfInteractivityTypeMapping.GetNullByType(fromInputPortType);
@@ -1141,7 +1132,7 @@ namespace UnityGLTF.Interactivity
                     
                     if (socketRestriction != null && socketRestriction.typeRestriction != null)
                     {
-                        var valueType = GetValueTypeForInput(nodes, node, valueSocket.Key);
+                        var valueType = GetValueTypeForInput(node, valueSocket.Key);
                         if (valueType == -1)
                             continue;
                         if (socketRestriction.typeRestriction.limitToType != null)
@@ -1151,16 +1142,16 @@ namespace UnityGLTF.Interactivity
                                     .limitToType);
                             if (limitToType != valueType)
                             {
-                                var conversionNode = AddTypeConversion(node, newNodeList.Count, socketRestriction.Id,
+                                var conversionNode = AddTypeConversion(node, nodesToSerialize.Count, socketRestriction.Id,
                                     valueType, limitToType);
                                 if (conversionNode != null)
-                                    newNodeList.AddRange(conversionNode);
+                                    nodesToSerialize.AddRange(conversionNode);
                             }
                         }
                         else if (socketRestriction.typeRestriction.fromInputPort != null)
                         {
                             var fromInputPort = socketRestriction.typeRestriction.fromInputPort;
-                            var fromInputPortType = GetValueTypeForInput(nodes, node, fromInputPort);
+                            var fromInputPortType = GetValueTypeForInput(node, fromInputPort);
                             if (fromInputPortType == -1)
                                 continue;
                             if (fromInputPortType != valueType)
@@ -1171,20 +1162,19 @@ namespace UnityGLTF.Interactivity
                                 {
                                     continue;
                                 }
-                                var conversionNode = AddTypeConversion(node, newNodeList.Count, socketRestriction.Id,
+                                var conversionNode = AddTypeConversion(node, nodesToSerialize.Count, socketRestriction.Id,
                                     valueType, preferType);
                                 if (conversionNode != null)
-                                    newNodeList.AddRange(conversionNode);
+                                    nodesToSerialize.AddRange(conversionNode);
                             }
                         }
                     }
                 }
             }
 
-            nodes = newNodeList.ToArray();
         }
 
-        private void ValidateData(GltfInteractivityNode[] nodes)
+        private void ValidateData()
         {
             var sb = new StringBuilder();
             
@@ -1193,7 +1183,7 @@ namespace UnityGLTF.Interactivity
                 sb.AppendLine($"Node Index {node.Index} with Schema={node.Schema.Type}: {message}");
             }
             
-            foreach (var node in nodes)
+            foreach (var node in nodesToSerialize)
             {
                 foreach (var valueSocket in node.ValueSocketConnectionData)
                 {

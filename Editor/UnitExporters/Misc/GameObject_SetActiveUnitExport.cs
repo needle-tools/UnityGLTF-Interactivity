@@ -20,11 +20,13 @@ namespace UnityGLTF.Interactivity.Export
         {
             var unit = unitExporter.unit as InvokeMember;
             
-            var node = unitExporter.CreateNode(new Pointer_SetNode());
+            var visibleNode = unitExporter.CreateNode(new Pointer_SetNode());
+            var selectableNode = unitExporter.CreateNode(new Pointer_SetNode());
             
             if (ValueInputHelper.TryGetValueInput(unit.valueInputs, "value", out var valueInput))
             {
-                unitExporter.MapInputPortToSocketName(valueInput, Pointer_SetNode.IdValue, node);
+                unitExporter.MapInputPortToSocketName(valueInput, Pointer_SetNode.IdValue, visibleNode);
+                unitExporter.MapInputPortToSocketName(valueInput, Pointer_SetNode.IdValue, selectableNode);
             
                 // Add Extension
                 if (!unitExporter.IsInputLiteralOrDefaultValue(valueInput, out var defaultValue))
@@ -37,18 +39,28 @@ namespace UnityGLTF.Interactivity.Export
                     {
                         var nodeIndex = unitExporter.exportContext.exporter.GetTransformIndex(go.transform);
                         unitExporter.exportContext.AddVisibilityExtensionToNode(nodeIndex);
+                        unitExporter.exportContext.AddSelectabilityExtensionToNode(nodeIndex);
                     }
                 }
             }
-            unitExporter.MapInputPortToSocketName(unit.enter, Pointer_SetNode.IdFlowIn, node);
+
+            visibleNode.FlowIn(Pointer_SetNode.IdFlowIn).MapToControlInput(unit.enter);
             
             unitExporter.SetupPointerTemplateAndTargetInput(
                 GltfInteractivityNodeHelper.IdPointerNodeIndex,
-                unit.target, node,
+                unit.target, visibleNode,
                 "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/extensions/KHR_node_visibility/visible"
                 );
             
-            unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Pointer_SetNode.IdFlowOut, node);
+            visibleNode.FlowOut(Pointer_SetNode.IdFlowOut)
+                .ConnectToFlowDestination(selectableNode.FlowIn(Pointer_SetNode.IdFlowIn));
+            unitExporter.SetupPointerTemplateAndTargetInput(
+                GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                unit.target, selectableNode,
+                "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/extensions/KHR_node_selectability/selectable"
+            );
+            
+            selectableNode.FlowOut(Pointer_SetNode.IdFlowOut).MapToControlOutput(unit.exit);
         }
     }
 }

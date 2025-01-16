@@ -32,32 +32,60 @@ namespace Editor.UnitExporters.Lists
             VariablesHelpers.SetVariableStaticValue(unitExporter, list.CountVarId, 0, flowIn, flowOut);
         }
 
-        public static void AddItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, ValueInput indexInput, ValueInput valueInput,
+        public static void AddItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list,
+            out GltfInteractivityUnitExporterNode.ValueInputSocketData valueInputSocket,
             ControlInput flowIn, ControlOutput flowOut)
         {
+            var addCount = unitExporter.CreateNode(new Math_AddNode());
+            addCount.ValueIn("a").ConnectToSource(GetListCountSocket(list));
+            addCount.ValueIn("b").SetValue(1);
+            addCount.FirstValueOut().ExpectedType(ExpectedType.Int);
+            
+            SetItem(unitExporter, list, out var indexInput, out valueInputSocket, flowIn, flowOut);
+            indexInput.SetValue(addCount.FirstValueOut());
+        }
+
+        public static void AddItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, ValueInput valueInput,
+            ControlInput flowIn, ControlOutput flowOut)
+        {
+            AddItem(unitExporter, list, out var valueInputSocket, flowIn, flowOut);
+            valueInputSocket.MapToInputPort(valueInput);
+        }
+
+        public static void SetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list,
+            out GltfInteractivityUnitExporterNode.ValueInputSocketData indexInput,
+            out GltfInteractivityUnitExporterNode.ValueInputSocketData valueInput,
+            ControlInput flowIn, ControlOutput flowOut)
+        {
+            if (list.setValueFlowIn == null)
+                CreateSetItemListNodes(unitExporter, list);
+            
+            var sequence = unitExporter.CreateNode(new Flow_SequenceNode());
             var setIndex = VariablesHelpers.SetVariable(unitExporter, list.CurrentIndexVarId);
             var setValue = VariablesHelpers.SetVariable(unitExporter, list.ValueToSetVarId);
 
-            setIndex.FlowIn(Variable_SetNode.IdFlowIn).MapToControlInput(flowIn);
+            sequence.FlowIn(Flow_SequenceNode.IdFlowIn).MapToControlInput(flowIn);
+            sequence.FlowOut("0").ConnectToFlowDestination(setIndex.FlowIn(Variable_SetNode.IdFlowIn));
+            sequence.FlowOut("1").MapToControlOutput(flowOut);
+            
             setIndex.FlowOut(Variable_SetNode.IdFlowOut)
                 .ConnectToFlowDestination(setValue.FlowIn(Variable_SetNode.IdFlowIn));
-            setValue.FlowOut(Variable_SetNode.IdFlowOut).MapToControlOutput(flowOut);
+            
+            setValue.FlowOut(Variable_SetNode.IdFlowOut).ConnectToFlowDestination(list.setValueFlowIn);
 
-            setIndex.ValueIn(Variable_SetNode.IdInputValue).MapToInputPort(indexInput);
-            setValue.ValueIn(Variable_SetNode.IdInputValue).MapToInputPort(valueInput);
+            indexInput = setIndex.ValueIn(Variable_SetNode.IdInputValue);
+            valueInput = setValue.ValueIn(Variable_SetNode.IdInputValue);
         }
 
-        // public static void GetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, ValueInput indexInput, ValueOutput valueOutput,
-        //     ControlInput flowIn, ControlOutput flowOut)
-        // {
-        //     var setIndex = VariablesHelpers.SetVariable(unitExporter, list.CurrentIndexVarId);
-        //     
-        //     setIndex.FlowIn(Variable_SetNode.IdFlowIn).MapToControlInput(flowIn);
-        //     setIndex.FlowOut(Variable_SetNode.IdFlowOut).MapToControlOutput(flowOut);
-        //     setIndex.ValueIn(Variable_SetNode.IdInputValue).MapToInputPort(indexInput);
-        //
-        //     list.getValueNodeSocket.MapToPort(valueOutput);
-        // }
+        
+        public static void SetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, ValueInput indexInput, ValueInput valueInput,
+            ControlInput flowIn, ControlOutput flowOut)
+        {
+            SetItem(unitExporter, list, out var indexInputSocket, out var valueInputSocket, flowIn, flowOut);
+            indexInputSocket.MapToInputPort(indexInput);
+            valueInputSocket.MapToInputPort(valueInput);
+        }
+        
         public static void GetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list,
             GltfInteractivityUnitExporterNode.ValueOutputSocketData indexInput, out GltfInteractivityUnitExporterNode.ValueOutputSocketData valueOutput)
         {
@@ -131,15 +159,35 @@ namespace Editor.UnitExporters.Lists
 
             return null;
         }
-        
+
+        private static void CreateSetItemListNodes(UnitExporter unitExporter,
+            GltfInteractivityExportContext.VariableBasedList list)
+        {
+            VariablesHelpers.GetVariable(unitExporter, list.CurrentIndexVarId, out var currentIndexValueOut);
+            VariablesHelpers.GetVariable(unitExporter, list.ValueToSetVarId, out var valueToSetValueOut);
+            // Set Values
+            int[] indices = new int[list.Capacity];
+            for (int i = 0; i < list.Capacity; i++)
+                indices[i] = i;
+            
+            var flowSwitch = unitExporter.CreateNode(new Flow_SwitchNode());
+            list.setValueFlowIn = flowSwitch.FlowIn(Flow_SwitchNode.IdFlowIn);
+            flowSwitch.ValueIn(Flow_SwitchNode.IdSelection).ConnectToSource(currentIndexValueOut);
+            flowSwitch.ConfigurationData["cases"] = new GltfInteractivityNode.ConfigData
+                { Id = "cases", Value = indices };
+
+            for (int i = 0; i < indices.Length; i++)
+            {
+                flowSwitch.FlowSocketConnectionData.Add(i.ToString(), new GltfInteractivityNode.FlowSocketData {Id = i.ToString()});
+                
+                VariablesHelpers.SetVariable(unitExporter, list.StartIndex + i, valueToSetValueOut, flowSwitch.FlowOut(i.ToString()), null);
+            }
+        }
         
         public static void CreateListNodes(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list)
         {
-            
             VariablesHelpers.GetVariable(unitExporter, list.CountVarId, out var listCountValueOut);
             list.getCountNodeSocket = listCountValueOut;
-            VariablesHelpers.GetVariable(unitExporter, list.CurrentIndexVarId, out var currentIndexValueOut);
-            VariablesHelpers.GetVariable(unitExporter, list.ValueToSetVarId, out var valueToSetValueOut);
 
             // Get Values
             // GltfInteractivityUnitExporterNode prevSelectNode = null;
@@ -171,23 +219,6 @@ namespace Editor.UnitExporters.Lists
             //
             // list.getValueNodeSocket = prevSelectNode.FirstValueOut();
             
-            // Set Values
-            int[] indices = new int[list.Capacity];
-            for (int i = 0; i < list.Capacity; i++)
-                indices[i] = i;
-            
-            var flowSwitch = unitExporter.CreateNode(new Flow_SwitchNode());
-            list.setValueFlowIn = flowSwitch.FlowIn(Flow_SwitchNode.IdFlowIn);
-            flowSwitch.ValueIn(Flow_SwitchNode.IdSelection).ConnectToSource(currentIndexValueOut);
-            flowSwitch.ConfigurationData["cases"] = new GltfInteractivityNode.ConfigData
-                { Id = "cases", Value = indices };
-
-            for (int i = 0; i < indices.Length; i++)
-            {
-                flowSwitch.FlowSocketConnectionData.Add(i.ToString(), new GltfInteractivityNode.FlowSocketData {Id = i.ToString()});
-                
-                VariablesHelpers.SetVariable(unitExporter, list.StartIndex + i, valueToSetValueOut, flowSwitch.FlowOut(i.ToString()), null);
-            }
 
         }
     }

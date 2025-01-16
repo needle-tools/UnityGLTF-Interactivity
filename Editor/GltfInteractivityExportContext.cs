@@ -49,7 +49,9 @@ namespace UnityGLTF.Interactivity
         private List<UnitExporter> nodesToExport = new List<UnitExporter>();
         
         public delegate void OnBeforeSerializationDelegate(List<GltfInteractivityNode> nodes);
+        public delegate void OnNodesCreatedDelegate(List<GltfInteractivityNode> nodes);
         public event OnBeforeSerializationDelegate OnBeforeSerialization;
+        public event OnNodesCreatedDelegate OnNodesCreated;
         
         public class InputPortGraph 
         {
@@ -583,6 +585,9 @@ namespace UnityGLTF.Interactivity
                     exportNode.Value.ResolveConnections();
             }
             
+            OnNodesCreated?.Invoke(nodesToSerialize);
+            
+            ResolveCoroutines();
             
             RemoveUnconnectedNodes();
 

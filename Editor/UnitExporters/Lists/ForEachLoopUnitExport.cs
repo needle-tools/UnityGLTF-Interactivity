@@ -34,7 +34,7 @@ namespace Editor.UnitExporters.Lists
             forLoop.FlowOut(Flow_ForLoopNode.IdLoopBody).MapToControlOutput(unit.body);
             forLoop.FlowOut(Flow_ForLoopNode.IdCompleted).MapToControlOutput(unit.exit);
             
-            ListHelpers.GetListCount(unitExporter, list, forLoop.ValueIn(Flow_ForLoopNode.IdEndIndex));
+            ListHelpers.GetListCount(list, forLoop.ValueIn(Flow_ForLoopNode.IdEndIndex));
             
             ListHelpers.GetItem(unitExporter, list, forLoop.ValueOut(Flow_ForLoopNode.IdIndex), out var getItemValueSocket);
 

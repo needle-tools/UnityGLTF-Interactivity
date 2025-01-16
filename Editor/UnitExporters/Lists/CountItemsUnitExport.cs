@@ -30,7 +30,7 @@ namespace Editor.UnitExporters.Lists
                 return;
             }
             
-            ListHelpers.GetListCount(unitExporter, list, countItems.count);
+            ListHelpers.GetListCount(list, countItems.count);
         }
     }
 }

@@ -1185,6 +1185,20 @@ namespace UnityGLTF.Interactivity
             
             void NodeAppendLine(GltfInteractivityNode node, string message)
             {
+                if (node.ConfigurationData != null)
+                {
+                    foreach (var config in node.ConfigurationData)
+                        message += $" (config: {config.Key}={config.Value.Value})";
+                }
+                
+                foreach (var g in addedGraphs)
+                    foreach (var kvpNode in g.nodes)
+                        if (kvpNode.Value.Nodes.Contains(node))
+                        {
+                            sb.AppendLine($"Node Index {node.Index} with Schema={node.Schema.Type} from Unit={kvpNode.Key}: {message}");
+                            return;
+                        }
+                
                 sb.AppendLine($"Node Index {node.Index} with Schema={node.Schema.Type}: {message}");
             }
             

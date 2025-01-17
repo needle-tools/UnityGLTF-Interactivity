@@ -64,32 +64,82 @@ namespace UnityGLTF.Interactivity
                 return this;
             }
         }
-        
+
+        public class LinkedValueInputSocketData : ValueInputSocketData
+        {
+            public List<ValueInputSocketData> links = new List<ValueInputSocketData>();
+
+            public LinkedValueInputSocketData(GltfInteractivityUnitExporterNode node, ValueSocketData socket) : base(node, socket)
+            {
+                links.Add(new(node, socket));
+            }
+
+            public override LinkedValueInputSocketData Link(ValueInputSocketData other)
+            {
+                links.Add(other);
+                return this;
+            }
+            
+            public override ValueInputSocketData MapToInputPort(IUnitInputPort inputPort)
+            {
+                foreach (var n in links)
+                    n.MapToInputPort(inputPort);
+                return this;
+            }
+            
+            public override ValueInputSocketData ConnectToSource(ValueOutputSocketData other)
+            {
+                foreach (var n in links)
+                    n.ConnectToSource(other);
+                return this;
+            }
+            
+            public override ValueInputSocketData SetType(TypeRestriction typeRestriction)
+            {
+                foreach (var n in links)
+                    n.SetType(typeRestriction);
+                return this;
+            }
+
+            public override ValueInputSocketData SetValue(object value)
+            {
+                foreach (var n in links)
+                    n.SetValue(value);
+                return this;
+            }
+        }
+            
         public class ValueInputSocketData : ExportSocketData<ValueSocketData>
         {
             public ValueInputSocketData(GltfInteractivityUnitExporterNode node, ValueSocketData socket) : base(node, socket)
             {
             }
             
-            public ValueInputSocketData MapToInputPort(IUnitInputPort inputPort)
+            public virtual LinkedValueInputSocketData Link(ValueInputSocketData other)
+            {
+                var multi = new LinkedValueInputSocketData(node, data);
+                return multi.Link(other);
+            }
+            
+            public virtual ValueInputSocketData MapToInputPort(IUnitInputPort inputPort)
             {
                 node.MapInputPortToSocketName(inputPort, data.Id);
                 return this;
             }
             
-            public ValueInputSocketData ConnectToSource(ValueOutputSocketData other)
+            public virtual ValueInputSocketData ConnectToSource(ValueOutputSocketData other)
             {
                 node.MapInputPortToSocketName(other.socket.Id, other.node, data.Id);
                 return this;
             }
             
-            public ValueInputSocketData SetType(TypeRestriction typeRestriction)
+            public virtual ValueInputSocketData SetType(TypeRestriction typeRestriction)
             {
                 data.typeRestriction = typeRestriction;
                 return this;
             }
 
-            public ValueInputSocketData SetValue(object value)
+            public virtual ValueInputSocketData SetValue(object value)
             {
                 node.SetValueInSocket(data.Id, value);
                 return this;

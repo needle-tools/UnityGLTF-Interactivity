@@ -35,7 +35,6 @@ namespace UnityGLTF.Interactivity.Export
                 
                 unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Flow_ForLoopNode.IdCompleted, node);
                 unitExporter.MapOutFlowConnectionWhenValid(unit.body, Flow_ForLoopNode.IdLoopBody, node);       
-                
             }
             else
             {
@@ -45,10 +44,8 @@ namespace UnityGLTF.Interactivity.Export
                     out var flowIn, out var currentIndex, 
                     out var loopBody, out var completed );
                 
-                foreach (var start in startIndex)
-                    start.MapToInputPort(unit.firstIndex);
-                foreach (var end in endIndex)
-                    end.MapToInputPort(unit.lastIndex);
+                startIndex.MapToInputPort(unit.firstIndex);
+                endIndex.MapToInputPort(unit.lastIndex);
 
                 step.MapToInputPort(unit.step);
                 flowIn.MapToControlInput(unit.enter);

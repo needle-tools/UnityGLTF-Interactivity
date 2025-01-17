@@ -41,17 +41,14 @@ namespace UnityGLTF.Interactivity.Export
         }
 
         public static void CreateCustomForLoop(UnitExporter unitExporter, 
-            out GltfInteractivityUnitExporterNode.ValueInputSocketData[] startIndex,
-            out GltfInteractivityUnitExporterNode.ValueInputSocketData[] endIndex,
+            out GltfInteractivityUnitExporterNode.ValueInputSocketData startIndex,
+            out GltfInteractivityUnitExporterNode.ValueInputSocketData endIndex,
             out GltfInteractivityUnitExporterNode.ValueInputSocketData step,
             out GltfInteractivityUnitExporterNode.FlowInSocketData flowIn,
             out GltfInteractivityUnitExporterNode.ValueOutputSocketData currentIndex,
             out GltfInteractivityUnitExporterNode.FlowOutSocketData loopBodyOut,
             out GltfInteractivityUnitExporterNode.FlowOutSocketData completed)
         {
-            startIndex = new GltfInteractivityUnitExporterNode.ValueInputSocketData[2];
-            endIndex = new GltfInteractivityUnitExporterNode.ValueInputSocketData[3];
-            
             var indexVar = unitExporter.exportContext.AddVariableWithIdIfNeeded("ForLoopIndex"+System.Guid.NewGuid().ToString(), 0, VariableKind.Scene, typeof(int));
 
             var whileNode = unitExporter.CreateNode(new Flow_WhileNode());
@@ -62,11 +59,11 @@ namespace UnityGLTF.Interactivity.Export
                 .ConnectToFlowDestination(whileNode.FlowIn(Flow_WhileNode.IdFlowIn));
             completed = whileNode.FlowOut(Flow_WhileNode.IdCompleted);
             
-            startIndex[0] = setStartIndexVar.ValueIn(Variable_SetNode.IdInputValue);
+            startIndex = setStartIndexVar.ValueIn(Variable_SetNode.IdInputValue);
 
             var ascendingCondition = unitExporter.CreateNode(new Math_LeNode());
-            startIndex[1] = ascendingCondition.ValueIn("a");
-            endIndex[0] = ascendingCondition.ValueIn("b");
+            startIndex = startIndex.Link(ascendingCondition.ValueIn("a"));
+            endIndex = ascendingCondition.ValueIn("b");
             
             VariablesHelpers.GetVariable(unitExporter, indexVar, out var indexVarValue);
             currentIndex = indexVarValue;
@@ -87,11 +84,11 @@ namespace UnityGLTF.Interactivity.Export
             
             var ascendingIndexCondition = unitExporter.CreateNode(new Math_LtNode());
             ascendingIndexCondition.ValueIn("a").ConnectToSource(indexVarValue);
-            endIndex[1] = ascendingIndexCondition.ValueIn("b");
+            endIndex = endIndex.Link(ascendingIndexCondition.ValueIn("b"));
             
             var descendingIndexCondition = unitExporter.CreateNode(new Math_GtNode());
             descendingIndexCondition.ValueIn("a").ConnectToSource(indexVarValue);
-            endIndex[2] = descendingIndexCondition.ValueIn("b");
+            endIndex = endIndex.Link(descendingIndexCondition.ValueIn("b"));
             
             var conditionSelect = unitExporter.CreateNode(new Math_SelectNode());
             conditionSelect.ValueIn("a").ConnectToSource(ascendingIndexCondition.FirstValueOut());
@@ -99,7 +96,6 @@ namespace UnityGLTF.Interactivity.Export
             conditionSelect.ValueIn("condition").ConnectToSource(ascendingCondition.FirstValueOut());
             
             whileNode.ValueIn(Flow_WhileNode.IdCondition).ConnectToSource(conditionSelect.FirstValueOut());
-
         }
     }
 }

@@ -6,28 +6,28 @@ using UnityGLTF.Interactivity.Export;
 
 namespace Editor.UnitExporters.Lists
 {
-    public class AddListItemUnitExport : IUnitExporter
+    public class InsertListItemUnitExporter : IUnitExporter
     {
-        public Type unitType { get => typeof(AddListItem); }
+        public Type unitType { get => typeof(InsertListItem); }
         
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            UnitExporterRegistry.RegisterExporter(new AddListItemUnitExport());
+            UnitExporterRegistry.RegisterExporter(new InsertListItemUnitExporter());
         }
         
         public void InitializeInteractivityNodes(UnitExporter unitExporter)
         {
-            var unit = unitExporter.unit as AddListItem;
-
+            var unit = unitExporter.unit as InsertListItem;
+            
             var list = ListHelpers.FindListByConnections(unitExporter.exportContext, unit);
             if (list == null)
             {
-                Debug.LogError("Could not find list for SetListItem");
+                Debug.LogError("Could not find list for InsertItem unit");
                 return;
             }
             
-            ListHelpers.AddItem(unitExporter, list, unit.item, unit.enter, unit.exit);
+            ListHelpers.InsertItem(unitExporter, list, unit.index, unit.item, unit.enter, unit.exit);
             unitExporter.ByPassValue(unit.listInput, unit.listOutput);
         }
     }

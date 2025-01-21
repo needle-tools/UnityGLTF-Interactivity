@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace UnityGLTF.Interactivity
 {
     using System;
@@ -66,6 +68,8 @@ namespace UnityGLTF.Interactivity
         // The list of custom events that can be sent/received in the behavior graph.
         public CustomEvent[] CustomEvents = { };
 
+        public Declaration[] Declarations = { };
+        
         public GltfInteractivityTypeMapping.TypeMapping[] Types = GltfInteractivityTypeMapping.TypesMapping;
         
         public JProperty Serialize()
@@ -84,6 +88,10 @@ namespace UnityGLTF.Interactivity
                     new JArray(
                         from customEvent in CustomEvents
                         select customEvent.SerializeObject())),
+                new JProperty("declarations",
+                    new JArray(
+                        from declaration in Declarations
+                        select declaration.SerializeObject())),
                 new JProperty("nodes",
                     new JArray(
                         from node in Nodes
@@ -108,6 +116,65 @@ namespace UnityGLTF.Interactivity
         // TODO: (b/333422987) Add a Validate() method to validate data conforms to the schemas
 
 
+        public class Declaration
+        {
+            public string op = string.Empty;
+            public string extension = null;
+
+            public class ValueSocket
+            {
+                public int type;
+            }
+            
+            public Dictionary<string, ValueSocket> inputValueSockets;
+            public Dictionary<string, ValueSocket> outputValueSockets;
+            
+            
+            public JObject SerializeObject()
+            {
+                var jObject = new JObject
+                {
+                    new JProperty("op", op),
+                };
+                
+                if (extension != null)
+                {
+                    jObject.Add(new JProperty("extension", extension));
+
+                    if (inputValueSockets != null)
+                    {
+                        var inputSockets = new JObject();
+                        foreach (var socket in inputValueSockets)
+                        {
+                            inputSockets.Add(socket.Key, new JObject
+                            {
+                                new JProperty("type", socket.Value.type)
+                            });
+                        }
+                        jObject.Add("inputValueSockets", inputSockets);
+                    }
+
+                    if (outputValueSockets != null)
+                    {
+                        var outputSockets = new JObject();
+                        foreach (var socket in outputValueSockets)
+                        {
+                            outputSockets.Add(socket.Key, new JObject
+                            {
+                                new JProperty("type", socket.Value.type)
+                            });
+                        }
+                        jObject.Add("outputValueSockets", outputSockets);
+                    }
+
+                }
+                
+              //  GltfInteractivityUnitExporterNode.ValueSerializer.Serialize(Value, jObject);
+
+                return jObject;
+            } 
+        }
+        
         /// <summary> Variables hold data or references accessible to the behavior graph.</summary>
         public class Variable
         {

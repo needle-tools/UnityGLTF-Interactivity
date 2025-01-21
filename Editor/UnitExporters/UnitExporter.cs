@@ -393,7 +393,7 @@ namespace UnityGLTF.Interactivity.Export
             {
                 if (!n.Value.node.ValueSocketConnectionData.ContainsKey(n.Value.socketName))
                 {
-                    Debug.LogError("Node: " + n.Value.node.Schema.Type + " does not have a socket named: " + n.Value.socketName);
+                    Debug.LogError("Node: " + n.Value.node.Schema.Op + " does not have a socket named: " + n.Value.socketName);
                     continue;
                 }
                 n.Value.node.ValueSocketConnectionData[n.Value.socketName].Node = n.Key.node.Index;

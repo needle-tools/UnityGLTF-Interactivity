@@ -46,6 +46,7 @@ namespace UnityGLTF.Interactivity
         
         internal List<GltfInteractivityExtension.Variable> variables = new List<GltfInteractivityExtension.Variable>();
         internal List<GltfInteractivityExtension.CustomEvent> customEvents = new List<GltfInteractivityExtension.CustomEvent>();
+        internal List<GltfInteractivityExtension.Declaration> opDeclarations = new List<GltfInteractivityExtension.Declaration>();
         private List<UnitExporter> nodesToExport = new List<UnitExporter>();
         
         public delegate void OnBeforeSerializationDelegate(List<GltfInteractivityNode> nodes);
@@ -598,6 +599,8 @@ namespace UnityGLTF.Interactivity
             CheckForCircularFlows();
             
             PostIndexTopologicalSort();  
+            
+            CollectedOpDeclarations();
 
             StringBuilder sb = new StringBuilder();
             foreach (var g in graphBypasses)
@@ -623,6 +626,7 @@ namespace UnityGLTF.Interactivity
             
             extension.Variables = variables.ToArray();
             extension.CustomEvents = customEvents.ToArray();
+            extension.Declarations = opDeclarations.ToArray();
             
             gltfRoot.AddExtension(GltfInteractivityExtension.ExtensionName, extension);
             
@@ -710,6 +714,8 @@ namespace UnityGLTF.Interactivity
                 usedTypeIndices.Add(customEventValue.Type);
             
             foreach (var node in nodes)
+            foreach (var declaration in opDeclarations.SelectMany( d => d.inputValueSockets.Values).Concat(opDeclarations.SelectMany( d => d.outputValueSockets.Values)))
+                usedTypeIndices.Add(declaration.type);
             {
                 foreach (var valueSocket in node.ValueSocketConnectionData)
                     if (valueSocket.Value.Value != null)
@@ -747,6 +753,10 @@ namespace UnityGLTF.Interactivity
             
             foreach (var customEventValue in customEvents.SelectMany(c => c.Values))
                 customEventValue.Type = typesIndexReplacement[customEventValue.Type];
+
+            foreach (var declaration in opDeclarations.SelectMany(d => d.inputValueSockets.Values)
+                         .Concat(opDeclarations.SelectMany(d => d.outputValueSockets.Values)))
+                declaration.type = typesIndexReplacement[declaration.type];
             
             return types.ToArray();
         }
@@ -1179,6 +1189,121 @@ namespace UnityGLTF.Interactivity
 
         }
 
+
+        private void CollectedOpDeclarations()
+        {
+            int IndexOfOp(GltfInteractivityNode node)
+            {
+                for (int i = 0; i < opDeclarations.Count; i++)
+                {
+                    if (opDeclarations[i].op.Equals(node.Schema.Op))
+                    {
+                        if (node.Schema.Extension != null)
+                        {
+                            var opInputs = opDeclarations[i].inputValueSockets;
+                            var opOutputs = opDeclarations[i].outputValueSockets;
+                            
+                            // Compare the input and output sockets if they match with exisiting ones
+                            
+                            foreach (var input in node.Schema.InputValueSockets)
+                            {
+                                var type = GetValueTypeForInput(node, input.Id);
+                                if (!opInputs.TryGetValue(input.Id, out var opInput))
+                                    return -1;
+
+                                if (opInput.type != type)
+                                    return -1;
+                            }
+                        }
+                        return i;
+                    }
+                }
+
+                return -1;
+            }
+            
+            foreach (var node in nodesToSerialize)
+            {
+                var opIndex = IndexOfOp(node);
+                if (opIndex == -1)
+                {
+                    var newDeclaration = new GltfInteractivityExtension.Declaration();
+                    opIndex = opDeclarations.Count;
+                    opDeclarations.Add(newDeclaration);
+                    
+                    newDeclaration.op = node.Schema.Op;
+                    if (!string.IsNullOrEmpty(node.Schema.Extension))
+                    {
+                        newDeclaration.extension = node.Schema.Extension;
+                        var inputs = new Dictionary<string, GltfInteractivityExtension.Declaration.ValueSocket>();
+                        foreach (var input in node.ValueSocketConnectionData)
+                        {
+                            var schemaInput = node.Schema.InputValueSockets.FirstOrDefault(i => i.Id == input.Key);
+                            var newInput = new GltfInteractivityExtension.Declaration.ValueSocket { type = GetValueTypeForInput(node, input.Value.Id)};
+                            if (newInput.type == -1)
+                            {
+                                // Probably it has no connection, so we use the Schema Type
+                                if (input.Value.typeRestriction != null)
+                                {
+                                    if (!string.IsNullOrEmpty(input.Value.typeRestriction.limitToType))
+                                        newInput.type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(input.Value.typeRestriction.limitToType);
+                                    else
+                                    {
+                                        var typeFromOtherPort = GetValueTypeForInput(node, input.Value.typeRestriction.fromInputPort);
+                                        if (typeFromOtherPort != -1)
+                                            newInput.type = typeFromOtherPort;
+                                    }
+
+                                }
+                                if (newInput.type == -1 && schemaInput != null && schemaInput.SupportedTypes.Length > 0)
+                                    newInput.type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(schemaInput.SupportedTypes[0]);
+                                else
+                                    Debug.LogError("Declaration invalid: Could not resolve Type for Input: "+input.Value.Id + " in Node: "+node.Schema.Op);
+
+                            }
+
+                            inputs.Add(input.Value.Id,  newInput);
+                        }
+                        newDeclaration.inputValueSockets = inputs;
+                        
+                        var outputs = new Dictionary<string, GltfInteractivityExtension.Declaration.ValueSocket>();
+                        
+                        foreach (var output in node.OutValueSocket)
+                        {
+                            var schemaOutput = node.Schema.OutputValueSockets.FirstOrDefault(i => i.Id == output.Key);
+
+                            var newOutput = new GltfInteractivityExtension.Declaration.ValueSocket();
+                            newOutput.type = -1;
+                            if (output.Value.expectedType != null)
+                            {
+                                if (output.Value.expectedType.typeIndex != null)
+                                    newOutput.type = output.Value.expectedType.typeIndex.Value;
+                                else
+                                {
+                                    var fromInputPortType = GetValueTypeForInput(node, output.Value.expectedType.fromInputPort);
+                                    if (fromInputPortType != -1)
+                                        newOutput.type = fromInputPortType;
+                                }
+                            }
+
+                            if (newOutput.type == -1 && schemaOutput != null && schemaOutput.SupportedTypes.Length > 0)
+                            {
+                                newOutput.type =
+                                    GltfInteractivityTypeMapping.TypeIndexByGltfSignature(schemaOutput.SupportedTypes[0]);
+                            }
+                            else
+                                Debug.LogError("Declaration invalid: Could not resolve Type for Output: "+output.Value.Id + " in Node: "+node.Schema.Op);
+                            
+                         
+                            outputs.Add(output.Value.Id,  newOutput);
+                        }
+                        newDeclaration.outputValueSockets = outputs;
+                    }
+                }
+
+                node.OpDeclaration = opIndex;
+            }
+        }
         private void ValidateData()
         {
             var sb = new StringBuilder();

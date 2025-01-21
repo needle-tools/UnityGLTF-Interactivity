@@ -2,12 +2,12 @@ using System.Collections.Generic;
 
 namespace UnityGLTF.Interactivity.Schema
 {
-    public class Math_Extract4x4 : GltfInteractivityNodeSchema
+    public class Math_Extract4x4Node : GltfInteractivityNodeSchema
     {
         public static readonly string TypeName = "math/extract4x4";
         public static readonly string IdValueIn = "a";
 
-        public Math_Extract4x4()
+        public Math_Extract4x4Node()
         {
             Op = TypeName;
             

@@ -1,11 +1,11 @@
 namespace UnityGLTF.Interactivity.Schema
 {
-    public class Math_Random: GltfInteractivityNodeSchema
+    public class Math_RandomNode: GltfInteractivityNodeSchema
     {
         public static readonly string TypeName = "math/random";
         public static readonly string IdValueResult = "value";
         
-        public Math_Random()
+        public Math_RandomNode()
         {
             Op = TypeName;
             

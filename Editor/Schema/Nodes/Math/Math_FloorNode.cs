@@ -1,12 +1,12 @@
 namespace UnityGLTF.Interactivity.Schema
 {
-    public class GltfInt_Floor : GltfInteractivityNodeSchema
+    public class Math_FloorNode : GltfInteractivityNodeSchema
     {
         public static readonly string TypeName = "math/floor";
         public static readonly string IdInputA = "a";
         public static readonly string IdValueResult = "value";
         
-        public GltfInt_Floor()
+        public Math_FloorNode()
         {
             Op = TypeName;
 

@@ -71,7 +71,7 @@ namespace UnityGLTF.Interactivity.Export
             else if (type == typeof(Vector4))
                 schema = new Math_Extract4Node();
             else if (type == typeof(Matrix4x4))
-                schema = new Math_Extract4x4();
+                schema = new Math_Extract4x4Node();
             
             if (schema == null)
                 return;

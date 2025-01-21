@@ -226,14 +226,15 @@ namespace UnityGLTF.Interactivity
         public class EventValues : BaseData
         {
             public int Type = -1;
+            public object Value = null;
             
             public JObject SerializeObject()
             {
                 JObject valueObject = new JObject()
                 {
                     new JProperty("type", Type),
-                    // TODO: add default value
                 };
+                ValueSerializer.Serialize(Value, valueObject);
                 
                 return valueObject;
             }

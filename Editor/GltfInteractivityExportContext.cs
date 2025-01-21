@@ -640,7 +640,6 @@ namespace UnityGLTF.Interactivity
         /// <param name="gltfRoot"> Root GLTF object for the gltf object tree</param>
         public override void AfterSceneExport(GLTFSceneExporter exporter, GLTFRoot gltfRoot)
         {
-            // TODO: Also handle getting non-embeded flow graphs?
             ActiveGltfRoot = gltfRoot;
 
             var scriptMachines = new List<ScriptMachine>();
@@ -1305,6 +1304,7 @@ namespace UnityGLTF.Interactivity
                 node.OpDeclaration = opIndex;
             }
         }
+
         private void ValidateData()
         {
             var sb = new StringBuilder();

@@ -161,10 +161,6 @@ namespace UnityGLTF.Interactivity
                         from config in ConfigurationData.Values
                         select config.SerializeObject())
                 ),
-                // TODO:
-       //         new JProperty("metadata",
-       //
-         //       ),
                 new JProperty("values",
                     new JArray(
                         from value in ValueSocketConnectionData.Values

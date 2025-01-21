@@ -1,4 +1,5 @@
 using Unity.VisualScripting;
+using UnityEngine;
 using UnityGLTF.Interactivity.Schema;
 
 namespace UnityGLTF.Interactivity.Export
@@ -59,6 +60,7 @@ namespace UnityGLTF.Interactivity.Export
                 target, setPosition,
                 "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/translation");
 
+            
             SpaceConversionHelpers.AddSpaceConversionNodes(unitExporter, position, out var convertedOutput);
             setPosition.ValueIn(Pointer_SetNode.IdValue).ConnectToSource(convertedOutput);
 
@@ -75,7 +77,7 @@ namespace UnityGLTF.Interactivity.Export
             SpaceConversionHelpers.AddRotationSpaceConversionNodes(unitExporter, getRotation.FirstValueOut(),
                 out var convertedRotation);
             value = convertedRotation;
-
+            
             //unitExporter.MapValueOutportToSocketName(unit.value, Pointer_GetNode.IdValue, getRotation);
 
             if (GltfInteractivityNodeHelper.IsMainCameraInInput(target))
@@ -85,7 +87,7 @@ namespace UnityGLTF.Interactivity.Export
                 value = invertedRotation;
                 return;
             }
-
+            
             unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
                 target, getRotation,
                 "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation");

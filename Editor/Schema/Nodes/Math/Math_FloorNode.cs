@@ -8,7 +8,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public GltfInt_Floor()
         {
-            Type = TypeName;
+            Op = TypeName;
 
             InputValueSockets = new InputValueSocketDescriptor[]
             {

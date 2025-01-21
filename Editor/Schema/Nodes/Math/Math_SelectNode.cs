@@ -10,7 +10,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Math_SelectNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             
             InputValueSockets = new GltfInteractivityNodeSchema.InputValueSocketDescriptor[]
             {

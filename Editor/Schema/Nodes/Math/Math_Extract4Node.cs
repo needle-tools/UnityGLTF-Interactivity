@@ -11,7 +11,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Math_Extract4Node()
         {
-            Type = TypeName;
+            Op = TypeName;
             
             InputValueSockets = new InputValueSocketDescriptor[]
             {

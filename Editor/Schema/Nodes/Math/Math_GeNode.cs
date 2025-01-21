@@ -9,7 +9,7 @@ namespace UnityGLTF.Interactivity.Schema
 
         public Math_GeNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "";
             Configuration =  new ConfigDescriptor[]
             {

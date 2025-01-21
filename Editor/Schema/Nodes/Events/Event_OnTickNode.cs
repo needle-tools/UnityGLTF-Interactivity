@@ -9,7 +9,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Event_OnTickNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Configuration =  new ConfigDescriptor[]
             {
             };

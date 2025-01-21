@@ -1,3 +1,5 @@
+using GLTF.Schema;
+
 namespace UnityGLTF.Interactivity.Schema
 {
 
@@ -19,7 +21,8 @@ namespace UnityGLTF.Interactivity.Schema
 
         public Event_OnSelectNode()
         {
-            Type = TypeName;
+            Op = TypeName;
+            Extension = KHR_node_selectability_Factory.EXTENSION_NAME;
             Description = "This node will fire when a node is selected.";
             Configuration =  new ConfigDescriptor[]
             {

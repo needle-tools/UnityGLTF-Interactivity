@@ -15,7 +15,7 @@ namespace UnityGLTF.Interactivity.Schema
 
         public Flow_ForLoopNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "";
             Configuration = new ConfigDescriptor[]
             {

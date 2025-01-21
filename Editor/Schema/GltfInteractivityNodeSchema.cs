@@ -180,8 +180,11 @@ namespace UnityGLTF.Interactivity
     {
         // TODO: Should have protected setters
         public static readonly string ExtensionName = "KHR_interactivity";
-        public string Type {get; set;}
+        public string Op {get; set;}
         public string Description {get; protected set;}
+
+        public string Extension { get; protected set; } = null;
+        
         public ConfigDescriptor[] Configuration {get; set;}
         public FlowSocketDescriptor[] InputFlowSockets {get; set;}
         public FlowSocketDescriptor[] OutputFlowSockets {get; set;}
@@ -192,7 +195,7 @@ namespace UnityGLTF.Interactivity
         
         public GltfInteractivityNodeSchema()
         {
-            Type = string.Empty;
+            Op = string.Empty;
             Description = string.Empty;
             Configuration = new ConfigDescriptor[] { };
             InputFlowSockets = new FlowSocketDescriptor[] { };

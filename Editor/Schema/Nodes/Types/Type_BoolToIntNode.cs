@@ -8,7 +8,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Type_BoolToIntNode()
         {
-            Type = TypeName;
+            Op = TypeName;
 
             InputValueSockets = new InputValueSocketDescriptor[]
             {

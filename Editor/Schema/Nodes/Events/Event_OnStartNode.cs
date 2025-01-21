@@ -7,7 +7,7 @@ namespace UnityGLTF.Interactivity.Schema
  
         public Event_OnStartNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Configuration =  new ConfigDescriptor[]
             {
             };

@@ -9,7 +9,7 @@ namespace UnityGLTF.Interactivity.Schema
 
         public Flow_SwitchNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "Switch between different flows based on a condition.";
             Configuration = new ConfigDescriptor[]
             {

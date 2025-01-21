@@ -1195,11 +1195,11 @@ namespace UnityGLTF.Interactivity
                     foreach (var kvpNode in g.nodes)
                         if (kvpNode.Value.Nodes.Contains(node))
                         {
-                            sb.AppendLine($"Node Index {node.Index} with Schema={node.Schema.Type} from Unit={kvpNode.Key}: {message}");
+                            sb.AppendLine($"Node Index {node.Index} with Schema={node.Schema.Op} from Unit={kvpNode.Key}: {message}");
                             return;
                         }
                 
-                sb.AppendLine($"Node Index {node.Index} with Schema={node.Schema.Type}: {message}");
+                sb.AppendLine($"Node Index {node.Index} with Schema={node.Schema.Op}: {message}");
             }
             
             foreach (var node in nodesToSerialize)
@@ -1227,7 +1227,7 @@ namespace UnityGLTF.Interactivity
                     }
                 }
 
-                if (node.Schema.Type == Pointer_SetNode.TypeName || node.Schema.Type == Pointer_GetNode.TypeName)
+                if (node.Schema.Op == Pointer_SetNode.TypeName || node.Schema.Op == Pointer_GetNode.TypeName)
                 {
                     if (node.ValueSocketConnectionData.TryGetValue(GltfInteractivityNodeHelper.IdPointerNodeIndex, out var valueSocket))
                     {
@@ -1236,7 +1236,7 @@ namespace UnityGLTF.Interactivity
                     }
                 }
                 
-                if (node.Schema.Type == Variable_SetNode.TypeName || node.Schema.Type == Variable_GetNode.TypeName)
+                if (node.Schema.Op == Variable_SetNode.TypeName || node.Schema.Op == Variable_GetNode.TypeName)
                 {
                     if (node.ConfigurationData.TryGetValue(Variable_SetNode.IdConfigVarIndex, out var varConfig))
                     {
@@ -1247,7 +1247,7 @@ namespace UnityGLTF.Interactivity
                     }
                 }
 
-                if (node.Schema.Type == Event_ReceiveNode.TypeName || node.Schema.Type == Event_SendNode.TypeName)
+                if (node.Schema.Op == Event_ReceiveNode.TypeName || node.Schema.Op == Event_SendNode.TypeName)
                 {
                     if (node.ConfigurationData.TryGetValue("event", out var varConfig))
                     {

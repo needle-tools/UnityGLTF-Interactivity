@@ -13,7 +13,7 @@ namespace UnityGLTF.Interactivity.Schema
 
         public Flow_SetDelayNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "Set a delay before continuing the flow.";
             
             InputValueSockets = new InputValueSocketDescriptor[]

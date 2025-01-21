@@ -39,6 +39,9 @@ namespace UnityGLTF.Interactivity
     public class GltfInteractivityNode
     {
         public int Index;
+        
+        public int OpDeclaration = -1;
+        
         public virtual GltfInteractivityNodeSchema Schema { get; protected set; }
         
         // Data to be serialized into Gltf
@@ -63,7 +66,7 @@ namespace UnityGLTF.Interactivity
             }
             else
             {
-                Debug.LogError($"Socket {socketId} not found in node {Schema.Type}");
+                Debug.LogError($"Socket {socketId} not found in node {Schema.Op}");
             }
         }
         
@@ -80,7 +83,7 @@ namespace UnityGLTF.Interactivity
             }
             else
             {
-                Debug.LogError($"Socket {socketId} not found in node {Schema.Type}");
+                Debug.LogError($"Socket {socketId} not found in node {Schema.Op}");
             }
         }
 
@@ -99,7 +102,7 @@ namespace UnityGLTF.Interactivity
             }
             else
             {
-                Debug.LogError($"Socket {socketId} not found in node {Schema.Type}");
+                Debug.LogError($"Socket {socketId} not found in node {Schema.Op}");
             }
         }
         
@@ -124,7 +127,7 @@ namespace UnityGLTF.Interactivity
                     typeRestriction = descriptor.typeRestriction
                 });
             }
-            foreach (var  descriptor in Schema.OutputValueSockets)
+            foreach (var descriptor in Schema.OutputValueSockets)
             {
                 if (descriptor.SupportedTypes.Length == 1 && descriptor.expectedType == null)
                     OutValueSocket.Add(descriptor.Id,
@@ -152,8 +155,7 @@ namespace UnityGLTF.Interactivity
         {
             JObject jo = new JObject
             {
-                new JProperty("type", Schema.Type),
-                new JProperty("index", Index),
+                new JProperty("op", OpDeclaration),
                 new JProperty("configuration",
                     new JArray(
                         from config in ConfigurationData.Values

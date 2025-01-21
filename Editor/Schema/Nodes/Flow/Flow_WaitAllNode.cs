@@ -11,7 +11,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Flow_WaitAllNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "";
             Configuration = new ConfigDescriptor[]
             {

@@ -18,7 +18,7 @@ namespace UnityGLTF.Interactivity.Export
             GetMemberUnitExport.RegisterMemberExporter(typeof(Mathf), nameof(float.NaN), new GenericGetMemberMathUnit1Out("math/nan", socketRules));
        }
         
-        public GenericGetMemberMathUnit1Out(string gltfNodeType, GenericSocketRules socketRules = null) : base(gltfNodeType, socketRules)
+        public GenericGetMemberMathUnit1Out(string gltfNodeOp, GenericSocketRules socketRules = null) : base(gltfNodeOp, socketRules)
         {
         }
     }
@@ -38,7 +38,7 @@ namespace UnityGLTF.Interactivity.Export
             GetMemberUnitExport.RegisterMemberExporter(typeof(Vector4), nameof(Vector3.magnitude), new GenericGetMemberMathUnit_1In_1Out("math/length", socketRules));
         }
         
-        public GenericGetMemberMathUnit_1In_1Out(string gltfNodeType, GenericSocketRules socketRules = null) : base(gltfNodeType, socketRules)
+        public GenericGetMemberMathUnit_1In_1Out(string gltfNodeOp, GenericSocketRules socketRules = null) : base(gltfNodeOp, socketRules)
         {
         }
     }

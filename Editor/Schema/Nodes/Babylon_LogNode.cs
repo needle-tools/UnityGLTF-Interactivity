@@ -11,7 +11,8 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Babylon_LogNode()
         {
-            Type = TypeName;
+            Op = TypeName;
+            Extension = EXTENSION_ID;
             
             InputValueSockets = new InputValueSocketDescriptor[]
             {

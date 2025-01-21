@@ -7,7 +7,7 @@ namespace UnityGLTF.Interactivity.Schema
        
         public Flow_SequenceNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "";
             Configuration =  new ConfigDescriptor[]
             {

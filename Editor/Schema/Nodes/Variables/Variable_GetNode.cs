@@ -8,7 +8,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Variable_GetNode()
         {
-            Type = TypeName;
+            Op = TypeName;
 
             Configuration = new ConfigDescriptor[]
             {

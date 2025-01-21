@@ -10,7 +10,7 @@ namespace UnityGLTF.Interactivity.Schema
 
         public Flow_WhileNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "";
           
             OutputFlowSockets = new FlowSocketDescriptor[]

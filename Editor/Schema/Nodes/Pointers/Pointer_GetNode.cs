@@ -8,7 +8,7 @@ namespace UnityGLTF.Interactivity.Schema
 
         public Pointer_GetNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "";
             Configuration = new ConfigDescriptor[]
             {

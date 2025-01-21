@@ -1,3 +1,5 @@
+using GLTF.Schema;
+
 namespace UnityGLTF.Interactivity.Schema
 {
     public class Event_OnHoverInNode : GltfInteractivityNodeSchema
@@ -11,7 +13,9 @@ namespace UnityGLTF.Interactivity.Schema
 
         public Event_OnHoverInNode()
         {
-            Type = TypeName;
+            Op = TypeName;
+            Extension = KHR_node_hoverability_Factory.EXTENSION_NAME;
+
             Description = "This node will fire when a node is selected.";
             Configuration =  new ConfigDescriptor[]
             {

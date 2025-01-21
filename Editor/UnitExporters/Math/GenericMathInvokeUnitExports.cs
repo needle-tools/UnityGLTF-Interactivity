@@ -24,7 +24,7 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Vector4), ".ctor", new GenericInvokeMathInvokeUnit4In1Out("math/combine4", socketRules_FloatIn_Float4Out));
         }
         
-        public GenericInvokeMathInvokeUnit4In1Out(string gltfNodeType, GenericSocketRules socketRules = null) : base(gltfNodeType, socketRules)
+        public GenericInvokeMathInvokeUnit4In1Out(string gltfNodeOp, GenericSocketRules socketRules = null) : base(gltfNodeOp, socketRules)
         {
         }
     }
@@ -91,7 +91,7 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Clamp), new GenericInvokeMathInvokeUnit3In1Out("math/clamp", socketRules_Clamp));
         }
         
-        public GenericInvokeMathInvokeUnit3In1Out(string gltfNodeType, GenericSocketRules socketRules = null) : base(gltfNodeType, socketRules)
+        public GenericInvokeMathInvokeUnit3In1Out(string gltfNodeOp, GenericSocketRules socketRules = null) : base(gltfNodeOp, socketRules)
         {
         }
     }
@@ -124,7 +124,7 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Equals), new GenericInvokeMathInvokeUnit2In1Out("math/eq", socketRules_SameIn_OutBool));
         }
         
-        public GenericInvokeMathInvokeUnit2In1Out(string gltfNodeType, GenericSocketRules socketRules = null) : base(gltfNodeType, socketRules)
+        public GenericInvokeMathInvokeUnit2In1Out(string gltfNodeOp, GenericSocketRules socketRules = null) : base(gltfNodeOp, socketRules)
         {
         }
     }
@@ -198,7 +198,7 @@ namespace UnityGLTF.Interactivity.Export
             new GenericInvokeMathInvokeUnit1In1Out("math/cbrt", socketRules_SameOutTypeAsInputA);
         }
         
-        public GenericInvokeMathInvokeUnit1In1Out(string gltfNodeType, GenericSocketRules socketRules = null) : base(gltfNodeType, socketRules)
+        public GenericInvokeMathInvokeUnit1In1Out(string gltfNodeOp, GenericSocketRules socketRules = null) : base(gltfNodeOp, socketRules)
         {
         }
     }

@@ -10,7 +10,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Math_Rotate3dNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             
             OutputValueSockets = new OutValueSocketDescriptor[]
             {

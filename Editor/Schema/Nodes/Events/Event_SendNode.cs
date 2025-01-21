@@ -9,7 +9,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Event_SendNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "Send a custom event";
             Configuration = new ConfigDescriptor[]
             {

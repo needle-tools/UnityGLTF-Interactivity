@@ -10,7 +10,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Animation_StopNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "Stops an animation.";
             InputFlowSockets = new FlowSocketDescriptor[]
             {

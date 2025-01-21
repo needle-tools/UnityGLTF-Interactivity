@@ -10,7 +10,7 @@ namespace UnityGLTF.Interactivity.Schema
 
         public Flow_BranchNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Configuration = new ConfigDescriptor[]
             {
             };

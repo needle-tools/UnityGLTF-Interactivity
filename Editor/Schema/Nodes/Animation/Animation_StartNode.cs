@@ -18,7 +18,7 @@ namespace UnityGLTF.Interactivity.Schema
 
         public Animation_StartNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "Plays an animation.";
             InputFlowSockets = new FlowSocketDescriptor[]
             {

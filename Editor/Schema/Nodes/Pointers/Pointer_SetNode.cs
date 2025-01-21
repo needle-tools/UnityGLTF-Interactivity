@@ -10,7 +10,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Pointer_SetNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "";
             Configuration = new ConfigDescriptor[]
             {

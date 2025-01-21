@@ -49,7 +49,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new GenericMathUnit_3In_1Out("math/select", typeof(SelectUnitExport), socketRules_InputABisSame_SameOutTypeAsInputA));
         }
         
-        public GenericMathUnit_3In_1Out(string gltfNodeType, Type unitType, GenericSocketRules socketRules = null) : base(gltfNodeType, unitType, socketRules)
+        public GenericMathUnit_3In_1Out(string gltfNodeOp, Type unitType, GenericSocketRules socketRules = null) : base(gltfNodeOp, unitType, socketRules)
         {
         }
     }
@@ -141,7 +141,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new GenericMathUnit_2In_1Out("math/xor", typeof(ExclusiveOr), socketRules_AllBool));
         }
         
-        public GenericMathUnit_2In_1Out(string gltfNodeType, Type unitType, GenericSocketRules socketRules = null) : base(gltfNodeType, unitType, socketRules)
+        public GenericMathUnit_2In_1Out(string gltfNodeOp, Type unitType, GenericSocketRules socketRules = null) : base(gltfNodeOp, unitType, socketRules)
         {
         }
     }
@@ -168,7 +168,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new GenericMathNodesOneInOut("math/not", typeof(Negate), socketRules_SameOutTypeAsInputA));
         }
         
-        public GenericMathNodesOneInOut(string gltfNodeType, Type unitType, GenericSocketRules socketRules = null) : base(gltfNodeType, unitType, socketRules)
+        public GenericMathNodesOneInOut(string gltfNodeOp, Type unitType, GenericSocketRules socketRules = null) : base(gltfNodeOp, unitType, socketRules)
         {
         }
     }

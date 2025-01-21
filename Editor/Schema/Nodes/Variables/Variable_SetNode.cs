@@ -11,7 +11,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Variable_SetNode()
         {
-            Type = TypeName;
+            Op = TypeName;
 
             Configuration = new ConfigDescriptor[]
             {

@@ -10,7 +10,8 @@ namespace UnityGLTF.Interactivity.Schema
         
         public ADBE_OutputConsoleNode()
         {
-            Type = TypeName;
+            Op = TypeName;
+            Extension = EXTENSION_ID;
             
             InputValueSockets = new InputValueSocketDescriptor[]
             {

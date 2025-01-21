@@ -8,7 +8,7 @@ namespace UnityGLTF.Interactivity.Schema
         
         public Math_CeilNode()
         {
-            Type = TypeName;
+            Op = TypeName;
 
             InputValueSockets = new InputValueSocketDescriptor[]
             {

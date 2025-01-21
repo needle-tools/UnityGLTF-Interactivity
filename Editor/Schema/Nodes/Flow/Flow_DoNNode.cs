@@ -11,7 +11,7 @@ namespace UnityGLTF.Interactivity.Schema
 
         public Flow_DoNNode()
         {
-            Type = TypeName;
+            Op = TypeName;
             Description = "";
           
             InputFlowSockets = new FlowSocketDescriptor[]

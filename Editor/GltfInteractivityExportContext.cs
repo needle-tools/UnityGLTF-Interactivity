@@ -617,8 +617,8 @@ namespace UnityGLTF.Interactivity
             GltfInteractivityExtension extension = new GltfInteractivityExtension();
             extension.Nodes = nodesToSerialize.ToArray();
             
-            // Deactivated for now - not working in Authoring Tool, and also waiting for Spec Discussions about Types
-            //extension.Types = CollectAndFilterUsedTypes(nodesToSerialize);
+            // !!!!!! Deactivated for now - not working in Authoring Tool, and also waiting for Spec Discussions about Types
+            //extension.Types = CollectAndFilterUsedTypes();
             
             ValidateData();
             
@@ -691,7 +691,7 @@ namespace UnityGLTF.Interactivity
             nodesToSerialize.Sort((a, b) => a.Index.CompareTo(b.Index));
         }
 
-        private GltfInteractivityTypeMapping.TypeMapping[] CollectAndFilterUsedTypes(GltfInteractivityNode[] nodes)
+        private GltfInteractivityTypeMapping.TypeMapping[] CollectAndFilterUsedTypes()
         {
             var types = new List<GltfInteractivityTypeMapping.TypeMapping>();
             
@@ -713,9 +713,10 @@ namespace UnityGLTF.Interactivity
             foreach (var customEventValue in customEvents.SelectMany(c => c.Values))
                 usedTypeIndices.Add(customEventValue.Type);
             
-            foreach (var node in nodes)
             foreach (var declaration in opDeclarations.SelectMany( d => d.inputValueSockets.Values).Concat(opDeclarations.SelectMany( d => d.outputValueSockets.Values)))
                 usedTypeIndices.Add(declaration.type);
+            
+            foreach (var node in nodesToSerialize)
             {
                 foreach (var valueSocket in node.ValueSocketConnectionData)
                     if (valueSocket.Value.Value != null)
@@ -741,7 +742,7 @@ namespace UnityGLTF.Interactivity
             }
             
             // Replace the old type indices with the new ones
-            foreach (var node in nodes)
+            foreach (var node in nodesToSerialize)
             {
                 foreach (var valueSocket in node.ValueSocketConnectionData)
                     if (valueSocket.Value.Value != null && valueSocket.Value.Type != -1)

@@ -24,43 +24,43 @@ namespace UnityGLTF.Interactivity
         public class ExportSocketData<T> where T : SocketData
         {
             public GltfInteractivityUnitExporterNode node { get; private set;}
-            public T data { get; private set; }
+            public KeyValuePair<string, T> socket { get; private set; }
             
-            public ExportSocketData(GltfInteractivityUnitExporterNode node, T socket)
+            public ExportSocketData(GltfInteractivityUnitExporterNode node, KeyValuePair<string,T> socket)
             {
-                this.data = socket;
+                this.socket = socket;
                 this.node = node;
             }
         }
 
         public class FlowOutSocketData : ExportSocketData<FlowSocketData>
         {
-            public FlowOutSocketData(GltfInteractivityUnitExporterNode node, FlowSocketData socket) : base(node, socket)
+            public FlowOutSocketData(GltfInteractivityUnitExporterNode node, KeyValuePair<string, FlowSocketData> socket) : base(node, socket)
             {
             }
             
             public FlowOutSocketData MapToControlOutput(ControlOutput controlOutput)
             {
-                node.MapOutFlowConnectionWhenValid(controlOutput, data.Id);
+                node.MapOutFlowConnectionWhenValid(controlOutput, socket.Key);
                 return this;
             }
             
             public FlowOutSocketData ConnectToFlowDestination(FlowInSocketData other)
             {
-                node.MapOutFlowConnection(other.node, other.data.Id, data.Id);
+                node.MapOutFlowConnection(other.node, other.socket.Key, socket.Key);
                 return this;
             }
         }
         
         public class FlowInSocketData : ExportSocketData<FlowSocketData>
         {
-            public FlowInSocketData(GltfInteractivityUnitExporterNode node, FlowSocketData socket) : base(node, socket)
+            public FlowInSocketData(GltfInteractivityUnitExporterNode node, KeyValuePair<string, FlowSocketData> socket) : base(node, socket)
             {
             }
             
             public FlowInSocketData MapToControlInput(ControlInput controlInput)
             {
-                node.MapInputPortToSocketName(controlInput, data.Id);
+                node.MapInputPortToSocketName(controlInput, socket.Key);
                 return this;
             }
         }
@@ -69,7 +69,7 @@ namespace UnityGLTF.Interactivity
         {
             public List<ValueInputSocketData> links = new List<ValueInputSocketData>();
 
-            public LinkedValueInputSocketData(GltfInteractivityUnitExporterNode node, ValueSocketData socket) : base(node, socket)
+            public LinkedValueInputSocketData(GltfInteractivityUnitExporterNode node, KeyValuePair<string, ValueSocketData> socket) : base(node, socket)
             {
                 links.Add(new(node, socket));
             }
@@ -111,47 +111,47 @@ namespace UnityGLTF.Interactivity
             
         public class ValueInputSocketData : ExportSocketData<ValueSocketData>
         {
-            public ValueInputSocketData(GltfInteractivityUnitExporterNode node, ValueSocketData socket) : base(node, socket)
+            public ValueInputSocketData(GltfInteractivityUnitExporterNode node, KeyValuePair<string, ValueSocketData> socket) : base(node, socket)
             {
             }
             
             public virtual LinkedValueInputSocketData Link(ValueInputSocketData other)
             {
-                var multi = new LinkedValueInputSocketData(node, data);
+                var multi = new LinkedValueInputSocketData(node, socket);
                 return multi.Link(other);
             }
             
             public virtual ValueInputSocketData MapToInputPort(IUnitInputPort inputPort)
             {
-                node.MapInputPortToSocketName(inputPort, data.Id);
+                node.MapInputPortToSocketName(inputPort, socket.Key);
                 return this;
             }
             
             public virtual ValueInputSocketData ConnectToSource(ValueOutputSocketData other)
             {
-                node.MapInputPortToSocketName(other.socket.Id, other.node, data.Id);
+                node.MapInputPortToSocketName(other.socket.Key, other.node, socket.Key);
                 return this;
             }
             
             public virtual ValueInputSocketData SetType(TypeRestriction typeRestriction)
             {
-                data.typeRestriction = typeRestriction;
+                socket.Value.typeRestriction = typeRestriction;
                 return this;
             }
 
             public virtual ValueInputSocketData SetValue(object value)
             {
-                node.SetValueInSocket(data.Id, value);
+                node.SetValueInSocket(socket.Key, value);
                 return this;
             }
         }
 
         public class ValueOutputSocketData
         {
-            public ValueOutSocket socket { get; private set; }
+            public KeyValuePair<string, ValueOutSocket> socket { get; private set; }
             public GltfInteractivityUnitExporterNode node { get; private set; }
             
-            public ValueOutputSocketData(GltfInteractivityUnitExporterNode node, ValueOutSocket socket)
+            public ValueOutputSocketData(GltfInteractivityUnitExporterNode node, KeyValuePair<string, ValueOutSocket> socket)
             {
                 this.socket = socket;
                 this.node = node;    
@@ -159,13 +159,13 @@ namespace UnityGLTF.Interactivity
             
             public ValueOutputSocketData ExpectedType(ExpectedType expectedType)
             {
-                socket.expectedType = expectedType;
+                socket.Value.expectedType = expectedType;
                 return this;
             }
             
             public ValueOutputSocketData MapToPort(IUnitOutputPort outputPort)
             {
-                node.MapValueOutportToSocketName(outputPort, socket.Id);
+                node.MapValueOutportToSocketName(outputPort, socket.Key);
                 return this;
             }
         }
@@ -174,10 +174,10 @@ namespace UnityGLTF.Interactivity
         {
             if (!ValueSocketConnectionData.ContainsKey(socketName))
             {
-               ValueSocketConnectionData.Add(socketName, new ValueSocketData { Id = socketName });
+               ValueSocketConnectionData.Add(socketName, new ValueSocketData {});
             }
             
-            var socket = new ValueInputSocketData(this, ValueSocketConnectionData[socketName]);
+            var socket = new ValueInputSocketData(this, new KeyValuePair<string, ValueSocketData>(socketName, ValueSocketConnectionData[socketName]));
             return socket;
         }
         
@@ -185,32 +185,36 @@ namespace UnityGLTF.Interactivity
         {
             if (!FlowSocketConnectionData.ContainsKey(socketName))
             {
-                FlowSocketConnectionData.Add(socketName, new FlowSocketData { Id = socketName });
+                FlowSocketConnectionData.Add(socketName, new FlowSocketData {});
             }
-            var socket = new FlowOutSocketData(this, FlowSocketConnectionData[socketName]);
+            var socket = new FlowOutSocketData(this, new KeyValuePair<string, FlowSocketData>(socketName, FlowSocketConnectionData[socketName]));
             return socket;
         }
 
         public FlowInSocketData FlowIn(string socketName)
         {
             // TODO
-            var socket = new FlowInSocketData(this, new FlowSocketData { Id = socketName});
+            var socket = new FlowInSocketData(this, new KeyValuePair<string, FlowSocketData>(socketName, new FlowSocketData()));
             return socket;
         }
         
-        public ValueOutputSocketData ValueOut(string value)
+        public ValueOutputSocketData ValueOut(string socket)
         {
-            if (!OutValueSocket.ContainsKey(value))
+            if (!OutValueSocket.ContainsKey(socket))
             {
-                OutValueSocket.Add(value, new ValueOutSocket { Id = value });
+                OutValueSocket.Add(socket, new ValueOutSocket());
             }
 
-            return new ValueOutputSocketData(this, OutValueSocket[value]);
+            return new ValueOutputSocketData(this, new KeyValuePair<string, ValueOutSocket>(socket, OutValueSocket[socket]));
         }
         
         public ValueOutputSocketData FirstValueOut()
         {
-            return new ValueOutputSocketData(this, OutValueSocket.First().Value);
+            var firstItem = OutValueSocket.FirstOrDefault();
+            if (firstItem.Value == null)
+                return null;
+            
+            return new ValueOutputSocketData(this,  firstItem);
         }
         
         public void MapOutFlowConnectionWhenValid(ControlOutput controlOutput, string outFlowSocketName)

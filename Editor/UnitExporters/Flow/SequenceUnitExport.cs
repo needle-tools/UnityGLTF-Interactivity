@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityGLTF.Interactivity.Schema;
@@ -34,7 +35,6 @@ namespace UnityGLTF.Interactivity.Export
                     var n = new GltfInteractivityUnitExporterNode.FlowSocketData();
                     var desc = new GltfInteractivityNodeSchema.FlowSocketDescriptor();
                     desc.Id = "sequence" + index;
-                    n.Id = desc.Id;
                     
                     node.FlowSocketConnectionData.Add(desc.Id, n);
                     unitExporter.MapOutFlowConnectionWhenValid(output, desc.Id, node);

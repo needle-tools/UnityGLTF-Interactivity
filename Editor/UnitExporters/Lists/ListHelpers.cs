@@ -263,12 +263,11 @@ namespace Editor.UnitExporters.Lists
             var flowSwitch = unitExporter.CreateNode(new Flow_SwitchNode());
             list.setValueFlowIn = flowSwitch.FlowIn(Flow_SwitchNode.IdFlowIn);
             flowSwitch.ValueIn(Flow_SwitchNode.IdSelection).ConnectToSource(currentIndexValueOut);
-            flowSwitch.ConfigurationData["cases"] = new GltfInteractivityNode.ConfigData
-                { Id = "cases", Value = indices };
+            flowSwitch.ConfigurationData["cases"] = new GltfInteractivityNode.ConfigData { Value = indices };
 
             for (int i = 0; i < indices.Length; i++)
             {
-                flowSwitch.FlowSocketConnectionData.Add(i.ToString(), new GltfInteractivityNode.FlowSocketData {Id = i.ToString()});
+                flowSwitch.FlowSocketConnectionData.Add(i.ToString(), new GltfInteractivityNode.FlowSocketData());
                 
                 VariablesHelpers.SetVariable(unitExporter, list.StartIndex + i, valueToSetValueOut, flowSwitch.FlowOut(i.ToString()), null);
             }

@@ -274,10 +274,7 @@ namespace UnityGLTF.Interactivity.Export
             GltfInteractivityNodeHelper.AddPointerConfig(node, pointerTemplate);
             if (!node.ValueSocketConnectionData.ContainsKey(pointerId))
             {
-                node.ValueSocketConnectionData.Add(pointerId, new GltfInteractivityUnitExporterNode.ValueSocketData
-                {
-                    Id = pointerId,
-                });
+                node.ValueSocketConnectionData.Add(pointerId, new GltfInteractivityUnitExporterNode.ValueSocketData());
             }
 
             MapInputPortToSocketName(targetInputPort, pointerId, node);
@@ -289,10 +286,7 @@ namespace UnityGLTF.Interactivity.Export
             GltfInteractivityNodeHelper.AddPointerConfig(node, pointerTemplate);
             if (!node.ValueSocketConnectionData.ContainsKey(pointerId))
             {
-                node.ValueSocketConnectionData.Add(pointerId, new GltfInteractivityUnitExporterNode.ValueSocketData
-                {
-                    Id = pointerId,
-                });
+                node.ValueSocketConnectionData.Add(pointerId, new GltfInteractivityUnitExporterNode.ValueSocketData());
             }
         }
 

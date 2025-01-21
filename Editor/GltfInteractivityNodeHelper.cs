@@ -94,7 +94,6 @@ namespace UnityGLTF.Interactivity
         {
             node.ValueSocketConnectionData.Add(pointerId, new GltfInteractivityNode.ValueSocketData()
             {
-                Id = pointerId,
                 Value = index,
                 Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"),
                 typeRestriction = TypeRestriction.LimitToInt,

@@ -41,7 +41,6 @@ namespace UnityGLTF.Interactivity.Export
                     Math_SelectNode.IdValueB, selectNode);
                 selectNode.ValueSocketConnectionData[Math_SelectNode.IdValueA] = new GltfInteractivityUnitExporterNode.ValueSocketData()
                 {
-                    Id = Math_SelectNode.IdValueA,
                     Value = 0f,
                     Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float"),
                 };

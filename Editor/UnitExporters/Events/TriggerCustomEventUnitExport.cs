@@ -28,27 +28,26 @@ namespace UnityGLTF.Interactivity.Export
             
             node.ValueIn("targetNodeIndex").MapToInputPort(customEvent.target).SetType(TypeRestriction.LimitToInt);
             
-            var args = new List<GltfInteractivityUnitExporterNode.EventValues>();
-            args.Add( new GltfInteractivityUnitExporterNode.EventValues { Id = "targetNodeIndex", Type = GltfInteractivityTypeMapping.TypeIndex("int") });
+            var args = new Dictionary<string, GltfInteractivityUnitExporterNode.EventValues>();
+            args.Add("targetNodeIndex", new GltfInteractivityUnitExporterNode.EventValues { Type = GltfInteractivityTypeMapping.TypeIndex("int") });
             
             foreach (var arg in customEvent.arguments)
             {
                 var argId = arg.key;
                 var argTypeIndex = GltfInteractivityTypeMapping.TypeIndex(arg.type);
-                var eventValue = new GltfInteractivityUnitExporterNode.EventValues { Id = argId, Type = argTypeIndex };
-                args.Add(eventValue);
+                var eventValue = new GltfInteractivityUnitExporterNode.EventValues { Type = argTypeIndex };
+                args.Add(argId, eventValue);
                 
                 unitExporter.MapInputPortToSocketName(arg, argId, node);
                 var valueSocketData = new GltfInteractivityUnitExporterNode.ValueSocketData()
                 {
-                    Id = argId,
                     Type = argTypeIndex,
                 };
                 node.ValueSocketConnectionData.Add(argId, valueSocketData);
 
 
             }
-            var index = unitExporter.exportContext.AddEventIfNeeded(customEvent, args.ToArray());
+            var index = unitExporter.exportContext.AddEventIfNeeded(customEvent, args);
             if (index == -1)
             {
                 unitExporter.IsTranslatable = false;
@@ -62,12 +61,12 @@ namespace UnityGLTF.Interactivity.Export
 
                 foreach (var argValue in args)
                 {
-                    var eventValue = customEvent.Values.FirstOrDefault(x => x.Id == argValue.Id);
-                    if (eventValue == null || eventValue.Type != -1)
+                    var eventValue = customEvent.Values.FirstOrDefault(x => x.Key == argValue.Key);
+                    if (eventValue.Value == null || eventValue.Value.Type != -1)
                         continue;
                     
-                    var argTypeIndex = unitExporter.exportContext.GetValueTypeForInput(node, argValue.Id);
-                    eventValue.Type = argTypeIndex;
+                    var argTypeIndex = unitExporter.exportContext.GetValueTypeForInput(node, argValue.Key);
+                    eventValue.Value.Type = argTypeIndex;
                 }
             };
             

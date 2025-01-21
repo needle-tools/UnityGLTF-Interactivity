@@ -35,8 +35,7 @@ namespace UnityGLTF.Interactivity.Export
                 unitExporter.MapInputPortToSocketName(unit.inputParameters[0], ADBE_OutputConsoleNode.IdMessage, adbe_node);
 
                 var flowAdbe = new GltfInteractivityUnitExporterNode.FlowSocketData();
-                flowAdbe.Id = "0";
-                sequence_node.FlowSocketConnectionData.Add(flowAdbe.Id, flowAdbe);
+                sequence_node.FlowSocketConnectionData.Add("0", flowAdbe);
                 unitExporter.MapOutFlowConnection(adbe_node, ADBE_OutputConsoleNode.IdFlowIn, sequence_node, "0");
     
                 unitExporter.exportContext.exporter.DeclareExtensionUsage(ADBE_OutputConsoleNode.EXTENSION_ID, false);
@@ -50,15 +49,13 @@ namespace UnityGLTF.Interactivity.Export
 
                 unitExporter.MapOutFlowConnection(babylon_node, Babylon_LogNode.IdFlowIn, sequence_node, "1");
                 var flowBabylon = new GltfInteractivityUnitExporterNode.FlowSocketData();
-                flowBabylon.Id = "1";
-                sequence_node.FlowSocketConnectionData.Add(flowBabylon.Id, flowBabylon);
+                sequence_node.FlowSocketConnectionData.Add("1", flowBabylon);
     
                 unitExporter.exportContext.exporter.DeclareExtensionUsage(Babylon_LogNode.EXTENSION_ID, false);
             }
             
             var flowExit = new GltfInteractivityUnitExporterNode.FlowSocketData();
-            flowExit.Id = "2";
-            sequence_node.FlowSocketConnectionData.Add(flowExit.Id, flowExit);
+            sequence_node.FlowSocketConnectionData.Add("2", flowExit);
             unitExporter.MapOutFlowConnectionWhenValid(unit.exit, "2", sequence_node);
             
             unitExporter.MapInputPortToSocketName(unit.enter, Flow_SequenceNode.IdFlowIn, sequence_node);

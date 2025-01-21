@@ -25,16 +25,13 @@ namespace UnityGLTF.Interactivity.Export
 
             node.ConfigurationData["cases"] = new GltfInteractivityNode.ConfigData
             {
-                Id = "cases",
                 Value = unit.branches.Select(b => b.Key).ToArray()
             };
             
             foreach (var branch in unit.branches)
             {
                 var caseFlow = new GltfInteractivityUnitExporterNode.FlowSocketData();
-                caseFlow.Id = branch.Key.ToString();
-                node.FlowSocketConnectionData.Add(caseFlow.Id, caseFlow);
-                node.FlowOut(caseFlow.Id).MapToControlOutput(branch.Value);
+                node.FlowOut(branch.Key.ToString()).MapToControlOutput(branch.Value);
             }
 
             node.FlowOut(Flow_SwitchNode.IdFDefaultFlowOut).MapToControlOutput(unit.@default);

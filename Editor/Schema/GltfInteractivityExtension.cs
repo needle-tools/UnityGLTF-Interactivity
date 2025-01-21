@@ -199,17 +199,18 @@ namespace UnityGLTF.Interactivity
         public class CustomEvent
         {
             public string Id = string.Empty;
-            public GltfInteractivityUnitExporterNode.EventValues[] Values = { };
+            public Dictionary<string, GltfInteractivityUnitExporterNode.EventValues> Values = new Dictionary<string, GltfInteractivityUnitExporterNode.EventValues>();
 
             public JObject SerializeObject()
             {
+                var values = new JObject();
+                foreach (var value in Values)
+                    values.Add(value.Key, value.Value.SerializeObject());
+
                 return new JObject
                 {
                     new JProperty("id", Id),
-                    new JProperty("values",
-                        new JArray(
-                            from value in Values
-                            select value.SerializeObject()))
+                    new JProperty("values", values)
                 };
             }
         }

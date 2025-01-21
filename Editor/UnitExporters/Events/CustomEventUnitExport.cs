@@ -22,19 +22,19 @@ namespace UnityGLTF.Interactivity.Export
 
             node.MapInputPortToSocketName(customEvent.name, "event");
             
-            var args = new List<GltfInteractivityUnitExporterNode.EventValues>();
-            args.Add( new GltfInteractivityUnitExporterNode.EventValues { Id = "targetNodeIndex", Type = GltfInteractivityTypeMapping.TypeIndex("int") });
+            var args = new Dictionary<string, GltfInteractivityUnitExporterNode.EventValues>();
+            args.Add("targetNodeIndex", new GltfInteractivityUnitExporterNode.EventValues {Type = GltfInteractivityTypeMapping.TypeIndex("int") });
 
             foreach (var arg in customEvent.argumentPorts)
             {
                 var argId = arg.key;
                 var argTypeIndex = GltfInteractivityTypeMapping.TypeIndex(arg.type);
-                args.Add(new  GltfInteractivityUnitExporterNode.EventValues{Id = argId, Type = argTypeIndex});
+                args.Add(argId, new  GltfInteractivityUnitExporterNode.EventValues{Type = argTypeIndex});
 
                 node.MapValueOutportToSocketName(arg, argId);
             }
             
-            var index = unitExporter.exportContext.AddEventIfNeeded(customEvent, args.ToArray());
+            var index = unitExporter.exportContext.AddEventIfNeeded(customEvent, args);
             node.ConfigurationData["event"].Value = index;
             node.ValueOut("targetNodeIndex").ExpectedType(ExpectedType.Int);
 

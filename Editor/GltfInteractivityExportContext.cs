@@ -367,7 +367,7 @@ namespace UnityGLTF.Interactivity
             return variables.Count - 1;
         }
         
-        public int AddEventIfNeeded(Unit eventUnit, GltfInteractivityUnitExporterNode.EventValues[] arguments = null)
+        public int AddEventIfNeeded(Unit eventUnit, Dictionary<string, GltfInteractivityUnitExporterNode.EventValues> arguments = null)
         {
             var eventId = eventUnit.defaultValues["name"] as string;
             GameObject target = null;
@@ -396,7 +396,7 @@ namespace UnityGLTF.Interactivity
             return AddEventWithIdIfNeeded(id, arguments);
         }
         
-        public int AddEventWithIdIfNeeded(string id, GltfInteractivityUnitExporterNode.EventValues[] arguments = null)
+        public int AddEventWithIdIfNeeded(string id, Dictionary<string, GltfInteractivityUnitExporterNode.EventValues> arguments = null)
         {
             var index = customEvents.FindIndex(customEvents => customEvents.Id == id);
             if (index != -1)
@@ -710,7 +710,7 @@ namespace UnityGLTF.Interactivity
                 usedTypeIndices.Add(variable.Type);
 
             foreach (var customEventValue in customEvents.SelectMany(c => c.Values))
-                usedTypeIndices.Add(customEventValue.Type);
+                usedTypeIndices.Add(customEventValue.Value.Type);
             
             foreach (var declaration in opDeclarations.SelectMany( d => d.inputValueSockets.Values).Concat(opDeclarations.SelectMany( d => d.outputValueSockets.Values)))
                 usedTypeIndices.Add(declaration.type);
@@ -752,7 +752,7 @@ namespace UnityGLTF.Interactivity
                 variable.Type = typesIndexReplacement[variable.Type];
             
             foreach (var customEventValue in customEvents.SelectMany(c => c.Values))
-                customEventValue.Type = typesIndexReplacement[customEventValue.Type];
+                customEventValue.Value.Type = typesIndexReplacement[customEventValue.Value.Type];
 
             foreach (var declaration in opDeclarations.SelectMany(d => d.inputValueSockets.Values)
                          .Concat(opDeclarations.SelectMany(d => d.outputValueSockets.Values)))
@@ -1013,7 +1013,6 @@ namespace UnityGLTF.Interactivity
                 newNodes.Add(conversionNode);
                 conversionNode.ValueSocketConnectionData["a"] = new GltfInteractivityUnitExporterNode.ValueSocketData()
                 {
-                    Id = "a",
                     Node = targetSocketData.Node, 
                     Socket = targetSocketData.Socket, 
                     Value = targetSocketData.Value, 
@@ -1119,22 +1118,22 @@ namespace UnityGLTF.Interactivity
             {
                 foreach (var valueSocket in node.ValueSocketConnectionData)
                 {
-                    node.ValueSocketConnectionData.TryGetValue(valueSocket.Key, out var socketRestriction);
+                    var socket = valueSocket.Value;
               
                     if (valueSocket.Value.Node == null && valueSocket.Value.Value == null)
                     {
                         // Try to handle nulls
 
-                        if (socketRestriction.typeRestriction != null)
+                        if (socket.typeRestriction != null)
                         {
-                            if (socketRestriction.typeRestriction.limitToType != null)
+                            if (socket.typeRestriction.limitToType != null)
                             {
-                                valueSocket.Value.Value = GltfInteractivityTypeMapping.GetNullByType(socketRestriction.typeRestriction.limitToType);
-                                valueSocket.Value.Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(socketRestriction.typeRestriction.limitToType);
+                                valueSocket.Value.Value = GltfInteractivityTypeMapping.GetNullByType(socket.typeRestriction.limitToType);
+                                valueSocket.Value.Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(socket.typeRestriction.limitToType);
                             }
-                            else if (socketRestriction.typeRestriction.fromInputPort != null)
+                            else if (socket.typeRestriction.fromInputPort != null)
                             {
-                                var fromInputPort = socketRestriction.typeRestriction.fromInputPort;
+                                var fromInputPort = socket.typeRestriction.fromInputPort;
                                 var fromInputPortType = GetValueTypeForInput(node, fromInputPort);
                                 if (fromInputPortType != -1)
                                 {
@@ -1145,27 +1144,27 @@ namespace UnityGLTF.Interactivity
                         }
                     }
                     
-                    if (socketRestriction != null && socketRestriction.typeRestriction != null)
+                    if (socket != null && socket.typeRestriction != null)
                     {
                         var valueType = GetValueTypeForInput(node, valueSocket.Key);
                         if (valueType == -1)
                             continue;
-                        if (socketRestriction.typeRestriction.limitToType != null)
+                        if (socket.typeRestriction.limitToType != null)
                         {
                             var limitToType =
-                                GltfInteractivityTypeMapping.TypeIndexByGltfSignature(socketRestriction.typeRestriction
+                                GltfInteractivityTypeMapping.TypeIndexByGltfSignature(socket.typeRestriction
                                     .limitToType);
                             if (limitToType != valueType)
                             {
-                                var conversionNode = AddTypeConversion(node, nodesToSerialize.Count, socketRestriction.Id,
+                                var conversionNode = AddTypeConversion(node, nodesToSerialize.Count, valueSocket.Key,
                                     valueType, limitToType);
                                 if (conversionNode != null)
                                     nodesToSerialize.AddRange(conversionNode);
                             }
                         }
-                        else if (socketRestriction.typeRestriction.fromInputPort != null)
+                        else if (socket.typeRestriction.fromInputPort != null)
                         {
-                            var fromInputPort = socketRestriction.typeRestriction.fromInputPort;
+                            var fromInputPort = socket.typeRestriction.fromInputPort;
                             var fromInputPortType = GetValueTypeForInput(node, fromInputPort);
                             if (fromInputPortType == -1)
                                 continue;
@@ -1177,7 +1176,7 @@ namespace UnityGLTF.Interactivity
                                 {
                                     continue;
                                 }
-                                var conversionNode = AddTypeConversion(node, nodesToSerialize.Count, socketRestriction.Id,
+                                var conversionNode = AddTypeConversion(node, nodesToSerialize.Count, valueSocket.Key,
                                     valueType, preferType);
                                 if (conversionNode != null)
                                     nodesToSerialize.AddRange(conversionNode);
@@ -1239,7 +1238,7 @@ namespace UnityGLTF.Interactivity
                         foreach (var input in node.ValueSocketConnectionData)
                         {
                             var schemaInput = node.Schema.InputValueSockets.FirstOrDefault(i => i.Id == input.Key);
-                            var newInput = new GltfInteractivityExtension.Declaration.ValueSocket { type = GetValueTypeForInput(node, input.Value.Id)};
+                            var newInput = new GltfInteractivityExtension.Declaration.ValueSocket { type = GetValueTypeForInput(node, input.Key)};
                             if (newInput.type == -1)
                             {
                                 // Probably it has no connection, so we use the Schema Type
@@ -1257,12 +1256,12 @@ namespace UnityGLTF.Interactivity
                                 }
                                 if (newInput.type == -1 && schemaInput != null && schemaInput.SupportedTypes.Length > 0)
                                     newInput.type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(schemaInput.SupportedTypes[0]);
-                                else
-                                    Debug.LogError("Declaration invalid: Could not resolve Type for Input: "+input.Value.Id + " in Node: "+node.Schema.Op);
-
+                                
+                                if (newInput.type == -1)
+                                    Debug.LogError("Declaration invalid: Could not resolve Type for Input: "+input.Key + " in Node: "+node.Schema.Op);
                             }
 
-                            inputs.Add(input.Value.Id,  newInput);
+                            inputs.Add(input.Key, newInput);
                         }
                         newDeclaration.inputValueSockets = inputs;
                         
@@ -1291,11 +1290,11 @@ namespace UnityGLTF.Interactivity
                                 newOutput.type =
                                     GltfInteractivityTypeMapping.TypeIndexByGltfSignature(schemaOutput.SupportedTypes[0]);
                             }
-                            else
-                                Debug.LogError("Declaration invalid: Could not resolve Type for Output: "+output.Value.Id + " in Node: "+node.Schema.Op);
                             
-                         
-                            outputs.Add(output.Value.Id,  newOutput);
+                            if (newOutput.type == -1)
+                                Debug.LogError("Declaration invalid: Could not resolve Type for Output: "+output.Key + " in Node: "+node.Schema.Op);
+                            
+                            outputs.Add(output.Key,  newOutput);
                         }
                         newDeclaration.outputValueSockets = outputs;
                     }
@@ -1395,8 +1394,8 @@ namespace UnityGLTF.Interactivity
             {
                 foreach (var customEventValue in customEvent.Values)
                 {
-                    if (customEventValue.Type == -1)
-                        sb.AppendLine($"Custom Event with Id >{customEvent.Id}< with Value >{customEventValue.Id}< has invalid Value Type (-1)");
+                    if (customEventValue.Value.Type == -1)
+                        sb.AppendLine($"Custom Event with Id >{customEvent.Id}< with Value >{customEventValue.Key}< has invalid Value Type (-1)");
                 }
             }
             

@@ -112,17 +112,13 @@ namespace UnityGLTF.Interactivity
 
             foreach (GltfInteractivityNodeSchema.ConfigDescriptor descriptor in Schema.Configuration)
             {
-                ConfigurationData.Add(descriptor.Id, new ConfigData()
-                {
-                    Id = descriptor.Id,
-                });
+                ConfigurationData.Add(descriptor.Id, new ConfigData());
             }
 
             foreach (GltfInteractivityNodeSchema.InputValueSocketDescriptor descriptor in Schema.InputValueSockets)
             {
                 ValueSocketConnectionData.Add(descriptor.Id, new ValueSocketData()
                 {
-                    Id = descriptor.Id,
                     Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(descriptor.SupportedTypes[0]),
                     typeRestriction = descriptor.typeRestriction
                 });
@@ -131,18 +127,15 @@ namespace UnityGLTF.Interactivity
             {
                 if (descriptor.SupportedTypes.Length == 1 && descriptor.expectedType == null)
                     OutValueSocket.Add(descriptor.Id,
-                        new ValueOutSocket { Id = descriptor.Id, expectedType = ExpectedType.GtlfType(descriptor.SupportedTypes[0])});
+                        new ValueOutSocket {expectedType = ExpectedType.GtlfType(descriptor.SupportedTypes[0])});
                 else
                     OutValueSocket.Add(descriptor.Id,
-                        new ValueOutSocket { Id = descriptor.Id, expectedType = descriptor.expectedType });
+                        new ValueOutSocket {expectedType = descriptor.expectedType });
             }
 
             foreach (GltfInteractivityNodeSchema.FlowSocketDescriptor descriptor in Schema.OutputFlowSockets)
             {
-                FlowSocketConnectionData.Add(descriptor.Id, new FlowSocketData()
-                {
-                    Id = descriptor.Id
-                });
+                FlowSocketConnectionData.Add(descriptor.Id, new FlowSocketData());
             }
             
             foreach (GltfInteractivityNodeSchema.MetaDataEntry descriptor in Schema.MetaDatas)
@@ -153,23 +146,26 @@ namespace UnityGLTF.Interactivity
         
         public virtual JObject SerializeObject()
         {
+            var configs = new JObject();
+            foreach (var config in ConfigurationData)
+                configs.Add(config.Key, config.Value.SerializeObject());
+            
+            var values = new JObject();
+            foreach (var value in ValueSocketConnectionData)
+                values.Add(value.Key, value.Value.SerializeObject());
+
+            var flows = new JObject();
+            foreach (var flow in FlowSocketConnectionData)
+                if (flow.Value.Node != null)
+                    flows.Add(flow.Key, flow.Value.SerializeObject());
+
+            
             JObject jo = new JObject
             {
                 new JProperty("op", OpDeclaration),
-                new JProperty("configuration",
-                    new JArray(
-                        from config in ConfigurationData.Values
-                        select config.SerializeObject())
-                ),
-                new JProperty("values",
-                    new JArray(
-                        from value in ValueSocketConnectionData.Values
-                        select value.SerializeObject())
-                ),
-                new JProperty("flows",
-                    new JArray(
-                        from flow in FlowSocketConnectionData.Values where flow.Node != null
-                        select flow.SerializeObject()))
+                new JProperty("configuration",configs),
+                new JProperty("values", values),
+                new JProperty("flows", flows),
             };
 
             // Remove all empty arrays in the first level of the JSON Object
@@ -187,7 +183,6 @@ namespace UnityGLTF.Interactivity
 
         public abstract class BaseData
         {
-            public string Id = string.Empty;
         }
 
         
@@ -200,13 +195,12 @@ namespace UnityGLTF.Interactivity
             {
                 if (Value == null)
                 {
-                    Debug.LogError($"{nameof(Value)} is null for ConfigData: {Id} ");
+                    Debug.LogError($"{nameof(Value)} is null for ConfigData");
                     return null;
                 }
                 
                 var jObject = new JObject
                 {
-                    new JProperty("id", Id),
                 };
                 ValueSerializer.Serialize(Value, jObject);
                 return jObject;
@@ -225,7 +219,7 @@ namespace UnityGLTF.Interactivity
 
             public override string ToString()
             {
-                return $"Id: \"{Id}\", Node: {(Node.HasValue ? Node.Value.ToString() : "null")}, Socket: \"{Socket}\"";
+                return $"Node: {(Node.HasValue ? Node.Value.ToString() : "null")}, Socket: \"{Socket}\"";
             }
         }
         
@@ -237,8 +231,8 @@ namespace UnityGLTF.Interactivity
             {
                 JObject valueObject = new JObject()
                 {
-                    new JProperty("id", Id),
                     new JProperty("type", Type),
+                    // TODO: add default value
                 };
                 
                 return valueObject;
@@ -261,7 +255,6 @@ namespace UnityGLTF.Interactivity
             {
                 return new JObject
                 {
-                    new JProperty("id", Id),
                     new JProperty("node", Node),
                     new JProperty("socket", Socket)
                 };
@@ -335,7 +328,6 @@ namespace UnityGLTF.Interactivity
 
         public class ValueOutSocket
         {
-            public string Id;
             public ExpectedType expectedType;
         }
         
@@ -357,7 +349,6 @@ namespace UnityGLTF.Interactivity
             {
                 JObject valueObject = new JObject()
                 {
-                    new JProperty("id", Id),
                 };
 
                 // Optional fields are only added if non-null
@@ -381,10 +372,10 @@ namespace UnityGLTF.Interactivity
                 {
                     if (Type != -1)
                         Debug.LogError(
-                            $"{nameof(Value)} is null for ValueSocketData: \"{Id}\" of type \"{GltfInteractivityTypeMapping.TypesMapping[Type].GltfSignature}\" on node \"{(Node.HasValue ? Node.Value : "<null node>")}\"");
+                            $"{nameof(Value)} is null for ValueSocketData: of type \"{GltfInteractivityTypeMapping.TypesMapping[Type].GltfSignature}\" on node \"{(Node.HasValue ? Node.Value : "<null node>")}\"");
                     else
                         Debug.LogError(
-                            $"{nameof(Value)} is null for ValueSocketData: \"{Id}\" on node \"{(Node.HasValue ? Node.Value : "<null node>")}\"");
+                            $"{nameof(Value)} is null for ValueSocketData: on node \"{(Node.HasValue ? Node.Value : "<null node>")}\"");
 
                 }
 

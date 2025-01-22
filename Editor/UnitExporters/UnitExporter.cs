@@ -158,24 +158,24 @@ namespace UnityGLTF.Interactivity.Export
                     exportContext.exporter.GetTransformIndex(gameObject.transform);
 
                 convertedValue = gameObjectNodeIndex;
-                typeIndex = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
+                typeIndex = GltfTypes.TypeIndexByGltfSignature("int");
             }
             else if (originalValue is Component component)
             {
                 var gameObjectNodeIndex =
                     exportContext.exporter.GetTransformIndex(component.transform);
                 convertedValue = gameObjectNodeIndex;
-                typeIndex = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
+                typeIndex = GltfTypes.TypeIndexByGltfSignature("int");
             }
             else if (originalValue is Material material)
             {
                 var materialIndex = exportContext.exporter.ExportMaterial(material).Id;
                 convertedValue = materialIndex;
-                typeIndex = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
+                typeIndex = GltfTypes.TypeIndexByGltfSignature("int");
             }
             else
             {
-                typeIndex = GltfInteractivityTypeMapping.TypeIndex(originalValue.GetType());
+                typeIndex = GltfTypes.TypeIndex(originalValue.GetType());
                 convertedValue = originalValue;
             }            
         }
@@ -267,29 +267,7 @@ namespace UnityGLTF.Interactivity.Export
         {
             outFlowConnections.AddNodeConnection(destinationNode, destinationSocketName, sourceNode, sourceSocketName);
         }
-
-        public void SetupPointerTemplateAndTargetInput(string pointerId, ValueInput targetInputPort,
-            GltfInteractivityUnitExporterNode node, string pointerTemplate)
-        {
-            GltfInteractivityNodeHelper.AddPointerConfig(node, pointerTemplate);
-            if (!node.ValueSocketConnectionData.ContainsKey(pointerId))
-            {
-                node.ValueSocketConnectionData.Add(pointerId, new GltfInteractivityUnitExporterNode.ValueSocketData());
-            }
-
-            MapInputPortToSocketName(targetInputPort, pointerId, node);
-        }
-
-        public void SetupPointerTemplateAndTargetInput(string pointerId, GltfInteractivityUnitExporterNode node,
-            string pointerTemplate)
-        {
-            GltfInteractivityNodeHelper.AddPointerConfig(node, pointerTemplate);
-            if (!node.ValueSocketConnectionData.ContainsKey(pointerId))
-            {
-                node.ValueSocketConnectionData.Add(pointerId, new GltfInteractivityUnitExporterNode.ValueSocketData());
-            }
-        }
-
+        
         private IUnitInputPort ResolveBypass(IUnitInputPort inputPort,
             ref GltfInteractivityExportContext.ExportGraph graph)
         {

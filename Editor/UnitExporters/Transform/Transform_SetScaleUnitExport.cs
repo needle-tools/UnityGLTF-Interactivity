@@ -31,9 +31,8 @@ namespace UnityGLTF.Interactivity.Export
            
            var setScale = unitExporter.CreateNode(new Pointer_SetNode());
            
-           unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-               unit.target, setScale,
-               "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/scale");
+           setScale.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+               unit.target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/scale", GltfTypes.Float3);
            
            unitExporter.MapInputPortToSocketName(unit.assign, Pointer_SetNode.IdFlowIn, setScale);
            unitExporter.MapOutFlowConnectionWhenValid(unit.assigned, Pointer_SetNode.IdFlowOut, setScale);

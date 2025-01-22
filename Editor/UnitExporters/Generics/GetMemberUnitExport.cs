@@ -109,7 +109,7 @@ namespace UnityGLTF.Interactivity.Export
             else
                 value = rawValue;
             
-            var gltfTypeIndex = GltfInteractivityTypeMapping.TypeIndex(value.GetType());
+            var gltfTypeIndex = GltfTypes.TypeIndex(value.GetType());
             if (gltfTypeIndex == -1)
             {
                 Debug.LogError("Unsupported type to get static value: " + value.GetType()+ " from " + unit.member.declaringType);

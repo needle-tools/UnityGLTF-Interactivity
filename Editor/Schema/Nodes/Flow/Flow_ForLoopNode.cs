@@ -2,64 +2,23 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Flow_ForLoopNode : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "flow/for";
-        public static readonly string IdFlowIn = "in";
+        public override string Op { get; set; } = "flow/for";
+
+        [FlowInSocketDescription]
+        public const string IdFlowIn = "in";
         
-        public static readonly string IdLoopBody = "loopBody";
-        public static readonly string IdCompleted = "completed";
+        [FlowOutSocketDescription]
+        public const string IdLoopBody = "loopBody";
+        [FlowOutSocketDescription]
+        public const string IdCompleted = "completed";
 
-        public static readonly string IdStartIndex = "startIndex";
-        public static readonly string IdEndIndex = "endIndex";
-        public static readonly string IdIndex = "index";
-        public static readonly string IdConfigInitialIndex = "initialIndex";
-
-        public Flow_ForLoopNode()
-        {
-            Op = TypeName;
-            Configuration = new ConfigDescriptor[]
-            {
-                new ConfigDescriptor
-                {
-                    Id = IdConfigInitialIndex,
-                    Type = "int",
-                }
-            };
-
-            OutputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdLoopBody,
-                },
-                new FlowSocketDescriptor()
-                {
-                    Id = IdCompleted,
-                }
-            };
-
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdStartIndex,
-                    SupportedTypes = new string[] { "int" }
-                },
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdEndIndex,
-                    SupportedTypes = new string[] { "int" }
-                }
-            };
-
-            OutputValueSockets = new OutValueSocketDescriptor[]
-            {
-                new OutValueSocketDescriptor()
-                {
-                    Id = IdIndex,
-                    SupportedTypes = new string[] { "int" },
-                    expectedType = ExpectedType.Int
-                }
-            };
-        }
+        [InputSocketDescription(GltfTypes.Int)]
+        public const string IdStartIndex = "startIndex";
+        [InputSocketDescription(GltfTypes.Int)]
+        public const string IdEndIndex = "endIndex";
+        [OutputSocketDescription(GltfTypes.Int)]
+        public const string IdIndex = "index";
+        [ConfigDescription(GltfTypes.Int)]
+        public const string IdConfigInitialIndex = "initialIndex";
     }
 }

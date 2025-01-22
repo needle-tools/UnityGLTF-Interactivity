@@ -2,36 +2,15 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Flow_WhileNode : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "flow/while";
-        public static readonly string IdFlowIn = "in";
-        public static readonly string IdLoopBody = "loopBody";
-        public static readonly string IdCompleted = "completed";
-        public static readonly string IdCondition = "condition";
+        public override string Op { get; set; } = "flow/while";
 
-        public Flow_WhileNode()
-        {
-            Op = TypeName;
-          
-            OutputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdLoopBody,
-                },
-                new FlowSocketDescriptor()
-                {
-                    Id = IdCompleted,
-                }
-            };
-
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdCondition,
-                    SupportedTypes = new string[] { "bool" }
-                },
-            };
-        }
+        [FlowInSocketDescription]
+        public const string IdFlowIn = "in";
+        [FlowOutSocketDescription]
+        public const string IdLoopBody = "loopBody";
+        [FlowOutSocketDescription]
+        public const string IdCompleted = "completed";
+        [InputSocketDescription(GltfTypes.Bool)]
+        public const string IdCondition = "condition";
     }
 }

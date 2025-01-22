@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityGLTF.Interactivity.Export;
 
@@ -86,6 +87,8 @@ namespace UnityGLTF.Interactivity
                 Debug.LogError($"Socket {socketId} not found in node {Schema.Op}");
             }
         }
+        
+        
 
         public void SetValueInSocket(string socketId, object value, TypeRestriction typeRestriction = null)
         {
@@ -95,7 +98,7 @@ namespace UnityGLTF.Interactivity
                 socket.Socket = null;
                 socket.Value = value;
                 if (value != null)
-                    socket.Type =  GltfInteractivityTypeMapping.TypeIndex(value.GetType());
+                    socket.Type =  GltfTypes.TypeIndex(value.GetType());
                 
                 if (typeRestriction != null)
                     socket.typeRestriction = typeRestriction;
@@ -110,32 +113,32 @@ namespace UnityGLTF.Interactivity
         {
             Schema = schema;
 
-            foreach (GltfInteractivityNodeSchema.ConfigDescriptor descriptor in Schema.Configuration)
+            foreach (var descriptor in Schema.Configuration)
             {
-                ConfigurationData.Add(descriptor.Id, new ConfigData());
+                ConfigurationData.Add(descriptor.Key, new ConfigData());
             }
 
-            foreach (GltfInteractivityNodeSchema.InputValueSocketDescriptor descriptor in Schema.InputValueSockets)
+            foreach (var descriptor in Schema.InputValueSockets)
             {
-                ValueSocketConnectionData.Add(descriptor.Id, new ValueSocketData()
+                ValueSocketConnectionData.Add(descriptor.Key, new ValueSocketData()
                 {
-                    Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(descriptor.SupportedTypes[0]),
-                    typeRestriction = descriptor.typeRestriction
+                    Type = GltfTypes.TypeIndexByGltfSignature(descriptor.Value.SupportedTypes[0]),
+                    typeRestriction = descriptor.Value.typeRestriction
                 });
             }
             foreach (var descriptor in Schema.OutputValueSockets)
             {
-                if (descriptor.SupportedTypes.Length == 1 && descriptor.expectedType == null)
-                    OutValueSocket.Add(descriptor.Id,
-                        new ValueOutSocket {expectedType = ExpectedType.GtlfType(descriptor.SupportedTypes[0])});
+                if (descriptor.Value.SupportedTypes.Length == 1 && descriptor.Value.expectedType == null)
+                    OutValueSocket.Add(descriptor.Key,
+                        new ValueOutSocket {expectedType = ExpectedType.GtlfType(descriptor.Value.SupportedTypes[0])});
                 else
-                    OutValueSocket.Add(descriptor.Id,
-                        new ValueOutSocket {expectedType = descriptor.expectedType });
+                    OutValueSocket.Add(descriptor.Key,
+                        new ValueOutSocket {expectedType = descriptor.Value.expectedType });
             }
 
-            foreach (GltfInteractivityNodeSchema.FlowSocketDescriptor descriptor in Schema.OutputFlowSockets)
+            foreach (var descriptor in Schema.OutputFlowSockets)
             {
-                FlowSocketConnectionData.Add(descriptor.Id, new FlowSocketData());
+                FlowSocketConnectionData.Add(descriptor.Key, new FlowSocketData());
             }
             
             foreach (GltfInteractivityNodeSchema.MetaDataEntry descriptor in Schema.MetaDatas)
@@ -373,7 +376,7 @@ namespace UnityGLTF.Interactivity
                 {
                     if (Type != -1)
                         Debug.LogError(
-                            $"{nameof(Value)} is null for ValueSocketData: of type \"{GltfInteractivityTypeMapping.TypesMapping[Type].GltfSignature}\" on node \"{(Node.HasValue ? Node.Value : "<null node>")}\"");
+                            $"{nameof(Value)} is null for ValueSocketData: of type \"{GltfTypes.TypesMapping[Type].GltfSignature}\" on node \"{(Node.HasValue ? Node.Value : "<null node>")}\"");
                     else
                         Debug.LogError(
                             $"{nameof(Value)} is null for ValueSocketData: on node \"{(Node.HasValue ? Node.Value : "<null node>")}\"");

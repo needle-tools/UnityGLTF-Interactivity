@@ -34,10 +34,10 @@ namespace UnityGLTF.Interactivity.Export
                     
                     var n = new GltfInteractivityUnitExporterNode.FlowSocketData();
                     var desc = new GltfInteractivityNodeSchema.FlowSocketDescriptor();
-                    desc.Id = "sequence" + index.ToString("D3");
+                    var id = "sequence" + index.ToString("D3");
                     
-                    node.FlowSocketConnectionData.Add(desc.Id, n);
-                    unitExporter.MapOutFlowConnectionWhenValid(output, desc.Id, node);
+                    node.FlowSocketConnectionData.Add(id, n);
+                    unitExporter.MapOutFlowConnectionWhenValid(output, id, node);
                     
                     index++;
                 }

@@ -2,43 +2,17 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Babylon_LogNode: GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "babylon/log";
-        public static readonly string EXTENSION_ID = "babylon/log";
+        public override string Op { get; set; } = "babylon/log";
+        public override string Extension { get; protected set; } = EXTENSION_ID; 
 
-        public static readonly string IdFlowIn = "in";
-        public static readonly string IdFlowOut = "out";
-        public static readonly string IdMessage = "message";
+        public const string EXTENSION_ID = "babylon/log";
+
+        [FlowInSocketDescription]
+        public const string IdFlowIn = "in";
+        [FlowOutSocketDescription]
+        public const string IdFlowOut = "out";
         
-        public Babylon_LogNode()
-        {
-            Op = TypeName;
-            Extension = EXTENSION_ID;
-            
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdMessage,
-                    SupportedTypes = new string[]{"string"}
-                }
-            };
-            
-            InputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowIn
-                }
-            };
-            
-            OutputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowOut
-                }
-            };
-        }
-        
+        [InputSocketDescription]
+        public const string IdMessage = "message";
     }
 }

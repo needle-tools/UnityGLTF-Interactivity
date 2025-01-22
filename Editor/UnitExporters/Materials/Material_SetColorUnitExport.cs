@@ -56,8 +56,8 @@ namespace UnityGLTF.Interactivity.Export
                 unitExporter.MapInputPortToSocketName(setMember.input, Pointer_SetNode.IdValue, node);
                 unitExporter.MapOutFlowConnectionWhenValid(setMember.assigned, Pointer_SetNode.IdFlowOut, node);
 
-                unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerMaterialIndex,
-                    setMember.target, node, template);
+                node.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerMaterialIndex,
+                    setMember.target, template, GltfTypes.Float4);
             }
             else if (unit is InvokeMember invokeMember)
             {
@@ -67,8 +67,8 @@ namespace UnityGLTF.Interactivity.Export
                 unitExporter.MapInputPortToSocketName(invokeMember.inputParameters[1], Pointer_SetNode.IdValue, node);
                 unitExporter.MapOutFlowConnectionWhenValid(invokeMember.exit, Pointer_SetNode.IdFlowOut, node);
 
-                unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerMaterialIndex,
-                    invokeMember.target, node, template);
+                node.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerMaterialIndex,
+                    invokeMember.target, template, GltfTypes.Float4);
             }
         }
     }

@@ -2,43 +2,23 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Math_EqNode : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "math/eq";
-        public static readonly string IdOut = "value";
-        public static readonly string IdValueA = "a";
-        public static readonly string IdValueB = "b";
+        public override string Op { get; set; } = "math/eq";
 
-        public Math_EqNode()
-        {
-            Op = TypeName;
-            Configuration =  new ConfigDescriptor[]
-            {
-            };
-            
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdValueA,
-                    SupportedTypes = new string[]{"int", "float","float2","float3","float4","bool"},
-                    typeRestriction = TypeRestriction.SameAsInputPort(IdValueB)
-                },
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdValueB,
-                    SupportedTypes = new string[]{"int", "float","float2","float3","float4","bool"},
-                    typeRestriction = TypeRestriction.SameAsInputPort(IdValueA)
-                }
-            };
-            
-            OutputValueSockets = new OutValueSocketDescriptor[]
-            {
-                new OutValueSocketDescriptor()
-                {
-                    Id = IdOut,
-                    SupportedTypes = new string[]{"bool"}
-                }
-            };
-        }
+        [OutputSocketDescription(GltfTypes.Bool)]
+        public const string IdOut = "value";
+        
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueB, GltfTypes.Int, GltfTypes.Bool,
+            GltfTypes.Float, GltfTypes.Float2,
+            GltfTypes.Float3, GltfTypes.Float4, 
+            GltfTypes.Float2x2, GltfTypes.Float3x3, GltfTypes.Float4x4)]
+        public const string IdValueA = "a";
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueA, GltfTypes.Int, GltfTypes.Bool,
+            GltfTypes.Float, GltfTypes.Float2,
+            GltfTypes.Float3, GltfTypes.Float4, 
+            GltfTypes.Float2x2, GltfTypes.Float3x3, GltfTypes.Float4x4)]
+        public const string IdValueB = "b";
+
+    
         
     }
 }

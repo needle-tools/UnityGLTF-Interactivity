@@ -2,41 +2,17 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class ADBE_OutputConsoleNode: GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "ADBE/output_console_node";
-        public static readonly string EXTENSION_ID = "ADBE_output_console_node";
-        public static readonly string IdFlowIn = "in";
-        public static readonly string IdFlowOut = "out";
-        public static readonly string IdMessage = "message";
+        public override string Op { get; set; } = "ADBE/output_console_node";
+        public override string Extension { get; protected set; } = EXTENSION_ID;
         
-        public ADBE_OutputConsoleNode()
-        {
-            Op = TypeName;
-            Extension = EXTENSION_ID;
-            
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdMessage,
-                    SupportedTypes = new string[]{"string"}
-                }
-            };
-            
-            InputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowIn
-                }
-            };
-            
-            OutputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowOut
-                }
-            };
-        }
+        public const string EXTENSION_ID = "ADBE_output_console_node";
+       
+        [FlowInSocketDescription]
+        public const string IdFlowIn = "in";
+        [FlowOutSocketDescription]
+        public const string IdFlowOut = "out";
+        
+        [InputSocketDescription]
+        public const string IdMessage = "message";
     }
 }

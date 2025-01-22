@@ -2,33 +2,11 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Type_IntToBoolNode : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "type/intToBool";
-        public static readonly string IdInputA = "a";
-        public static readonly string IdValueResult = "value";
-        
-        public Type_IntToBoolNode()
-        {
-            Op = TypeName;
+        public override string Op { get; set; } = "type/intToBool";
 
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdInputA,
-                    SupportedTypes = new string[]{"int"}
-                }
-            };
-            
-            OutputValueSockets = new OutValueSocketDescriptor[]
-            {
-                new OutValueSocketDescriptor()
-                {
-                    Id = IdValueResult,
-                    SupportedTypes = new string[]{"bool"},
-                    expectedType = ExpectedType.Int
-                }
-            };
-        }
-        
+        [InputSocketDescription(GltfTypes.Int)]
+        public const string IdInputA = "a";
+        [OutputSocketDescription(GltfTypes.Bool)]
+        public const string IdValueResult = "value";
     }
 }

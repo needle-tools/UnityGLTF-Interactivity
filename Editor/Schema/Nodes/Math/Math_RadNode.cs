@@ -2,33 +2,11 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class GltfInt_Rad : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "math/rad";
-        public static readonly string IdInputA = "a";
-        public static readonly string IdValueResult = "value";
-        
-        public GltfInt_Rad()
-        {
-            Op = TypeName;
+        public override string Op { get; set; } = "math/rad";
 
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdInputA,
-                    SupportedTypes = new string[]{"float", "float2", "float3", "float4"}
-                }
-            };
-            
-            OutputValueSockets = new OutValueSocketDescriptor[]
-            {
-                new OutValueSocketDescriptor()
-                {
-                    Id = IdValueResult,
-                    SupportedTypes = new string[]{"float", "float2", "float3", "float4"},
-                    expectedType = ExpectedType.FromInputSocket(IdInputA)
-                }
-            };
-        }
-        
+        [InputSocketDescription(GltfTypes.Float, GltfTypes.Float2, GltfTypes.Float3, GltfTypes.Float4)]
+        public const string IdInputA = "a";
+        [OutputSocketDescriptionWithTypeDependencyFromInput(IdInputA)]
+        public const string IdValueResult = "value";
     }
 }

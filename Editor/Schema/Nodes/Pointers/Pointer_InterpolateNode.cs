@@ -2,67 +2,24 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Pointer_InterpolateNode : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "pointer/interpolate";
-        public static readonly string IdFlowIn = "in";
-        public static readonly string IdFlowOut = "out";
-        public static readonly string IdValue = "value";
-        public static readonly string IdPointer = "pointer";
-        public static readonly string IdDuration = "duration";
-        public static readonly string IdPoint1 = "p1";
-        public static readonly string IdPoint2 = "p2";
+        public override string Op { get; set; } = "pointer/interpolate";
 
-        public Pointer_InterpolateNode()
-        {
-            Op = TypeName;
-            Configuration = new ConfigDescriptor[]
-            {
-                new ConfigDescriptor()
-                {
-                    Id = IdPointer,
-                    Type = "pointer",
-                }
-            };
-
-            OutputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowOut,
-                }
-            };
-            
-            InputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowIn,
-                }
-            };
-
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdValue,
-                    SupportedTypes = GltfInteractivityTypeMapping.allTypes
-                },
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdDuration,
-                    SupportedTypes = new[] { "float" },
-                },
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdPoint1,
-                    SupportedTypes = new[] { "float2" },
-                },
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdPoint2,
-                    SupportedTypes = new[] { "float2" },
-                },
-            };
-        }
+        [FlowInSocketDescription]
+        public const string IdFlowIn = "in";
+        [FlowOutSocketDescription]
+        public const string IdFlowOut = "out";
+        [InputSocketDescription()]
+        public const string IdValue = "value";
+        [ConfigDescription(GltfTypes.String)]
+        public const string IdPointer = "pointer";
+        [ConfigDescription(GltfTypes.Int)]
+        public const string IdPointerValueType = "type";
         
+        [InputSocketDescription(GltfTypes.Float)]
+        public const string IdDuration = "duration";
+        [InputSocketDescription(GltfTypes.Float)]
+        public const string IdPoint1 = "p1";
+        [InputSocketDescription(GltfTypes.Float)]
+        public const string IdPoint2 = "p2";
     }
 }

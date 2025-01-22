@@ -140,10 +140,10 @@ namespace UnityGLTF.Interactivity.Export
         {
             var attributes = GetType().GetCustomAttributes(true);
         
-            var inputSockets = new List<GltfInteractivityNodeSchema.InputValueSocketDescriptor>();
-            var OutputSockets = new List<GltfInteractivityNodeSchema.OutValueSocketDescriptor>();
-            var inputFlowSockets = new List<GltfInteractivityNodeSchema.FlowSocketDescriptor>();
-            var outputFlowSockets = new List<GltfInteractivityNodeSchema.FlowSocketDescriptor>();
+            var inputSockets = new Dictionary<string, GltfInteractivityNodeSchema.InputValueSocketDescriptor>();
+            var OutputSockets = new Dictionary<string, GltfInteractivityNodeSchema.OutValueSocketDescriptor>();
+            var inputFlowSockets = new Dictionary<string, GltfInteractivityNodeSchema.FlowSocketDescriptor>();
+            var outputFlowSockets = new Dictionary<string, GltfInteractivityNodeSchema.FlowSocketDescriptor>();
 
             foreach (var attribute in attributes)
             {
@@ -152,10 +152,9 @@ namespace UnityGLTF.Interactivity.Export
                     TypeRestriction typeRestriction = null;
                     inputSocketRestrictions.TryGetValue(inputSocketDefineAttribute.gltfId, out typeRestriction);
                     
-                    inputSockets.Add(new GltfInteractivityNodeSchema.InputValueSocketDescriptor
+                    inputSockets.Add(inputSocketDefineAttribute.gltfId, new GltfInteractivityNodeSchema.InputValueSocketDescriptor
                     {
-                        Id = inputSocketDefineAttribute.gltfId,
-                        SupportedTypes = GltfInteractivityTypeMapping.allTypes,
+                        SupportedTypes = GltfTypes.allTypes,
                         typeRestriction = typeRestriction
                     });
 
@@ -177,10 +176,9 @@ namespace UnityGLTF.Interactivity.Export
                     ExpectedType expectedType = null;
                     outValueSocketsExpectedTypes.TryGetValue(outputSocketDefineAttribute.gltfId, out expectedType);
 
-                    OutputSockets.Add(new GltfInteractivityNodeSchema.OutValueSocketDescriptor
+                    OutputSockets.Add(outputSocketDefineAttribute.gltfId, new GltfInteractivityNodeSchema.OutValueSocketDescriptor
                     {
-                        Id = outputSocketDefineAttribute.gltfId,
-                        SupportedTypes = GltfInteractivityTypeMapping.allTypes,
+                        SupportedTypes = GltfTypes.allTypes,
                         expectedType = expectedType
                     });
                     
@@ -200,10 +198,10 @@ namespace UnityGLTF.Interactivity.Export
                 // TODO: flow in/out
             }
             
-            schema.InputFlowSockets = inputFlowSockets.ToArray();
-            schema.OutputFlowSockets = outputFlowSockets.ToArray();
-            schema.InputValueSockets = inputSockets.ToArray();
-            schema.OutputValueSockets = OutputSockets.ToArray();
+            schema.InputFlowSockets = inputFlowSockets;
+            schema.OutputFlowSockets = outputFlowSockets;
+            schema.InputValueSockets = inputSockets;
+            schema.OutputValueSockets = OutputSockets;
         }
         
         public void InitializeInteractivityNodes(UnitExporter unitExporter)
@@ -215,7 +213,7 @@ namespace UnityGLTF.Interactivity.Export
                 // TODO: Map flow sockets
             }
 
-            if (schema.InputFlowSockets.Length == 0 && schema.OutputFlowSockets.Length == 0)
+            if (schema.InputFlowSockets.Count == 0 && schema.OutputFlowSockets.Count == 0)
             {
                 // Gltf Node has no flow sockets, we need to bypass the flow sockets
                 if (unitExporter.unit.controlInputs.Count == 1 && unitExporter.unit.controlOutputs.Count == 1)
@@ -250,19 +248,19 @@ namespace UnityGLTF.Interactivity.Export
 
             foreach (var output in node.Schema.OutputValueSockets)
             {
-                if (portMappingNodeToUnit.TryGetValue(output.Id, out var unitSocketName))
+                if (portMappingNodeToUnit.TryGetValue(output.Key, out var unitSocketName))
                 {
                     if (unitExporter.unit.valueOutputs.TryGetValue(unitSocketName, out var outputSocket))
                     {
-                        unitExporter.MapValueOutportToSocketName(outputSocket, output.Id, node); 
+                        unitExporter.MapValueOutportToSocketName(outputSocket, output.Key, node); 
                     }
                 }
                 else
                 {
-                    if (outputPortMappingNodeToUnitInt.TryGetValue(output.Id, out var unitSocketIndex))
+                    if (outputPortMappingNodeToUnitInt.TryGetValue(output.Key, out var unitSocketIndex))
                     {
                         var valueOutput = unitExporter.unit.valueOutputs[unitSocketIndex];
-                        unitExporter.MapValueOutportToSocketName(valueOutput, output.Id, node); 
+                        unitExporter.MapValueOutportToSocketName(valueOutput, output.Key, node); 
                     }
                 }
             }

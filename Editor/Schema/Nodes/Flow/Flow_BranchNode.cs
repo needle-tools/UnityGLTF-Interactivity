@@ -2,48 +2,15 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Flow_BranchNode : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "flow/branch";
-        public static readonly string IdFlowIn = "in";
-        public static readonly string IdCondition = "condition";
-        public static readonly string IdFlowOutTrue = "true";
-        public static readonly string IdFlowOutFalse = "false";
+        public override string Op { get; set; } = "flow/branch";
 
-        public Flow_BranchNode()
-        {
-            Op = TypeName;
-            Configuration = new ConfigDescriptor[]
-            {
-            };
-
-            InputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowIn
-                }
-            };
-            
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdCondition,
-                    SupportedTypes = new string[]{"bool"}
-                }
-            };
-
-            OutputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowOutTrue
-                },
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowOutFalse
-                }
-            };
-        }
-        
+        [FlowInSocketDescription]
+        public const string IdFlowIn = "in";
+        [InputSocketDescription(GltfTypes.Bool)]
+        public const string IdCondition = "condition";
+        [FlowOutSocketDescription]
+        public const string IdFlowOutTrue = "true";
+        [FlowOutSocketDescription]
+        public const string IdFlowOutFalse = "false";
     }
 }

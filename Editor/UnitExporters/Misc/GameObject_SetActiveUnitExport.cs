@@ -46,19 +46,17 @@ namespace UnityGLTF.Interactivity.Export
 
             visibleNode.FlowIn(Pointer_SetNode.IdFlowIn).MapToControlInput(unit.enter);
             
-            unitExporter.SetupPointerTemplateAndTargetInput(
+            visibleNode.SetupPointerTemplateAndTargetInput(
                 GltfInteractivityNodeHelper.IdPointerNodeIndex,
-                unit.target, visibleNode,
-                "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/extensions/KHR_node_visibility/visible"
-                );
+                unit.target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/extensions/KHR_node_visibility/visible",
+                GltfTypes.Bool);
             
             visibleNode.FlowOut(Pointer_SetNode.IdFlowOut)
                 .ConnectToFlowDestination(selectableNode.FlowIn(Pointer_SetNode.IdFlowIn));
-            unitExporter.SetupPointerTemplateAndTargetInput(
+            selectableNode.SetupPointerTemplateAndTargetInput(
                 GltfInteractivityNodeHelper.IdPointerNodeIndex,
-                unit.target, selectableNode,
-                "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/extensions/KHR_node_selectability/selectable"
-            );
+                unit.target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/extensions/KHR_node_selectability/selectable",
+                GltfTypes.Bool);
             
             selectableNode.FlowOut(Pointer_SetNode.IdFlowOut).MapToControlOutput(unit.exit);
         }

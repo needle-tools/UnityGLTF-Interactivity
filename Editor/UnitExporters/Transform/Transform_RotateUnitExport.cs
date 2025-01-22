@@ -28,9 +28,8 @@ namespace UnityGLTF.Interactivity.Export
 
             var getRotation = unitExporter.CreateNode(new Pointer_GetNode());
             
-            unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-                unit.target, getRotation,
-                "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation");
+            getRotation.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                unit.target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation", GltfTypes.Float4);
 
             var setRotation = unitExporter.CreateNode(new Pointer_SetNode());
             
@@ -84,9 +83,8 @@ namespace UnityGLTF.Interactivity.Export
             unitExporter.MapInputPortToSocketName(unit.enter, Pointer_SetNode.IdFlowIn, setRotation);
             unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Pointer_SetNode.IdFlowOut, setRotation);
 
-            unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-                unit.target, setRotation,
-                "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation");
+            setRotation.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                unit.target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation", GltfTypes.Float4);
 
 
             unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Pointer_SetNode.IdFlowOut, setRotation);

@@ -2,23 +2,9 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Flow_SequenceNode : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "flow/sequence";
-        public static readonly string IdFlowIn = "in";
-       
-        public Flow_SequenceNode()
-        {
-            Op = TypeName;
-            Configuration =  new ConfigDescriptor[]
-            {
-            };
+        public override string Op { get; set; } = "flow/sequence";
 
-            InputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowIn,
-                }
-            };   
-        }
+        [FlowInSocketDescription]
+        public const string IdFlowIn = "in";
     }
 }

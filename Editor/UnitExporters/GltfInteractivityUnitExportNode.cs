@@ -227,16 +227,36 @@ namespace UnityGLTF.Interactivity
             Exporter.MapOutFlowConnection(destinationNode, destinationSocketName, this, outFlowSocketName);
         }
         
-        public void SetupPointerTemplateAndTargetInput(string pointerId, ValueInput targetInputPort, string pointerTemplate)
+        public void SetupPointerTemplateAndTargetInput(string pointerId, ValueInput targetInputPort, string pointerTemplate, int valueGltfType)
         {
-            Exporter.SetupPointerTemplateAndTargetInput(pointerId, targetInputPort, this, pointerTemplate);
+            GltfInteractivityNodeHelper.AddPointerConfig(this, pointerTemplate, valueGltfType);
+            if (!ValueSocketConnectionData.ContainsKey(pointerId))
+            {
+                ValueSocketConnectionData.Add(pointerId, new GltfInteractivityUnitExporterNode.ValueSocketData());
+            }
+            
+            ValueIn(pointerId).MapToInputPort(targetInputPort);
         }
         
-        public void SetupPointerTemplateAndTargetInput(string pointerId, string pointerTemplate)
+        public void SetupPointerTemplateAndTargetInput(string pointerId, string pointerTemplate, string valueGltfType)
         {
-            Exporter.SetupPointerTemplateAndTargetInput(pointerId, this, pointerTemplate);
+            SetupPointerTemplateAndTargetInput(pointerId, pointerTemplate, GltfTypes.TypeIndexByGltfSignature(valueGltfType));
         }
 
+        public void SetupPointerTemplateAndTargetInput(string pointerId, string pointerTemplate, int valueGltfType)
+        {
+            GltfInteractivityNodeHelper.AddPointerConfig(this, pointerTemplate, valueGltfType);
+            if (!ValueSocketConnectionData.ContainsKey(pointerId))
+            {
+                ValueSocketConnectionData.Add(pointerId, new GltfInteractivityUnitExporterNode.ValueSocketData());
+            }
+        }
+        
+        public void SetupPointerTemplateAndTargetInput(string pointerId, ValueInput targetInputPort, string pointerTemplate, string gltfType)
+        {
+            SetupPointerTemplateAndTargetInput(pointerId, targetInputPort, pointerTemplate, GltfTypes.TypeIndexByGltfSignature(gltfType));
+        }
+        
         public void MapValueOutportToSocketName(IUnitOutputPort outputPort, string socketName)
         {
             Exporter.MapValueOutportToSocketName(outputPort, socketName, this);

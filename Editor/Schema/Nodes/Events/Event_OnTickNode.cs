@@ -2,44 +2,13 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Event_OnTickNode: GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "event/onTick";
-        public static readonly string IdFlowOut = "out";
-        public static readonly string IdOutTimeSinceStart = "timeSinceStart";
-        public static readonly string IdOutTimeSinceLastTick = "timeSinceLastTick";
+        public override string Op { get; set; } = "event/onTick";
         
-        public Event_OnTickNode()
-        {
-            Op = TypeName;
-            Configuration =  new ConfigDescriptor[]
-            {
-            };
-
-            OutputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowOut,
-                }
-            };
-            
-            OutputValueSockets = new OutValueSocketDescriptor[]
-            {
-                new OutValueSocketDescriptor()
-                {
-                    Id = IdOutTimeSinceStart,
-                    SupportedTypes = new string[]{"float"},
-                    expectedType = ExpectedType.Float
-                },
-                new OutValueSocketDescriptor()
-                {
-                    Id = IdOutTimeSinceLastTick,
-                    SupportedTypes = new string[]{"float"},
-                    expectedType = ExpectedType.Float
-                },
-                
-            };
-            
-        }
-        
+        [FlowOutSocketDescription]
+        public const string IdFlowOut = "out";
+        [OutputSocketDescription(GltfTypes.Float)]
+        public const string IdOutTimeSinceStart = "timeSinceStart";
+        [OutputSocketDescription(GltfTypes.Float)]
+        public const string IdOutTimeSinceLastTick = "timeSinceLastTick";
     }
 }

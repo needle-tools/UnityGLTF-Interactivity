@@ -31,7 +31,7 @@ namespace UnityGLTF.Interactivity.Export
                 equalNode.ValueIn("b").SetType(TypeRestriction.LimitToInt);
                 
                 equalNode.ValueSocketConnectionData[Math_EqNode.IdValueB].Value = (int)unit.branches[i].Key;
-                equalNode.ValueSocketConnectionData[Math_EqNode.IdValueB].Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int");
+                equalNode.ValueSocketConnectionData[Math_EqNode.IdValueB].Type = GltfTypes.TypeIndexByGltfSignature("int");
                 
                 // Select Node: Value A = Branch Value, Value B =
                 var selectNode = unitExporter.CreateNode(new Math_SelectNode());

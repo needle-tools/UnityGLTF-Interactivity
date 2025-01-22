@@ -70,7 +70,7 @@ namespace UnityGLTF.Interactivity
 
         public Declaration[] Declarations = { };
         
-        public GltfInteractivityTypeMapping.TypeMapping[] Types = GltfInteractivityTypeMapping.TypesMapping;
+        public GltfTypes.TypeMapping[] Types = GltfTypes.TypesMapping;
         
         public JProperty Serialize()
         {

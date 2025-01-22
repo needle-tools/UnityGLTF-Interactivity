@@ -4,36 +4,19 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Math_Extract4x4Node : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "math/extract4x4";
-        public static readonly string IdValueIn = "a";
+        public override string Op { get; set; } = "math/extract4x4";
 
-        public Math_Extract4x4Node()
+        [InputSocketDescription(GltfTypes.Float4x4)]
+        public const string IdValueIn = "a";
+
+        public Math_Extract4x4Node() : base()
         {
-            Op = TypeName;
-            
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdValueIn,
-                    SupportedTypes = new string[] { "float4x4" }
-                }
-            };
-   
-            var output = new List<OutValueSocketDescriptor>();
             for (int i = 0; i < 16; i++)
-            {
-                output.Add(
-                    new OutValueSocketDescriptor()
-                    {
-                        Id = i.ToString(),
-                        SupportedTypes = new string[] { "float" }
-                    }
-                    );
-            }
-            
-            OutputValueSockets = output.ToArray();
+                OutputValueSockets.Add(i.ToString(), new OutValueSocketDescriptor()
+                {
+                    SupportedTypes = new string[] { "float" },
+                    expectedType =  ExpectedType.Float
+                });
         }
-        
     }
 }

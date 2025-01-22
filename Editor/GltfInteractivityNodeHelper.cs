@@ -59,10 +59,17 @@ namespace UnityGLTF.Interactivity
         public static readonly string IdPointerMeshIndex = "meshIndex";
         public static readonly string IdPointerMaterialIndex = "materialIndex";
 
-        public static void AddPointerConfig(GltfInteractivityNode node, string pointer)
+        public static void AddPointerConfig(GltfInteractivityNode node, string pointer, string gltfType)
+        {
+            AddPointerConfig(node, pointer, GltfTypes.TypeIndexByGltfSignature(gltfType));
+        }
+
+        public static void AddPointerConfig(GltfInteractivityNode node, string pointer, int gltfType)
         {
             var pointerConfig = node.ConfigurationData[Pointer_SetNode.IdPointer];
             pointerConfig.Value = pointer; 
+            var typeConfig = node.ConfigurationData[Pointer_SetNode.IdPointerValueType];
+            typeConfig.Value = gltfType; 
         }
 
         public static bool IsMainCameraInInput(IUnit unit)
@@ -95,7 +102,7 @@ namespace UnityGLTF.Interactivity
             node.ValueSocketConnectionData.Add(pointerId, new GltfInteractivityNode.ValueSocketData()
             {
                 Value = index,
-                Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"),
+                Type = GltfTypes.TypeIndexByGltfSignature("int"),
                 typeRestriction = TypeRestriction.LimitToInt,
             });
         }

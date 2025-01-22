@@ -1,42 +1,20 @@
 namespace UnityGLTF.Interactivity.Schema
 {
+    
     internal class Animation_StopNode : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "animation/stop";
-        public static readonly string IdFlowIn = "in";
-        public static readonly string IdFlowOut = "out";
-        public static readonly string IdFlowError = "err";
-        public static readonly string IdValueAnimation = "animation";
+        public override string Op { get; set; } = "animation/stop";
         
-        public Animation_StopNode()
-        {
-            Op = TypeName;
-            InputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowIn,
-                }
-            };
-            OutputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowOut,
-                },
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowError,
-                }
-            };
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdValueAnimation,
-                    SupportedTypes = new string[] { "int" }
-                },
-            };
-        }
+        [FlowInSocketDescription()]
+        public const string IdFlowIn = "in";
+        
+        [FlowOutSocketDescription()]
+        public const string IdFlowOut = "out";
+        
+        [FlowOutSocketDescription()]
+        public const string IdFlowError = "err";
+        
+        [InputSocketDescription(GltfTypes.Int)]
+        public const string IdValueAnimation = "animation";
     }
 }

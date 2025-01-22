@@ -76,7 +76,7 @@ namespace UnityGLTF.Interactivity.Export
             if (schema == null)
                 return;
 
-            bool isMatrix = schema.OutputValueSockets.Length == 16;
+            bool isMatrix = schema.OutputValueSockets.Count == 16;
             
             var node = unitExporter.CreateNode(schema);
             

@@ -47,7 +47,7 @@ namespace Editor.UnitExporters.Lists
                 .Select(transform => unitExporter.exportContext.exporter.GetTransformIndex(transform)).Where(trIndex => trIndex != -1);
             
             var objectList = unitExporter.exportContext.CreateNewVariableBasedList(transformsIndicies.Count(),
-                GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"));
+                GltfTypes.TypeIndexByGltfSignature("int"));
             
             foreach (var transformIndex in transformsIndicies)
                 objectList.AddItem(transformIndex);

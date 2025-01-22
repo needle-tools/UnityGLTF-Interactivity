@@ -2,44 +2,18 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Math_Rotate3dNode : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "math/rotate3d";
-        public static readonly string IdInputVector = "a";
-        public static readonly string IdInputAxis = "b";
-        public static readonly string IdInputAngleRadians = "b";
-        public static readonly string IdOutputResult = "value";
-        
-        public Math_Rotate3dNode()
-        {
-            Op = TypeName;
-            
-            OutputValueSockets = new OutValueSocketDescriptor[]
-            {
-                new OutValueSocketDescriptor()
-                {
-                    Id = IdOutputResult,
-                    SupportedTypes = new []{"float3"},
-                }
-            };
-            
-            InputValueSockets = new InputValueSocketDescriptor[]
-            {
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdInputVector,
-                    SupportedTypes = new []{"float3"},
-                },
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdInputAxis,
-                    SupportedTypes = new []{"float3"},
-                },
-                new InputValueSocketDescriptor()
-                {
-                    Id = IdInputAngleRadians,
-                    SupportedTypes = new []{"float"},
-                }
-            };
-        }
-        
+        public override string Op { get; set; } = "math/rotate3d";
+
+        [InputSocketDescription(GltfTypes.Float3)]
+        public const string IdInputVector = "a";
+
+        [InputSocketDescription(GltfTypes.Float3)]
+        public const string IdInputAxis = "b";
+
+        [InputSocketDescription(GltfTypes.Float)]
+        public const string IdInputAngleRadians = "b";
+
+        [OutputSocketDescription(GltfTypes.Float3)]
+        public const string IdOutputResult = "value";
     }
 }

@@ -13,22 +13,34 @@ namespace UnityGLTF.Interactivity
     /// <summary>
     /// </summary>
     [Serializable]
-    internal class GltfInteractivityTypeMapping
+    public class GltfTypes
     {
+        public const string Bool = "bool";
+        public const string Int = "int";
+        public const string Float = "float";
+        public const string Float2 = "float2";
+        public const string Float3 = "float3";
+        public const string Float4 = "float4";
+        public const string Float2x2 = "float2x2";
+        public const string Float3x3 = "float3x3";
+        public const string Float4x4 = "float4x4";
+        public const string IntArray = "int[]";
+        public const string String = "string";
+        
         // List of mappings of the data types that can be used in the GLTF serialization.
         // TODO: change to Dict!
         public static readonly TypeMapping[] TypesMapping =
         {
-            new TypeMapping("bool",  new [] {typeof(bool)}),
-            new TypeMapping("int", new [] {typeof(int), typeof(long), typeof(GameObject), typeof(Material), typeof(Transform)}),
-            new TypeMapping("float", new [] {typeof(float), typeof(double)}),
-            new TypeMapping("float2", new [] {typeof(Vector2)}),
-            new TypeMapping("float3", new [] {typeof(Vector3)}),
-            new TypeMapping("float4", new [] {typeof(Color), typeof(Color32), typeof(Vector4), typeof(Quaternion)}),
-            new TypeMapping("float4x4", new [] {typeof(Matrix4x4)}),
-            new TypeMapping("string", new [] {typeof(string)}),
+            new TypeMapping(Bool,  new [] {typeof(bool)}),
+            new TypeMapping(Int, new [] {typeof(int), typeof(long), typeof(GameObject), typeof(Material), typeof(Transform)}),
+            new TypeMapping(Float, new [] {typeof(float), typeof(double)}),
+            new TypeMapping(Float2, new [] {typeof(Vector2)}),
+            new TypeMapping(Float3, new [] {typeof(Vector3)}),
+            new TypeMapping(Float4, new [] {typeof(Color), typeof(Color32), typeof(Vector4), typeof(Quaternion)}),
+            new TypeMapping(Float4x4, new [] {typeof(Matrix4x4)}),
+            new TypeMapping(String, new [] {typeof(string)}),
             new TypeMapping("custom", new [] {typeof(string)}, "AMZN_interactivity_string"),
-            new TypeMapping("int[]", new [] {typeof(int[])}),
+            new TypeMapping(IntArray, new [] {typeof(int[])}),
         };
 
         public static int GetComponentCount(int typeIndex)
@@ -40,13 +52,13 @@ namespace UnityGLTF.Interactivity
         {
             switch (signature)
             {
-                case "float2":
+                case Float2:
                     return 2;
-                case "float3":
+                case Float3:
                     return 3;
-                case "float4":
+                case Float4:
                     return 4;
-                case "float4x4":
+                case Float4x4:
                     return 16;
                 default:
                     return 1;
@@ -62,19 +74,19 @@ namespace UnityGLTF.Interactivity
         {
             switch (gltfSignature)
             {
-                case "bool":
+                case Bool:
                     return false;
-                case "int":
+                case Int:
                     return -1;
-                case "float":
+                case Float:
                     return float.NaN;
-                case "float2":
+                case Float2:
                     return new Vector2(float.NaN, float.NaN);
-                case "float3":
+                case Float3:
                     return new Vector3(float.NaN, float.NaN, float.NaN);
-                case "float4":
+                case Float4:
                     return new Vector4(float.NaN, float.NaN, float.NaN, float.NaN);
-                case "float4x4":
+                case Float4x4:
                     return new Matrix4x4();
                 default:
                     return null;

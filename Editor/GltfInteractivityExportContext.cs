@@ -121,13 +121,13 @@ namespace UnityGLTF.Interactivity
                 Context = context;
                 ListId = listId;
                 
-                CurrentIndexVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_CurrentIndex", 0, VariableKind.Scene, GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"));
-                ValueToSetVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_ValueToSet", 0, VariableKind.Scene, GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"));
+                CurrentIndexVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_CurrentIndex", 0, VariableKind.Scene, GltfTypes.TypeIndexByGltfSignature("int"));
+                ValueToSetVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_ValueToSet", 0, VariableKind.Scene, GltfTypes.TypeIndexByGltfSignature("int"));
                 
                 ListIndex = Context.variables.Count;
                 
-                CountVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_Count", 0, VariableKind.Scene, GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"));
-                CapacityVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_Capacity", Capacity, VariableKind.Scene, GltfInteractivityTypeMapping.TypeIndexByGltfSignature("int"));
+                CountVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_Count", 0, VariableKind.Scene, GltfTypes.TypeIndexByGltfSignature("int"));
+                CapacityVarId = Context.AddVariableWithIdIfNeeded($"VARLIST_{listId}_Capacity", Capacity, VariableKind.Scene, GltfTypes.TypeIndexByGltfSignature("int"));
                 
                 StartIndex = -1;
                 EndIndex = -1;
@@ -275,7 +275,7 @@ namespace UnityGLTF.Interactivity
                 return null;
             }
 
-            var typeIndex = GltfInteractivityTypeMapping.TypeIndex(varType);
+            var typeIndex = GltfTypes.TypeIndex(varType);
             if (typeIndex == -1)
             {
                 Debug.LogError("Unsupported type for variable: " + varType);
@@ -327,12 +327,12 @@ namespace UnityGLTF.Interactivity
 
         public int AddVariableWithIdIfNeeded(string id, object defaultValue, VariableKind varKind, string type)
         {
-            return AddVariableWithIdIfNeeded(id, defaultValue, varKind, GltfInteractivityTypeMapping.TypeIndex(type));
+            return AddVariableWithIdIfNeeded(id, defaultValue, varKind, GltfTypes.TypeIndex(type));
         }
         
         public int AddVariableWithIdIfNeeded(string id, object defaultValue, VariableKind varKind, Type type)
         {
-            return AddVariableWithIdIfNeeded(id, defaultValue, varKind, GltfInteractivityTypeMapping.TypeIndex(type));
+            return AddVariableWithIdIfNeeded(id, defaultValue, varKind, GltfTypes.TypeIndex(type));
         }
         
         public int AddVariableWithIdIfNeeded(string id, object defaultValue, VariableKind varKind, int gltfTypeIndex)
@@ -622,7 +622,7 @@ namespace UnityGLTF.Interactivity
             
             ValidateData();
             
-            extension.Types = GltfInteractivityTypeMapping.TypesMapping;
+            extension.Types = GltfTypes.TypesMapping;
             
             extension.Variables = variables.ToArray();
             extension.CustomEvents = customEvents.ToArray();
@@ -690,9 +690,9 @@ namespace UnityGLTF.Interactivity
             nodesToSerialize.Sort((a, b) => a.Index.CompareTo(b.Index));
         }
 
-        private GltfInteractivityTypeMapping.TypeMapping[] CollectAndFilterUsedTypes()
+        private GltfTypes.TypeMapping[] CollectAndFilterUsedTypes()
         {
-            var types = new List<GltfInteractivityTypeMapping.TypeMapping>();
+            var types = new List<GltfTypes.TypeMapping>();
             
             // key = old index, value = new index
             var typesIndexReplacement = new Dictionary<int, int>();
@@ -701,7 +701,7 @@ namespace UnityGLTF.Interactivity
             // Collect used Types
             foreach (var variable in variables.Where(v => v.Type == -1 && v.Value != null))
             {
-                var typeIndex = GltfInteractivityTypeMapping.TypeIndex(variable.Value.GetType());
+                var typeIndex = GltfTypes.TypeIndex(variable.Value.GetType());
                 variable.Type = typeIndex;
                 usedTypeIndices.Add(typeIndex);
             }
@@ -721,7 +721,7 @@ namespace UnityGLTF.Interactivity
                     if (valueSocket.Value.Value != null)
                     {
                         if (valueSocket.Value.Type == -1)
-                            valueSocket.Value.Type = GltfInteractivityTypeMapping.TypeIndex(valueSocket.Value.GetType());
+                            valueSocket.Value.Type = GltfTypes.TypeIndex(valueSocket.Value.GetType());
                         usedTypeIndices.Add(valueSocket.Value.Type);
                     }
                 
@@ -736,7 +736,7 @@ namespace UnityGLTF.Interactivity
             // Create used Type Mapping List and mark the new indices
             foreach (var typeIndex in usedTypeIndices.OrderBy( t => t))
             {
-                types.Add(GltfInteractivityTypeMapping.TypesMapping[typeIndex]);
+                types.Add(GltfTypes.TypesMapping[typeIndex]);
                 typesIndexReplacement.Add(typeIndex, types.Count-1);
             }
             
@@ -997,14 +997,14 @@ namespace UnityGLTF.Interactivity
         {
             List<GltfInteractivityNode> newNodes = new List<GltfInteractivityNode>();
             
-            var fromTypeSignature = GltfInteractivityTypeMapping.TypesMapping[fromType].GltfSignature;
-            var toTypeSignature = GltfInteractivityTypeMapping.TypesMapping[toType].GltfSignature;
+            var fromTypeSignature = GltfTypes.TypesMapping[fromType].GltfSignature;
+            var toTypeSignature = GltfTypes.TypesMapping[toType].GltfSignature;
 
             var targetSocketData = targetNode.ValueSocketConnectionData[targetInputSocket];
             GltfInteractivityNode conversionNode = null;
             
-            var fromTypeComponentCount = GltfInteractivityTypeMapping.GetComponentCount(fromTypeSignature);
-            var toTypeComponentCount = GltfInteractivityTypeMapping.GetComponentCount(toTypeSignature);
+            var fromTypeComponentCount = GltfTypes.GetComponentCount(fromTypeSignature);
+            var toTypeComponentCount = GltfTypes.GetComponentCount(toTypeSignature);
             
             void SetupSimpleConversion(GltfInteractivityNodeSchema schema)
             {
@@ -1087,7 +1087,7 @@ namespace UnityGLTF.Interactivity
                         else
                         {
                             inputSocket.Value.Value = 0f;
-                            inputSocket.Value.Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float");
+                            inputSocket.Value.Type = GltfTypes.TypeIndexByGltfSignature("float");
                         }
                     }
                 }
@@ -1100,10 +1100,10 @@ namespace UnityGLTF.Interactivity
             if (fromTypeSignature == toTypeSignature)
                 return null;
             
-            var conversionSchema = GltfInteractivityTypeMapping.GetTypeConversionSchema(fromTypeSignature, toTypeSignature);
+            var conversionSchema = GltfTypes.GetTypeConversionSchema(fromTypeSignature, toTypeSignature);
             if (conversionSchema != null)
             {
-                if (conversionSchema.InputValueSockets.Length == 1)
+                if (conversionSchema.InputValueSockets.Count == 1)
                     SetupSimpleConversion(conversionSchema);
                 else
                     SetupConversion(conversionSchema);
@@ -1128,8 +1128,8 @@ namespace UnityGLTF.Interactivity
                         {
                             if (socket.typeRestriction.limitToType != null)
                             {
-                                valueSocket.Value.Value = GltfInteractivityTypeMapping.GetNullByType(socket.typeRestriction.limitToType);
-                                valueSocket.Value.Type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(socket.typeRestriction.limitToType);
+                                valueSocket.Value.Value = GltfTypes.GetNullByType(socket.typeRestriction.limitToType);
+                                valueSocket.Value.Type = GltfTypes.TypeIndexByGltfSignature(socket.typeRestriction.limitToType);
                             }
                             else if (socket.typeRestriction.fromInputPort != null)
                             {
@@ -1137,7 +1137,7 @@ namespace UnityGLTF.Interactivity
                                 var fromInputPortType = GetValueTypeForInput(node, fromInputPort);
                                 if (fromInputPortType != -1)
                                 {
-                                    valueSocket.Value.Value = GltfInteractivityTypeMapping.GetNullByType(fromInputPortType);
+                                    valueSocket.Value.Value = GltfTypes.GetNullByType(fromInputPortType);
                                     valueSocket.Value.Type = fromInputPortType;
                                 }
                             }
@@ -1152,7 +1152,7 @@ namespace UnityGLTF.Interactivity
                         if (socket.typeRestriction.limitToType != null)
                         {
                             var limitToType =
-                                GltfInteractivityTypeMapping.TypeIndexByGltfSignature(socket.typeRestriction
+                                GltfTypes.TypeIndexByGltfSignature(socket.typeRestriction
                                     .limitToType);
                             if (limitToType != valueType)
                             {
@@ -1171,7 +1171,7 @@ namespace UnityGLTF.Interactivity
                             if (fromInputPortType != valueType)
                             {
                                 var preferType =
-                                    GltfInteractivityTypeMapping.PreferType(valueType, fromInputPortType);
+                                    GltfTypes.PreferType(valueType, fromInputPortType);
                                 if (preferType == -1)
                                 {
                                     continue;
@@ -1206,8 +1206,8 @@ namespace UnityGLTF.Interactivity
                             
                             foreach (var input in node.Schema.InputValueSockets)
                             {
-                                var type = GetValueTypeForInput(node, input.Id);
-                                if (!opInputs.TryGetValue(input.Id, out var opInput))
+                                var type = GetValueTypeForInput(node, input.Key);
+                                if (!opInputs.TryGetValue(input.Key, out var opInput))
                                     return -1;
 
                                 if (opInput.type != type)
@@ -1237,7 +1237,7 @@ namespace UnityGLTF.Interactivity
                         var inputs = new Dictionary<string, GltfInteractivityExtension.Declaration.ValueSocket>();
                         foreach (var input in node.ValueSocketConnectionData)
                         {
-                            var schemaInput = node.Schema.InputValueSockets.FirstOrDefault(i => i.Id == input.Key);
+                            var schemaInput = node.Schema.InputValueSockets.FirstOrDefault(i => i.Key == input.Key);
                             var newInput = new GltfInteractivityExtension.Declaration.ValueSocket { type = GetValueTypeForInput(node, input.Key)};
                             if (newInput.type == -1)
                             {
@@ -1245,7 +1245,7 @@ namespace UnityGLTF.Interactivity
                                 if (input.Value.typeRestriction != null)
                                 {
                                     if (!string.IsNullOrEmpty(input.Value.typeRestriction.limitToType))
-                                        newInput.type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(input.Value.typeRestriction.limitToType);
+                                        newInput.type = GltfTypes.TypeIndexByGltfSignature(input.Value.typeRestriction.limitToType);
                                     else
                                     {
                                         var typeFromOtherPort = GetValueTypeForInput(node, input.Value.typeRestriction.fromInputPort);
@@ -1254,8 +1254,8 @@ namespace UnityGLTF.Interactivity
                                     }
 
                                 }
-                                if (newInput.type == -1 && schemaInput != null && schemaInput.SupportedTypes.Length > 0)
-                                    newInput.type = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(schemaInput.SupportedTypes[0]);
+                                if (newInput.type == -1 && schemaInput.Value != null && schemaInput.Value.SupportedTypes.Length > 0)
+                                    newInput.type = GltfTypes.TypeIndexByGltfSignature(schemaInput.Value.SupportedTypes[0]);
                                 
                                 if (newInput.type == -1)
                                     Debug.LogError("Declaration invalid: Could not resolve Type for Input: "+input.Key + " in Node: "+node.Schema.Op);
@@ -1269,7 +1269,7 @@ namespace UnityGLTF.Interactivity
                         
                         foreach (var output in node.OutValueSocket)
                         {
-                            var schemaOutput = node.Schema.OutputValueSockets.FirstOrDefault(i => i.Id == output.Key);
+                            var schemaOutput = node.Schema.OutputValueSockets.FirstOrDefault(i => i.Key == output.Key);
 
                             var newOutput = new GltfInteractivityExtension.Declaration.ValueSocket();
                             newOutput.type = -1;
@@ -1285,10 +1285,10 @@ namespace UnityGLTF.Interactivity
                                 }
                             }
 
-                            if (newOutput.type == -1 && schemaOutput != null && schemaOutput.SupportedTypes.Length > 0)
+                            if (newOutput.type == -1 && schemaOutput.Value != null && schemaOutput.Value.SupportedTypes.Length > 0)
                             {
                                 newOutput.type =
-                                    GltfInteractivityTypeMapping.TypeIndexByGltfSignature(schemaOutput.SupportedTypes[0]);
+                                    GltfTypes.TypeIndexByGltfSignature(schemaOutput.Value.SupportedTypes[0]);
                             }
                             
                             if (newOutput.type == -1)
@@ -1329,6 +1329,14 @@ namespace UnityGLTF.Interactivity
             
             foreach (var node in nodesToSerialize)
             {
+                foreach (var config in node.ConfigurationData)
+                {
+                    if (config.Value.Value == null)
+                    {
+                        NodeAppendLine(node, $"Configuration with <{config.Key}> has no Value");
+                    }
+                }
+                
                 foreach (var valueSocket in node.ValueSocketConnectionData)
                 {
                     if (valueSocket.Value.Node == null)
@@ -1352,7 +1360,7 @@ namespace UnityGLTF.Interactivity
                     }
                 }
 
-                if (node.Schema.Op == Pointer_SetNode.TypeName || node.Schema.Op == Pointer_GetNode.TypeName)
+                if (node.Schema.Op == "pointer/set" || node.Schema.Op == "pointer/get")
                 {
                     if (node.ValueSocketConnectionData.TryGetValue(GltfInteractivityNodeHelper.IdPointerNodeIndex, out var valueSocket))
                     {
@@ -1361,7 +1369,7 @@ namespace UnityGLTF.Interactivity
                     }
                 }
                 
-                if (node.Schema.Op == Variable_SetNode.TypeName || node.Schema.Op == Variable_GetNode.TypeName)
+                if (node.Schema.Op == "variable/set" || node.Schema.Op == "variable/get")
                 {
                     if (node.ConfigurationData.TryGetValue(Variable_SetNode.IdConfigVarIndex, out var varConfig))
                     {
@@ -1372,7 +1380,7 @@ namespace UnityGLTF.Interactivity
                     }
                 }
 
-                if (node.Schema.Op == Event_ReceiveNode.TypeName || node.Schema.Op == Event_SendNode.TypeName)
+                if (node.Schema.Op == "event/receive" || node.Schema.Op == "event/send")
                 {
                     if (node.ConfigurationData.TryGetValue("event", out var varConfig))
                     {

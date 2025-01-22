@@ -32,9 +32,8 @@ namespace UnityGLTF.Interactivity.Export
            
            var getScale = unitExporter.CreateNode(new Pointer_GetNode());
            
-           unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-               unit.target, getScale,
-               "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/scale");
+           getScale.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+               unit.target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/scale", GltfTypes.Float3);
            
            getScale.OutValueSocket[Pointer_GetNode.IdValue].expectedType = ExpectedType.GtlfType("float3");
 

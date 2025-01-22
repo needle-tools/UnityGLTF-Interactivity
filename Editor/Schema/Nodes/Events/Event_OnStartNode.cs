@@ -2,25 +2,9 @@ namespace UnityGLTF.Interactivity.Schema
 {
     public class Event_OnStartNode : GltfInteractivityNodeSchema
     {
-        public static readonly string TypeName = "event/onStart";
-        public static readonly string IdFlowOut = "out";
- 
-        public Event_OnStartNode()
-        {
-            Op = TypeName;
-            Configuration =  new ConfigDescriptor[]
-            {
-            };
+        public override string Op { get; set; } = "event/onStart";
 
-            OutputFlowSockets = new FlowSocketDescriptor[]
-            {
-                new FlowSocketDescriptor()
-                {
-                    Id = IdFlowOut,
-                }
-            };
-            
-        }
-        
+        [FlowOutSocketDescription]
+        public const string IdFlowOut = "out";
     }
 }

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace UnityGLTF.Interactivity
 {
     
@@ -51,7 +54,7 @@ namespace UnityGLTF.Interactivity
         public static ExpectedType GtlfType(string gltfType)
         {
             var expectedType = new ExpectedType();
-            expectedType.typeIndex = GltfInteractivityTypeMapping.TypeIndexByGltfSignature(gltfType);
+            expectedType.typeIndex = GltfTypes.TypeIndexByGltfSignature(gltfType);
             return expectedType;
         }
             
@@ -85,7 +88,7 @@ namespace UnityGLTF.Interactivity
         
         public static TypeRestriction LimitToType(int typeIndex)
         {
-            return new TypeRestriction { limitToType = GltfInteractivityTypeMapping.TypesMapping[typeIndex].GltfSignature};
+            return new TypeRestriction { limitToType = GltfTypes.TypesMapping[typeIndex].GltfSignature};
         }
 
         public static TypeRestriction LimitToBool
@@ -125,6 +128,78 @@ namespace UnityGLTF.Interactivity
         
         private TypeRestriction()
         {
+        }
+    }
+    
+    [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true)]
+    public class InputSocketDescriptionAttribute : Attribute
+    {
+        public string[] supportedTypes;
+        
+        public InputSocketDescriptionAttribute(params string[] supportedTypes)
+        {
+            this.supportedTypes = supportedTypes;
+        }
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true)]
+    public class InputSocketDescriptionWithTypeDependencyFromOtherPortAttribute : InputSocketDescriptionAttribute
+    {
+        public TypeRestriction typeRestriction;
+        
+        public InputSocketDescriptionWithTypeDependencyFromOtherPortAttribute(string sameAsSocket,
+            params string[] supportedTypes) : base(supportedTypes)
+        {
+            typeRestriction = TypeRestriction.SameAsInputPort(sameAsSocket);
+        }
+    }
+
+
+    [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true)]
+    public class OutputSocketDescriptionAttribute : Attribute
+    {
+        public string[] supportedTypes;
+        
+        public OutputSocketDescriptionAttribute( params string[] supportedTypes)
+        {
+            this.supportedTypes = supportedTypes;
+        }
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true)]
+    public class OutputSocketDescriptionWithTypeDependencyFromInputAttribute : OutputSocketDescriptionAttribute
+    {
+        public ExpectedType expectedType;
+        public OutputSocketDescriptionWithTypeDependencyFromInputAttribute(string sameTypeAsInputSocket) : base()
+        {
+            expectedType = ExpectedType.FromInputSocket(sameTypeAsInputSocket);
+        }
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true)]
+    public class FlowInSocketDescriptionAttribute : Attribute
+    {
+        public FlowInSocketDescriptionAttribute()
+        {
+        }
+    }
+    
+    [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true)]
+    public class FlowOutSocketDescriptionAttribute : Attribute
+    {
+        public FlowOutSocketDescriptionAttribute()
+        {
+        }
+    }
+    
+    [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true)]
+    public class ConfigDescriptionAttribute : Attribute
+    {
+        public string gltfValueType;
+        
+        public ConfigDescriptionAttribute(string gltfValueType)
+        {
+            this.gltfValueType = gltfValueType;
         }
     }
     
@@ -178,34 +253,117 @@ namespace UnityGLTF.Interactivity
     /// </summary>
     public class GltfInteractivityNodeSchema
     {
-        public string Op {get; set;}
+        public virtual string Op { get; set; } = string.Empty;
 
-        public string Extension { get; protected set; } = null;
-        
-        public ConfigDescriptor[] Configuration {get; set;}
-        public FlowSocketDescriptor[] InputFlowSockets {get; set;}
-        public FlowSocketDescriptor[] OutputFlowSockets {get; set;}
-        public InputValueSocketDescriptor[] InputValueSockets {get; set;}
-        public OutValueSocketDescriptor[] OutputValueSockets {get; set;}
+        public virtual string Extension { get; protected set; } = null;
+
+        public Dictionary<string, ConfigDescriptor> Configuration { get; set; } = new();
+        public Dictionary<string, FlowSocketDescriptor> InputFlowSockets { get; set; } = new();
+        public Dictionary<string, FlowSocketDescriptor> OutputFlowSockets {get; set;} = new();
+        public Dictionary<string, InputValueSocketDescriptor> InputValueSockets {get; set;} = new();
+        public Dictionary<string, OutValueSocketDescriptor> OutputValueSockets {get; set;} = new();
         
         public MetaDataEntry[] MetaDatas {get; protected set;}
+
+        public void CreateDescriptorsFromAttributes(bool clearExisting = false)
+        {
+            if (clearExisting)
+            {
+                Configuration.Clear();
+                InputFlowSockets.Clear();
+                OutputFlowSockets.Clear();
+                InputValueSockets.Clear();
+                OutputValueSockets.Clear();
+            }
+            
+            var fields = GetType().GetFields();
+            foreach (var field in fields)
+            {
+                if (field.FieldType != typeof(string))
+                    return;
+                
+                var fieldValue = field.GetValue(this) as string;
+                
+                var attributes = field.GetCustomAttributes(false);
+                foreach (var attribute in attributes)
+                {
+                    
+                    if (attribute is ConfigDescriptionAttribute configDescription)
+                    {
+                        Configuration.Add(fieldValue, new ConfigDescriptor { Type = configDescription.gltfValueType });
+                    }
+                    else if (attribute is OutputSocketDescriptionWithTypeDependencyFromInputAttribute outputSocketDescriptionWithExpectedType)
+                    {
+                        var newOut = new OutValueSocketDescriptor
+                        {
+                            SupportedTypes = outputSocketDescriptionWithExpectedType.supportedTypes,
+                            expectedType = outputSocketDescriptionWithExpectedType.expectedType
+                        };
+                        if (newOut.SupportedTypes == null || newOut.SupportedTypes.Length == 0)
+                            newOut.SupportedTypes = GltfTypes.allTypes;
+
+                        OutputValueSockets.Add(fieldValue, newOut);
+                    }
+                    else if (attribute is InputSocketDescriptionWithTypeDependencyFromOtherPortAttribute inputSocketDescriptionWithTypeRestriction)
+                    {
+                        var newIn = new InputValueSocketDescriptor
+                        {
+                            SupportedTypes = inputSocketDescriptionWithTypeRestriction.supportedTypes,
+                            typeRestriction = inputSocketDescriptionWithTypeRestriction.typeRestriction
+                        };
+                        if (newIn.SupportedTypes == null || newIn.SupportedTypes.Length == 0)
+                            newIn.SupportedTypes = GltfTypes.allTypes;
+                        
+                        InputValueSockets.Add(fieldValue, newIn);
+                    }
+                    else if (attribute is InputSocketDescriptionAttribute inputSocketDescription)
+                    {
+                        var newIn = new InputValueSocketDescriptor
+                        {
+                            SupportedTypes = inputSocketDescription.supportedTypes
+                        };
+                        
+                        if (newIn.SupportedTypes == null || newIn.SupportedTypes.Length == 0)
+                            newIn.SupportedTypes = GltfTypes.allTypes;
+                        
+                        InputValueSockets.Add(fieldValue, newIn);
+                    }
+                    else if (attribute is OutputSocketDescriptionAttribute outputSocketDescription)
+                    {
+                        var newOut = new OutValueSocketDescriptor
+                        {
+                            SupportedTypes = outputSocketDescription.supportedTypes
+                        };
+
+                        if (newOut.SupportedTypes == null || newOut.SupportedTypes.Length == 0)
+                            newOut.SupportedTypes = GltfTypes.allTypes;
+                        else if (newOut.SupportedTypes != null && newOut.SupportedTypes.Length == 1)
+                        {
+                            newOut.expectedType = ExpectedType.GtlfType(newOut.SupportedTypes[0]);
+                        }
+                        OutputValueSockets.Add(fieldValue, newOut);
+                    }
+                    else if (attribute is FlowInSocketDescriptionAttribute)
+                    {
+                        InputFlowSockets.Add(fieldValue, new FlowSocketDescriptor());
+                    }
+                    else if (attribute is FlowOutSocketDescriptionAttribute)
+                    {
+                        OutputFlowSockets.Add(fieldValue, new FlowSocketDescriptor());
+                    }
+                }
+            }
+        }
         
         public GltfInteractivityNodeSchema()
         {
-            Op = string.Empty;
-            Configuration = new ConfigDescriptor[] { };
-            InputFlowSockets = new FlowSocketDescriptor[] { };
-            OutputFlowSockets = new FlowSocketDescriptor[] { };
-            InputValueSockets = new InputValueSocketDescriptor[] { };
-            OutputValueSockets = new OutValueSocketDescriptor[] { };
             MetaDatas = new MetaDataEntry[] { };
+            CreateDescriptorsFromAttributes();
         }
 
         /// <summary> Every descriptive field should have the fields contained here.</summary>
         public class BaseDescriptor
         {
-            // A unique identifier within the field's respective container.
-            public string Id = string.Empty;
         }
 
         public class MetaDataEntry

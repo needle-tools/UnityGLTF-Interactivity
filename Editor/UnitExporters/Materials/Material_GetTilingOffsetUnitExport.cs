@@ -43,11 +43,9 @@ namespace UnityGLTF.Interactivity.Export
                 unitExporter.MapValueOutportToSocketName(invokeMember.result, Pointer_GetNode.IdValue, node);
             }
 
-            unitExporter.SetupPointerTemplateAndTargetInput(
-                GltfInteractivityNodeHelper.IdPointerMaterialIndex,
-                target, node,
-                "/materials/{" + GltfInteractivityNodeHelper.IdPointerMaterialIndex + "}/pbrMetallicRoughness/baseColorTexture/extensions/KHR_texture_transform/"+property
-            );
+            node.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerMaterialIndex, target, 
+                "/materials/{" + GltfInteractivityNodeHelper.IdPointerMaterialIndex + "}/pbrMetallicRoughness/baseColorTexture/extensions/KHR_texture_transform/"+property,
+                GltfTypes.Float2);
         }
     }
 }

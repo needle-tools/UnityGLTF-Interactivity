@@ -33,15 +33,15 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Lerp), new LerpClampedInvokeUnitExports(GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float")));
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Vector2), nameof(Vector2.Lerp), new LerpClampedInvokeUnitExports(GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float2")));
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Vector3), nameof(Vector3.Lerp), new LerpClampedInvokeUnitExports(GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float3")));
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Vector4), nameof(Vector4.Lerp), new LerpClampedInvokeUnitExports(GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float4")));
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Quaternion), nameof(Quaternion.Lerp), new LerpClampedInvokeUnitExports(GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float4")));
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Lerp), new LerpClampedInvokeUnitExports(GltfTypes.TypeIndexByGltfSignature("float")));
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Vector2), nameof(Vector2.Lerp), new LerpClampedInvokeUnitExports(GltfTypes.TypeIndexByGltfSignature("float2")));
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Vector3), nameof(Vector3.Lerp), new LerpClampedInvokeUnitExports(GltfTypes.TypeIndexByGltfSignature("float3")));
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Vector4), nameof(Vector4.Lerp), new LerpClampedInvokeUnitExports(GltfTypes.TypeIndexByGltfSignature("float4")));
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Quaternion), nameof(Quaternion.Lerp), new LerpClampedInvokeUnitExports(GltfTypes.TypeIndexByGltfSignature("float4")));
             
             // TODO: correct Slerp, currently we use Mix  
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Vector3), nameof(Vector3.Slerp), new LerpClampedInvokeUnitExports(GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float3")));
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Quaternion), nameof(Quaternion.Slerp), new LerpClampedInvokeUnitExports(GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float4")));
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Vector3), nameof(Vector3.Slerp), new LerpClampedInvokeUnitExports(GltfTypes.TypeIndexByGltfSignature("float3")));
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Quaternion), nameof(Quaternion.Slerp), new LerpClampedInvokeUnitExports(GltfTypes.TypeIndexByGltfSignature("float4")));
         }
 
         public Type unitType { get => typeof(InvokeMember); }
@@ -66,10 +66,10 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            UnitExporterRegistry.RegisterExporter(new LerpClampedUnitExports(typeof(ScalarLerp), GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float")));
-            UnitExporterRegistry.RegisterExporter(new LerpClampedUnitExports(typeof(Vector2Lerp), GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float2")));
-            UnitExporterRegistry.RegisterExporter(new LerpClampedUnitExports(typeof(Vector3Lerp), GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float3")));
-            UnitExporterRegistry.RegisterExporter(new LerpClampedUnitExports(typeof(Vector4Lerp), GltfInteractivityTypeMapping.TypeIndexByGltfSignature("float4")));
+            UnitExporterRegistry.RegisterExporter(new LerpClampedUnitExports(typeof(ScalarLerp), GltfTypes.TypeIndexByGltfSignature("float")));
+            UnitExporterRegistry.RegisterExporter(new LerpClampedUnitExports(typeof(Vector2Lerp), GltfTypes.TypeIndexByGltfSignature("float2")));
+            UnitExporterRegistry.RegisterExporter(new LerpClampedUnitExports(typeof(Vector3Lerp), GltfTypes.TypeIndexByGltfSignature("float3")));
+            UnitExporterRegistry.RegisterExporter(new LerpClampedUnitExports(typeof(Vector4Lerp), GltfTypes.TypeIndexByGltfSignature("float4")));
         }
 
         public Type unitType { get; private set; }

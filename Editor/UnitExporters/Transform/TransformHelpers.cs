@@ -19,13 +19,12 @@ namespace UnityGLTF.Interactivity.Export
 
             if (GltfInteractivityNodeHelper.IsMainCameraInInput(target))
             {
-                GltfInteractivityNodeHelper.AddPointerConfig(getPosition, "/activeCamera/position");
+                GltfInteractivityNodeHelper.AddPointerConfig(getPosition, "/activeCamera/position", GltfTypes.Float3);
                 return;
             }
 
-            unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-                target, getPosition,
-                "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/translation");
+            getPosition.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/translation", GltfTypes.Float3);
         }
 
         public static void GetLocalPosition(UnitExporter unitExporter, ValueInput target, ValueOutput positionOutput)
@@ -39,9 +38,8 @@ namespace UnityGLTF.Interactivity.Export
         {
             var setPosition = unitExporter.CreateNode(new Pointer_SetNode());
 
-            unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-                target, setPosition,
-                "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/translation");
+            setPosition.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/translation", GltfTypes.Float3);
 
             SpaceConversionHelpers.AddSpaceConversionNodes(unitExporter, position, out var convertedOutput);
             setPosition.ValueIn(Pointer_SetNode.IdValue).ConnectToSource(convertedOutput);
@@ -56,9 +54,8 @@ namespace UnityGLTF.Interactivity.Export
         {
             var setPosition = unitExporter.CreateNode(new Pointer_SetNode());
 
-            unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-                target, setPosition,
-                "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/translation");
+            setPosition.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/translation", GltfTypes.Float3);
 
             
             SpaceConversionHelpers.AddSpaceConversionNodes(unitExporter, position, out var convertedOutput);
@@ -82,15 +79,14 @@ namespace UnityGLTF.Interactivity.Export
 
             if (GltfInteractivityNodeHelper.IsMainCameraInInput(target))
             {
-                GltfInteractivityNodeHelper.AddPointerConfig(getRotation, "/activeCamera/rotation");
+                GltfInteractivityNodeHelper.AddPointerConfig(getRotation, "/activeCamera/rotation", GltfTypes.Float4);
                 QuaternionHelpers.Invert(unitExporter, convertedRotation, out var invertedRotation);
                 value = invertedRotation;
                 return;
             }
             
-            unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-                target, getRotation,
-                "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation");
+            getRotation.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation", GltfTypes.Float4);
         }
 
         public static void GetLocalRotation(UnitExporter unitExporter, ValueInput target, ValueOutput value)
@@ -105,9 +101,8 @@ namespace UnityGLTF.Interactivity.Export
         {
             var setRotation = unitExporter.CreateNode(new Pointer_SetNode());
 
-            unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-                target, setRotation,
-                "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation");
+            setRotation.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation", GltfTypes.Float4);
 
             SpaceConversionHelpers.AddRotationSpaceConversionNodes(unitExporter, rotationInput,
                 out var convertedRotation);
@@ -121,9 +116,8 @@ namespace UnityGLTF.Interactivity.Export
         {
             var setRotation = unitExporter.CreateNode(new Pointer_SetNode());
 
-            unitExporter.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-                target, setRotation,
-                "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation");
+            setRotation.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/rotation", GltfTypes.Float4);
 
             SpaceConversionHelpers.AddRotationSpaceConversionNodes(unitExporter, rotationInput,
                 out var convertedRotation);

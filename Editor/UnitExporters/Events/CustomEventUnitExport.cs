@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEngine;
 using UnityGLTF.Interactivity.Schema;
 
 namespace UnityGLTF.Interactivity.Export
@@ -17,19 +18,27 @@ namespace UnityGLTF.Interactivity.Export
 
         public void InitializeInteractivityNodes(UnitExporter unitExporter)
         {
-            var node = unitExporter.CreateNode(new Event_ReceiveNode());
             var customEvent = unitExporter.unit as CustomEvent;
 
+            if (!customEvent.target.hasDefaultValue && !customEvent.target.hasValidConnection)
+            {
+                Debug.LogWarning("Ignoring CustomEvent node because it has no target");
+                return;
+            }
+            
+            var node = unitExporter.CreateNode(new Event_ReceiveNode());
             node.MapInputPortToSocketName(customEvent.name, "event");
             
             var args = new Dictionary<string, GltfInteractivityUnitExporterNode.EventValues>();
-            args.Add("targetNodeIndex", new GltfInteractivityUnitExporterNode.EventValues {Type = GltfInteractivityTypeMapping.TypeIndex("int") });
+            args.Add("targetNodeIndex", new GltfInteractivityUnitExporterNode.EventValues {Type = GltfTypes.TypeIndex("int") });
 
             foreach (var arg in customEvent.argumentPorts)
             {
                 var argId = arg.key;
-                var argTypeIndex = GltfInteractivityTypeMapping.TypeIndex(arg.type);
-                args.Add(argId, new  GltfInteractivityUnitExporterNode.EventValues{Type = argTypeIndex});
+                var argTypeIndex = GltfTypes.TypeIndex(arg.type);
+                var newArg = new GltfInteractivityUnitExporterNode.EventValues { Type = argTypeIndex };
+                args.Add(argId, newArg);
+                // TODO: adding default values?
 
                 node.MapValueOutportToSocketName(arg, argId);
             }

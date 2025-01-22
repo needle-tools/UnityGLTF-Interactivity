@@ -19,13 +19,11 @@ namespace UnityGLTF.Interactivity.Schema
         public Animation_StartNode()
         {
             Op = TypeName;
-            Description = "Plays an animation.";
             InputFlowSockets = new FlowSocketDescriptor[]
             {
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowIn,
-                    Description = "In-flow to trigger this node."
                 }
             };
             OutputFlowSockets = new FlowSocketDescriptor[]
@@ -33,13 +31,10 @@ namespace UnityGLTF.Interactivity.Schema
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowOut,
-                    Description = "The synchronous flow to be followed."
                 },
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowDone,
-                    Description = "The flow to be followed when the animation target time is " +
-                        "reached, async."
                 }
             };
             InputValueSockets = new InputValueSocketDescriptor[]
@@ -47,31 +42,21 @@ namespace UnityGLTF.Interactivity.Schema
                 new InputValueSocketDescriptor()
                 {
                     Id = IdValueAnimation,
-                    Description = "The index of the animation to play.",
                     SupportedTypes = new string[] { "int" }
                 },
                 new InputValueSocketDescriptor()
                 {
                     Id = IdValueSpeed,
-                    Description = "The speed multiplier of the animation, must be greater than " +
-                        "zero/strictly positive, otherwise undefined (but you could in your " +
-                        "implementation then default it to 1.0).  We specify backward playing " +
-                        "using a negative targetTime.",
                     SupportedTypes = new string[] { "float" }
                 },
                 new InputValueSocketDescriptor()
                 {
                     Id = IdValueStartTime,
-                    Description = "Start animation frame must be between the range of 0 to max " +
-                        "animation time.",
                     SupportedTypes = new string[] { "float" }
                 },
                 new InputValueSocketDescriptor()
                 {
                     Id = IdValueEndtime,
-                    Description = "End animation time, if it is before the start time the " +
-                        "animation will be played backwards, if it is +/- Inf the animation " +
-                        "will loop until manually stopped.",
                     SupportedTypes = new string[] { "float" }
                 }
             };

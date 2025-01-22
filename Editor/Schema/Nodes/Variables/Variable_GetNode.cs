@@ -16,9 +16,7 @@ namespace UnityGLTF.Interactivity.Schema
                 {
                     Id = IdConfigVarIndex,
                     Type = "int",
-                    Description = ""
                 },
-
             };
             
             OutputValueSockets = new OutValueSocketDescriptor[]

@@ -14,14 +14,12 @@ namespace UnityGLTF.Interactivity.Schema
         public Pointer_InterpolateNode()
         {
             Op = TypeName;
-            Description = "";
             Configuration = new ConfigDescriptor[]
             {
                 new ConfigDescriptor()
                 {
                     Id = IdPointer,
                     Type = "pointer",
-                    Description = "The pointer to interpolate."
                 }
             };
 
@@ -30,7 +28,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowOut,
-                    Description = ""
                 }
             };
             
@@ -39,7 +36,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowIn,
-                    Description = ""
                 }
             };
 
@@ -48,25 +44,21 @@ namespace UnityGLTF.Interactivity.Schema
                 new InputValueSocketDescriptor()
                 {
                     Id = IdValue,
-                    Description = "",
                     SupportedTypes = GltfInteractivityTypeMapping.allTypes
                 },
                 new InputValueSocketDescriptor()
                 {
                     Id = IdDuration,
-                    Description = "",
                     SupportedTypes = new[] { "float" },
                 },
                 new InputValueSocketDescriptor()
                 {
                     Id = IdPoint1,
-                    Description = "Control point P1 for cubic bezier curve",
                     SupportedTypes = new[] { "float2" },
                 },
                 new InputValueSocketDescriptor()
                 {
                     Id = IdPoint2,
-                    Description = "Control point P2 for cubic bezier curve",
                     SupportedTypes = new[] { "float2" },
                 },
             };

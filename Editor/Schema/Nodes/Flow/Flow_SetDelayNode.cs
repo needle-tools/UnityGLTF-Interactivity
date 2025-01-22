@@ -14,14 +14,12 @@ namespace UnityGLTF.Interactivity.Schema
         public Flow_SetDelayNode()
         {
             Op = TypeName;
-            Description = "Set a delay before continuing the flow.";
             
             InputValueSockets = new InputValueSocketDescriptor[]
             {
                 new InputValueSocketDescriptor()
                 {
                     Id = IdDuration,
-                    Description = "The duration of the delay in seconds.",
                     SupportedTypes = new string[] {"float"}
                 }
             };
@@ -59,7 +57,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new OutValueSocketDescriptor()
                 {
                     Id = IdOutLastDelayIndex,
-                    Description = "The index of the last delay that was set.",
                     SupportedTypes = new string[] {"int"},
                     expectedType = ExpectedType.Int
                 }

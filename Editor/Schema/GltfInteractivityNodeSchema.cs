@@ -178,10 +178,7 @@ namespace UnityGLTF.Interactivity
     /// </summary>
     public class GltfInteractivityNodeSchema
     {
-        // TODO: Should have protected setters
-        public static readonly string ExtensionName = "KHR_interactivity";
         public string Op {get; set;}
-        public string Description {get; protected set;}
 
         public string Extension { get; protected set; } = null;
         
@@ -196,7 +193,6 @@ namespace UnityGLTF.Interactivity
         public GltfInteractivityNodeSchema()
         {
             Op = string.Empty;
-            Description = string.Empty;
             Configuration = new ConfigDescriptor[] { };
             InputFlowSockets = new FlowSocketDescriptor[] { };
             OutputFlowSockets = new FlowSocketDescriptor[] { };
@@ -210,9 +206,6 @@ namespace UnityGLTF.Interactivity
         {
             // A unique identifier within the field's respective container.
             public string Id = string.Empty;
-
-            // A description of the field's intended usage.
-            public string Description = string.Empty;
         }
 
         public class MetaDataEntry

@@ -12,19 +12,16 @@ namespace UnityGLTF.Interactivity.Schema
         public Flow_DoNNode()
         {
             Op = TypeName;
-            Description = "";
           
             InputFlowSockets = new FlowSocketDescriptor[]
             {
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowIn,
-                    Description = "The flow to be followed when the custom event is fired."
                 },
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowReset,
-                    Description = "The flow to be followed when the custom event is fired."
                 }
             };
             
@@ -41,7 +38,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new InputValueSocketDescriptor()
                 {
                     Id = IdN,
-                    Description = "",
                     SupportedTypes = new string[] { "int" }
                 },
             };

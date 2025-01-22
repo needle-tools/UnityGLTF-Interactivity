@@ -23,20 +23,17 @@ namespace UnityGLTF.Interactivity.Schema
         {
             Op = TypeName;
             Extension = KHR_node_selectability_Factory.EXTENSION_NAME;
-            Description = "This node will fire when a node is selected.";
             Configuration =  new ConfigDescriptor[]
             {
                 new ConfigDescriptor()
                 {
                     Id = IdConfigNodeIndex,
                     Type = "int",
-                    Description = "The node to add the listener on"
                 },
                 new ConfigDescriptor()
                 {
                     Id = IdConfigStopPropagation,
                     Type = "bool",
-                    Description = "Should the event be propagated up the node parent hierarchy"
                 }
             };
 
@@ -45,7 +42,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowOut,
-                    Description = "The flow to be followed when the custom event is fired."
                 }
             };
 
@@ -54,13 +50,11 @@ namespace UnityGLTF.Interactivity.Schema
                 new OutValueSocketDescriptor()
                 {
                     Id = IdValueSelectedNodeIndex,
-                    Description = "The index of the first hit node",
                     SupportedTypes = new string[]{"int"}
                 },
                 new OutValueSocketDescriptor()
                 {
                     Id = IdValueLocalHitLocation,
-                    Description = "The local hit offset from the hit node's origin",
                     SupportedTypes = new string[]{"float3"}
                 },
                 new OutValueSocketDescriptor()

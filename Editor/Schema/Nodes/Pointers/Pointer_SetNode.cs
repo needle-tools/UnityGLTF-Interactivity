@@ -11,14 +11,12 @@ namespace UnityGLTF.Interactivity.Schema
         public Pointer_SetNode()
         {
             Op = TypeName;
-            Description = "";
             Configuration = new ConfigDescriptor[]
             {
                 new ConfigDescriptor()
                 {
                     Id = IdPointer,
                     Type = "pointer",
-                    Description = "The pointer to set."
                 }
             };
 
@@ -27,7 +25,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowOut,
-                    Description = ""
                 }
             };
             
@@ -36,7 +33,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowIn,
-                    Description = ""
                 }
             };
 
@@ -45,7 +41,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new InputValueSocketDescriptor()
                 {
                     Id = IdValue,
-                    Description = "",
                     SupportedTypes = GltfInteractivityTypeMapping.allTypes
                 },
 

@@ -10,24 +10,18 @@ namespace UnityGLTF.Interactivity.Schema
         public Math_GtNode()
         {
             Op = TypeName;
-            Description = "";
-            Configuration =  new ConfigDescriptor[]
-            {
-            };
             
             InputValueSockets = new InputValueSocketDescriptor[]
             {
                 new InputValueSocketDescriptor()
                 {
                     Id = IdValueA,
-                    Description = "",
                     SupportedTypes = new string[]{"int", "float","float2","float3","float4"},
                     typeRestriction = TypeRestriction.SameAsInputPort(IdValueB)
                 },
                 new InputValueSocketDescriptor()
                 {
                     Id = IdValueB,
-                    Description = "",
                     SupportedTypes = new string[]{"int", "float","float2","float3","float4"},
                     typeRestriction = TypeRestriction.SameAsInputPort(IdValueA)
                 }
@@ -38,7 +32,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new OutValueSocketDescriptor()
                 {
                     Id = IdOut,
-                    Description = "",
                     SupportedTypes = new string[]{"bool"}
                 }
             };

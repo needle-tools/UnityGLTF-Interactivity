@@ -9,14 +9,12 @@ namespace UnityGLTF.Interactivity.Schema
         public Pointer_GetNode()
         {
             Op = TypeName;
-            Description = "";
             Configuration = new ConfigDescriptor[]
             {
                 new ConfigDescriptor()
                 {
                     Id = IdPointer,
                     Type = "pointer",
-                    Description = "The pointer to get."
                 }
             };
             
@@ -25,7 +23,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new OutValueSocketDescriptor()
                 {
                     Id = IdValue,
-                    Description = "",
                     SupportedTypes = GltfInteractivityTypeMapping.allTypes
                 },
 

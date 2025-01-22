@@ -12,7 +12,6 @@ namespace UnityGLTF.Interactivity.Schema
         public Flow_WaitAllNode()
         {
             Op = TypeName;
-            Description = "";
             Configuration = new ConfigDescriptor[]
             {
                 new ConfigDescriptor
@@ -43,7 +42,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new OutValueSocketDescriptor()
                 {
                     Id = IdOutRemainingInputs,
-                    Description = "",
                     SupportedTypes = new string[] { "int" },
                     expectedType = ExpectedType.Int
                 }

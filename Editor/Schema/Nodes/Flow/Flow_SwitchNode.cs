@@ -10,7 +10,6 @@ namespace UnityGLTF.Interactivity.Schema
         public Flow_SwitchNode()
         {
             Op = TypeName;
-            Description = "Switch between different flows based on a condition.";
             Configuration = new ConfigDescriptor[]
             {
             };
@@ -20,7 +19,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowIn,
-                    Description = "The flow to be followed when the custom event is fired."
                 },
             };
 
@@ -37,7 +35,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new InputValueSocketDescriptor()
                 {
                     Id = IdSelection,
-                    Description = "The index of the selected flow.",
                     SupportedTypes = new string[]{"int"}
                 }
             };

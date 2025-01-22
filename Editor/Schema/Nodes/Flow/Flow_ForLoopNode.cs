@@ -16,7 +16,6 @@ namespace UnityGLTF.Interactivity.Schema
         public Flow_ForLoopNode()
         {
             Op = TypeName;
-            Description = "";
             Configuration = new ConfigDescriptor[]
             {
                 new ConfigDescriptor
@@ -43,13 +42,11 @@ namespace UnityGLTF.Interactivity.Schema
                 new InputValueSocketDescriptor()
                 {
                     Id = IdStartIndex,
-                    Description = "",
                     SupportedTypes = new string[] { "int" }
                 },
                 new InputValueSocketDescriptor()
                 {
                     Id = IdEndIndex,
-                    Description = "",
                     SupportedTypes = new string[] { "int" }
                 }
             };
@@ -59,7 +56,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new OutValueSocketDescriptor()
                 {
                     Id = IdIndex,
-                    Description = "",
                     SupportedTypes = new string[] { "int" },
                     expectedType = ExpectedType.Int
                 }

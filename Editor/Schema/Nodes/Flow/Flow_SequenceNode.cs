@@ -8,7 +8,6 @@ namespace UnityGLTF.Interactivity.Schema
         public Flow_SequenceNode()
         {
             Op = TypeName;
-            Description = "";
             Configuration =  new ConfigDescriptor[]
             {
             };
@@ -18,7 +17,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new FlowSocketDescriptor()
                 {
                     Id = IdFlowIn,
-                    Description = "The flow to be followed when the custom event is fired."
                 }
             };   
         }

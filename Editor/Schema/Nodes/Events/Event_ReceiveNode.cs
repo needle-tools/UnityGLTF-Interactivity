@@ -8,7 +8,6 @@ namespace UnityGLTF.Interactivity.Schema
         public Event_ReceiveNode()
         {
             Op = TypeName;
-            Description = "Receive a custom event";
             Configuration = new ConfigDescriptor[]
             {
                 new()

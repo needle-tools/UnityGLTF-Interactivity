@@ -11,7 +11,6 @@ namespace UnityGLTF.Interactivity.Schema
         public Flow_WhileNode()
         {
             Op = TypeName;
-            Description = "";
           
             OutputFlowSockets = new FlowSocketDescriptor[]
             {
@@ -30,7 +29,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new InputValueSocketDescriptor()
                 {
                     Id = IdCondition,
-                    Description = "",
                     SupportedTypes = new string[] { "bool" }
                 },
             };

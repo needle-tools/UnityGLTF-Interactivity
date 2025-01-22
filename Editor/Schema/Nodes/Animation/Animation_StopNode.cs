@@ -11,7 +11,6 @@ namespace UnityGLTF.Interactivity.Schema
         public Animation_StopNode()
         {
             Op = TypeName;
-            Description = "Stops an animation.";
             InputFlowSockets = new FlowSocketDescriptor[]
             {
                 new FlowSocketDescriptor()
@@ -35,7 +34,6 @@ namespace UnityGLTF.Interactivity.Schema
                 new InputValueSocketDescriptor()
                 {
                     Id = IdValueAnimation,
-                    Description = "The index of the animation to play.",
                     SupportedTypes = new string[] { "int" }
                 },
             };

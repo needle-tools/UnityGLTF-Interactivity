@@ -7,53 +7,6 @@ namespace UnityGLTF.Interactivity
     using GLTF.Schema;
     using Newtonsoft.Json.Linq;
     
-    /// <summary>
-    /// Defines the KHR_Interactivity extension and holds the data required to serialize to GLTF.
-    ///
-    /// example:
-    /// KHR_interactivity : {
-    ///     "types": [
-    ///         {"signature": "bool"},
-    ///         {"signature": "int"},
-    ///         [...]
-    ///     ],
-    ///     "variables": [
-    ///         {
-    ///             "id": "variable1",
-    ///             "type": 0,
-    ///             "value": false
-    ///         },
-    ///         [...]
-    ///     ],
-    ///     "customEvents": [
-    ///         {
-    ///             "id": "Event1",
-    ///             "values": [
-    ///                 {"id": "input1", "type": 4 },
-    ///                 [...],
-    ///             ]
-    ///         },
-    ///         [...]
-    ///     ],
-    ///     "nodes": [
-    ///         {
-    ///             "type": "mock/testNode",
-    ///             "index": 0,
-    ///             "configuration": [
-    ///                 { "id": "config1", "type": 1, "value": 100 },
-    ///                 { "id": "config2", "type": 0, "value": false },
-    ///             ],
-    ///             "flows": [
-    ///                 { "id": "out", "node": 61, "socket": "in" }
-    ///             ],
-    ///             "values": [
-    ///                 {"id": "input1", "type": 4, "value": [ 1, 2, 3 ] },
-    ///                 {"id": "output1", "type": 4, "node": 61, "socket": "translation" },
-    ///             ]
-    ///         },
-    ///      [...] ]
-    /// }.
-    /// </summary>
     [Serializable]
     internal class GltfInteractivityExtension : IExtension
     {
@@ -112,10 +65,7 @@ namespace UnityGLTF.Interactivity
                 CustomEvents = CustomEvents
             };
         }
-
-        // TODO: (b/333422987) Add a Validate() method to validate data conforms to the schemas
-
-
+        
         public class Declaration
         {
             public string op = string.Empty;
@@ -169,8 +119,6 @@ namespace UnityGLTF.Interactivity
 
                 }
                 
-              //  GltfInteractivityUnitExporterNode.ValueSerializer.Serialize(Value, jObject);
-
                 return jObject;
             } 
         }

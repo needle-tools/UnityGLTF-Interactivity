@@ -120,28 +120,10 @@ namespace UnityGLTF.Interactivity.Export
             IsTranslatable = _nodes != null && _nodes.Count > 0;
         }
 
-        /// <summary>
-        /// Creates a gltf node by translating a unit's values, flows, and connections
-        /// to gltf values, controls, and configs.
-        ///
-        /// The return node's data is expected to be fully populated except for socket data
-        /// which will be resolved later once the set of valid nodes has been defined.
-        /// Unused config/value/flow parameters should be removed from the node data object.
-        /// </summary>
-        /// <param name="iUnit"> The unit to be translated into a glTF node.</param>
-        /// <param name="exportContext"> The export context in case any context data is needed.</param>
-        /// <param name="destinationFlowConnections">
-        /// Maps the input ports of all outgoing connections to socket data references to
-        /// be resolved later since we do not have access to node indices and socket names
-        /// at this stage.
-        /// </param>
-        /// <returns> null if the unit could not be translated, otherwise returns a node.</returns>
+
         private void InitializeInteractivityNode()
         {
             exporter.InitializeInteractivityNodes(this);
-
-            // newNode.MetaData.Add("positionX", iUnit.position.x.ToString(CultureInfo.InvariantCulture));
-            // newNode.MetaData.Add("positionY", iUnit.position.y.ToString(CultureInfo.InvariantCulture));
 
             if (Nodes == null || Nodes.Length == 0)
                 IsTranslatable = false;

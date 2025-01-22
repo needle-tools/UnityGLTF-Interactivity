@@ -588,8 +588,6 @@ namespace UnityGLTF.Interactivity
             
             OnNodesCreated?.Invoke(nodesToSerialize);
             
-            ResolveCoroutines();
-            
             RemoveUnconnectedNodes();
 
             TriggerInterfaceExportCallbacks();

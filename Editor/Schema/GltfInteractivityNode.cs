@@ -1,6 +1,4 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityGLTF.Interactivity.Export;
 
 namespace UnityGLTF.Interactivity
 {
@@ -9,34 +7,6 @@ namespace UnityGLTF.Interactivity
     using System.Linq;
     using Newtonsoft.Json.Linq;
 
-    /// <summary>
-    /// Contains KHR_Interactivity Node data to be serialized into GLTF.
-    ///
-    /// example:
-    /// KHR_interactivity : {
-    ///     [...]
-    ///     "nodes": [
-    ///      {
-    ///       "type": "mock/testNode",
-    ///          "index": 0,
-    ///          "configuration": [
-    ///              { "id": "config1", "type": 1, "value": 100 },
-    ///              { "id": "config2", "type": 0, "value": false },
-    ///          ],
-    ///         "flows": [
-    ///             { "id": "out", "node": 61, "socket": "in" }
-    ///         ],
-    ///         "values": [
-    ///             {"id": "input1", "type": 4, "value": [ 1, 2, 3 ] },
-    ///             {"id": "output1", "type": 4, "node": 61, "socket": "translation" },
-    ///         ]
-    ///       },
-    ///      [...] ]
-    ///      [...]
-    /// }.
-    /// </summary>
-    ///
-    ///
     public class GltfInteractivityNode
     {
         public int Index;
@@ -88,8 +58,6 @@ namespace UnityGLTF.Interactivity
             }
         }
         
-        
-
         public void SetValueInSocket(string socketId, object value, TypeRestriction typeRestriction = null)
         {
             if (ValueSocketConnectionData.TryGetValue(socketId, out var socket))
@@ -181,15 +149,8 @@ namespace UnityGLTF.Interactivity
 
             return jo;
         }
-
-        // TODO: (b/333422987) Add a Validate() method to validate data conforms to the schema
-
-        public abstract class BaseData
-        {
-        }
-
         
-        public class ConfigData : BaseData
+        public class ConfigData
         {
             // data field holds index in list of types supported in the extension
             public object Value = null;
@@ -215,7 +176,7 @@ namespace UnityGLTF.Interactivity
         ///
         /// Only outgoing connections from this node to the next are required to be serialized.
         /// </summary>
-        public abstract class SocketData : BaseData
+        public abstract class SocketData
         {
             public string Socket = null;
             public int? Node = null;
@@ -226,7 +187,7 @@ namespace UnityGLTF.Interactivity
             }
         }
         
-        public class EventValues : BaseData
+        public class EventValues
         {
             public int Type = -1;
             public object Value = null;
@@ -264,8 +225,7 @@ namespace UnityGLTF.Interactivity
                 };
             }
         }
-
-
+        
         public static class ValueSerializer
         {
             public static void Serialize(object value, JObject valueObject)

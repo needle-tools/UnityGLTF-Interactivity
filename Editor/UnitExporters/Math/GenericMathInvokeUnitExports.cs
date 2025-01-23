@@ -59,10 +59,11 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Min), new GenericInvokeMathInvokeUnitExporters(new Math_MinNode()));
             InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Max), new GenericInvokeMathInvokeUnitExporters(new Math_MaxNode()));
             InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Equals), new GenericInvokeMathInvokeUnitExporters(new Math_EqNode()));
+
             InvokeUnitExport.RegisterInvokeExporter(typeof(Matrix4x4), ".ctor", new GenericInvokeMathInvokeUnitExporters(new Math_Combine4x4Node()));
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Matrix4x4), nameof(Matrix4x4.Determinant), new GenericInvokeMathInvokeUnitExporters(new Math_Determinant()));
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Matrix4x4), nameof(Matrix4x4.Transpose), new GenericInvokeMathInvokeUnitExporters(new Math_Transpose()));
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Matrix4x4), nameof(Matrix4x4.Inverse), new GenericInvokeMathInvokeUnitExporters(new Math_Inverse()));
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Matrix4x4), nameof(Matrix4x4.Determinant), new GenericInvokeMathInvokeUnitExporters(new Math_DeterminantNode()));
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Matrix4x4), nameof(Matrix4x4.Transpose), new GenericInvokeMathInvokeUnitExporters(new Math_TransposeNode()));
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Matrix4x4), nameof(Matrix4x4.Inverse), new GenericInvokeMathInvokeUnitExporters(new Math_InverseNode()));
         }
         
         public GenericInvokeMathInvokeUnitExporters(GltfInteractivityNodeSchema schema) : base(schema)

@@ -21,7 +21,7 @@ namespace UnityGLTF.Interactivity.Export
             out GltfInteractivityUnitExporterNode.ValueOutputSocketData result)
         {
             
-            var degToRad = unitExporter.CreateNode(new GltfInt_Rad());
+            var degToRad = unitExporter.CreateNode(new Math_RadNode());
             degToRad.FirstValueOut().ExpectedType(ExpectedType.Float3);
             
             degToRad.ValueIn("a").ConnectToSource(xyz).SetType(TypeRestriction.LimitToFloat3);
@@ -33,7 +33,7 @@ namespace UnityGLTF.Interactivity.Export
             out GltfInteractivityUnitExporterNode.ValueOutputSocketData result)
         {
             
-            var degToRad = unitExporter.CreateNode(new GltfInt_Rad());
+            var degToRad = unitExporter.CreateNode(new Math_RadNode());
             degToRad.FirstValueOut().ExpectedType(ExpectedType.Float3);
             
             degToRad.ValueIn("a").MapToInputPort(xyz).SetType(TypeRestriction.LimitToFloat3);

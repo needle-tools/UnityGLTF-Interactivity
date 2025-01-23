@@ -1,6 +1,6 @@
 namespace UnityGLTF.Interactivity.Schema
 {
-    public class Math_MatMul : GltfInteractivityNodeSchema
+    public class Math_MatMulNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/matmul";
         
@@ -14,7 +14,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueB = "b";
     }
     
-    public class Math_Transpose : GltfInteractivityNodeSchema
+    public class Math_TransposeNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/transpose";
         
@@ -25,7 +25,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueA = "a";
     }
     
-    public class Math_Inverse : GltfInteractivityNodeSchema
+    public class Math_InverseNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/inverse";
         
@@ -36,7 +36,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueA = "a";
     }
     
-    public class Math_Determinant : GltfInteractivityNodeSchema
+    public class Math_DeterminantNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/determinant";
         
@@ -47,7 +47,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueA = "a";
     }
     
-    public class Math_Transform_Float2 : GltfInteractivityNodeSchema
+    public class Math_Transform_Float2Node : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/transform";
         
@@ -60,7 +60,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueB = "b";
     }
     
-    public class Math_Transform_Float3 : GltfInteractivityNodeSchema
+    public class Math_Transform_Float3Node : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/transform";
         
@@ -73,7 +73,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueB = "b";
     }
     
-    public class Math_Transform_Float4 : GltfInteractivityNodeSchema
+    public class Math_Transform_Float4Node : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/transform";
         
@@ -86,7 +86,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueB = "b";
     }
     
-    public class Math_LeftShift : GltfInteractivityNodeSchema
+    public class Math_LeftShiftNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/lsl";
         
@@ -99,7 +99,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueB = "b";
     }
     
-    public class Math_RightShift : GltfInteractivityNodeSchema
+    public class Math_RightShiftNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/asr";
         
@@ -112,7 +112,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueB = "b";
     }
     
-    public class Math_CountingLeadingZeros : GltfInteractivityNodeSchema
+    public class Math_CountingLeadingZerosNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/clz";
         
@@ -123,7 +123,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueA = "a";
     }
     
-    public class Math_CountingTrailingZeros : GltfInteractivityNodeSchema
+    public class Math_CountingTrailingZerosNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/ctz";
         
@@ -134,7 +134,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueA = "a";
     }
     
-    public class Math_CountOneBits : GltfInteractivityNodeSchema
+    public class Math_CountOneBitsNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/popcnt";
         
@@ -746,7 +746,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdOut = "value";
     }
     
-    public class GltfInt_Rad : GltfInteractivityNodeSchema
+    public class Math_RadNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/rad";
 
@@ -756,7 +756,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueResult = "value";
     }    
 
-    public class GltfInt_Deg : GltfInteractivityNodeSchema
+    public class Math_DegNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/deg";
 

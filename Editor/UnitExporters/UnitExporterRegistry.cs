@@ -43,7 +43,7 @@ namespace UnityGLTF.Interactivity.Export
         public static bool HasUnitExporter(IUnit unit)
         {
             var directlyExported = _exportRegistry.ContainsKey(unit.GetType());
-            if (unit is GetMember || unit is SetMember || unit is InvokeMember || unit is Expose)
+            if (unit is GetMember || unit is SetMember || unit is InvokeMember || unit is Expose || unit is CreateStruct)
                 directlyExported = false;
             
             var invokeExported = unit is InvokeMember invokeMember &&
@@ -52,8 +52,12 @@ namespace UnityGLTF.Interactivity.Export
                                     SetMemberUnitExport.HasMemberConvert(setMember.member?.declaringType, setMember.member?.name);
             var getMemberExported = unit is GetMember getMember &&
                                     GetMemberUnitExport.HasMemberConvert(getMember.member?.declaringType, getMember.member?.name);
+
+            var createStructExported = unit is CreateStruct createStruct &&
+                                    CreateStructsUnitExport.HasConvert(createStruct.type);
+
             var exposeExported = unit is Expose expose && ExposeUnitExport.HasConvert(expose.type);
-            return directlyExported || invokeExported || setMemberExported || getMemberExported || exposeExported;
+            return createStructExported || directlyExported || invokeExported || setMemberExported || getMemberExported || exposeExported;
         }
 
         public static IUnitExporter GetUnitExporter(IUnit unit)

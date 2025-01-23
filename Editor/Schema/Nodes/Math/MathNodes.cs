@@ -336,7 +336,7 @@ namespace UnityGLTF.Interactivity.Schema
     {
         public override string Op { get; set; } = "math/combine2";
 
-        [OutputSocketDescription(GltfTypes.Float3)]
+        [OutputSocketDescription(GltfTypes.Float2)]
         public const string IdOut = "value";
         
         [InputSocketDescription(GltfTypes.Float)]

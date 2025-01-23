@@ -38,7 +38,7 @@ namespace UnityGLTF.Interactivity.Schema
     
     public class Math_Determinant : GltfInteractivityNodeSchema
     {
-        public override string Op { get; set; } = "math/transpose";
+        public override string Op { get; set; } = "math/determinant";
         
         [OutputSocketDescription(GltfTypes.Float)]
         public const string IdOut = "value";

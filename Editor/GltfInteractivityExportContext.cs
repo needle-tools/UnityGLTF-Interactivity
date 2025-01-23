@@ -321,6 +321,11 @@ namespace UnityGLTF.Interactivity
         {
             var varValue = GetVariableValue(unit, out string varName, out string varType);
 
+            if (GltfTypes.TypeIndex(varType) == -1)
+            {
+                UnitExportLogging.AddErrorLog(unit, "Type not supported for variable: " + varType);
+            }
+            
             var variableIndex = AddVariableWithIdIfNeeded(varName, varValue, unit.kind, varType);
             return variableIndex;
         }
@@ -370,6 +375,12 @@ namespace UnityGLTF.Interactivity
         public int AddEventIfNeeded(Unit eventUnit, Dictionary<string, GltfInteractivityUnitExporterNode.EventValues> arguments = null)
         {
             var eventId = eventUnit.defaultValues["name"] as string;
+            if (string.IsNullOrEmpty(eventId))
+            {
+                UnitExportLogging.AddErrorLog(eventUnit, "No event selected.");
+                Debug.LogError("Event Id is empty");
+                return -1;
+            }
             GameObject target = null;
 
             ValueInput targetValueInput;
@@ -639,6 +650,7 @@ namespace UnityGLTF.Interactivity
         public override void AfterSceneExport(GLTFSceneExporter exporter, GLTFRoot gltfRoot)
         {
             ActiveGltfRoot = gltfRoot;
+            UnitExportLogging.ClearLogs();
 
             var scriptMachines = new List<ScriptMachine>();
             
@@ -1318,6 +1330,7 @@ namespace UnityGLTF.Interactivity
                     foreach (var kvpNode in g.nodes)
                         if (kvpNode.Value.Nodes.Contains(node))
                         {
+                            UnitExportLogging.AddErrorLog(kvpNode.Key, "Validation Error: "+message);
                             sb.AppendLine($"Node Index {node.Index} with Schema={node.Schema.Op} from Unit={kvpNode.Key}: {message}");
                             return;
                         }

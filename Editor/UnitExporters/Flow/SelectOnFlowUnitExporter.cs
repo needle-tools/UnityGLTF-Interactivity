@@ -21,7 +21,10 @@ namespace UnityGLTF.Interactivity.Export
             var unit = unitExporter.unit as SelectOnFlow;
 
             if (unit.branchCount == 0)
+            {
+                UnitExportLogging.AddWarningLog(unit, "No branches. Will be skipped.");
                 return;
+            }
             
             var setVarNodes = new List<GltfInteractivityUnitExporterNode>();
             

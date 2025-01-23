@@ -118,6 +118,9 @@ namespace UnityGLTF.Interactivity.Export
             // If node is null then an error prevented it from being initialized
             // and this node is invalid.
             IsTranslatable = _nodes != null && _nodes.Count > 0;
+            
+            if (!IsTranslatable)
+                UnitExportLogging.AddErrorLog(unit, "Could not be exported to GLTF.");
         }
 
 
@@ -185,6 +188,8 @@ namespace UnityGLTF.Interactivity.Export
                                 ConvertValue(defaultValue, out var convertedValue, out int typeIndex);
                                 valueSocketData.Value = convertedValue;
                                 valueSocketData.Type = typeIndex;
+                                if (typeIndex == -1 && defaultValue != null)
+                                    UnitExportLogging.AddErrorLog(unit, "Unsupported type: " + defaultValue.GetType().ToString());
                             }
                         }
                         else if (inputPort.node.ConfigurationData.TryGetValue(inputPort.socketName,

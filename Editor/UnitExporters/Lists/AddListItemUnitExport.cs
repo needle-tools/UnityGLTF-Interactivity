@@ -2,11 +2,12 @@ using System;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityGLTF.Interactivity;
 using UnityGLTF.Interactivity.Export;
 
 namespace Editor.UnitExporters.Lists
 {
-    public class AddListItemUnitExport : IUnitExporter
+    public class AddListItemUnitExport : IUnitExporter, IUnitExporterFeedback
     {
         public Type unitType { get => typeof(AddListItem); }
         
@@ -29,6 +30,14 @@ namespace Editor.UnitExporters.Lists
             
             ListHelpers.AddItem(unitExporter, list, unit.item, unit.enter, unit.exit);
             unitExporter.ByPassValue(unit.listInput, unit.listOutput);
+        }
+
+        public UnitLogs GetFeedback(IUnit unit)
+        {
+            var logs = new UnitLogs();
+            logs.infos.Add("Be aware that exported lists will be limited in size to the capacity on export.");
+            
+            return logs;
         }
     }
 }

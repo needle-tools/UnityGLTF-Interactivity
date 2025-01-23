@@ -8,7 +8,7 @@ using UnityGLTF.Interactivity.Export;
 
 namespace Editor.UnitExporters.Lists
 {
-    public class CreateListUnitExport : IUnitExporter
+    public class CreateListUnitExport : IUnitExporter, IUnitExporterFeedback
     {
         public Type unitType { get => typeof(CreateList); }
         
@@ -55,6 +55,13 @@ namespace Editor.UnitExporters.Lists
                 }
             }
             
+        }
+
+        public UnitLogs GetFeedback(IUnit unit)
+        {
+            var logs = new UnitLogs();
+            logs.infos.Add("Exported list capacity will be limited to the size: "+(unit as CreateList).inputCount);
+            return logs;
         }
     }
 }

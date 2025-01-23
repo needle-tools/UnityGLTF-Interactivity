@@ -113,6 +113,7 @@ namespace UnityGLTF.Interactivity.Export
             if (gltfTypeIndex == -1)
             {
                 Debug.LogError("Unsupported type to get static value: " + value.GetType()+ " from " + unit.member.declaringType);
+                UnitExportLogging.AddErrorLog(unit, "Unsupported type: "+value.GetType().ToString());
                 unitExporter.IsTranslatable = false;
                 // Unsupported type
                 return;

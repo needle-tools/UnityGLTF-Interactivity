@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace Editor.UnitExporters.Lists
 {
-    public class FindObjectsOfTypeUnitExport : IUnitExporter
+    public class FindObjectsOfTypeUnitExport : IUnitExporter, IUnitExporterFeedback
     {
         public Type unitType
         {
@@ -59,6 +59,14 @@ namespace Editor.UnitExporters.Lists
             
             
             unitExporter.ByPassFlow(unit.enter, unit.exit);
+        }
+        
+        public UnitLogs GetFeedback(IUnit unit)
+        {
+            var logs = new UnitLogs();
+            logs.infos.Add("This will be exported as a static list of indices of the found objects.");
+            
+            return logs;
         }
     }
 }

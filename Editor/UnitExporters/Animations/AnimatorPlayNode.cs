@@ -34,17 +34,26 @@ namespace UnityGLTF.Interactivity.Export
                 unit.target, unit.defaultValues, unitExporter.exportContext);
 
             if (target == null)
+            {
+                UnitExportLogging.AddErrorLog(unit, "Can't resolve target GameObject");
                 return;
+            }
 
             // Get the state name from the node
             if (!GltfInteractivityNodeHelper.GetDefaultValue<string>(unit, _stateNameKey, out string stateName))
+            {
+                UnitExportLogging.AddErrorLog(unit, "Invalid state name.");
                 return;
+            }
             
             AnimatorState animationState = AnimatorHelper.GetAnimationState(target, stateName);
             int animationId = AnimatorHelper.GetAnimationId(animationState, unitExporter.exportContext);
 
             if (animationId == -1)
+            {
+                UnitExportLogging.AddErrorLog(unit, "Animation not found in export context.");
                 return;
+            }
 
             node.ValueSocketConnectionData[Animation_StartNode.IdValueAnimation].Value = animationId;
             node.ValueSocketConnectionData[Animation_StartNode.IdValueSpeed].Value = animationState.speed;

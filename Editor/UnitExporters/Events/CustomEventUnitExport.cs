@@ -22,7 +22,7 @@ namespace UnityGLTF.Interactivity.Export
 
             if (!customEvent.target.hasDefaultValue && !customEvent.target.hasValidConnection)
             {
-                Debug.LogWarning("Ignoring CustomEvent node because it has no target");
+                UnitExportLogging.AddErrorLog(customEvent, "Could not find target node for CustomEvent");
                 return;
             }
             

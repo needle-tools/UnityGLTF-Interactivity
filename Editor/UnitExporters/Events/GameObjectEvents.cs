@@ -46,16 +46,22 @@ namespace UnityGLTF.Interactivity.Export
             GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new TNodeSchema());
 
             if (!unit.valueInputs.TryGetValue("target", out var targetInput))
+            {
+                UnitExportLogging.AddErrorLog(unit, "Could not find target node for CustomEvent");
                 return;
+            }
 
             if (!unit.controlOutputs.TryGetValue("trigger", out var triggerOutput))
+            {
                 return;
+            }
             
             // NodeIndex's value should equal the ID of the object referenced by the target value input.
             GameObject target = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(targetInput, unit.defaultValues, unitExporter.exportContext);
 
             if (target == null)
             {
+                UnitExportLogging.AddErrorLog(unit, "No target object found.");
                 unitExporter.IsTranslatable = false;
                 return;
             }

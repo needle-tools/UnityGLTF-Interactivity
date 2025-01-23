@@ -1,3 +1,4 @@
+using Editor.UnitExporters;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityGLTF.Interactivity.Schema;
 
 namespace UnityGLTF.Interactivity.Export
 {
-    public class Debug_LogUnitExport : IUnitExporter
+    public class Debug_LogUnitExport : IUnitExporter, IUnitExporterFeedback
     {
         public System.Type unitType { get => typeof(InvokeMember); }
          
@@ -25,7 +26,10 @@ namespace UnityGLTF.Interactivity.Export
             var addADBE = unitExporter.exportContext.plugin.debugLogSetting.ADBEConsole;
 
             if (!addBabylon && !addADBE)
+            {
+                UnitExportLogging.AddWarningLog(unit,"No debug log output selected for Debug.Log unit. Skipping export. See Project Settings > UnityGltf");
                 return;
+            }
             
             var sequence_node = unitExporter.CreateNode(new Flow_SequenceNode());
             
@@ -60,6 +64,12 @@ namespace UnityGLTF.Interactivity.Export
             
             unitExporter.MapInputPortToSocketName(unit.enter, Flow_SequenceNode.IdFlowIn, sequence_node);
         }
-        
+
+        public UnitLogs GetFeedback(IUnit unit)
+        {
+            var logs = new UnitLogs();
+            logs.infos.Add("See Project Settings > UnityGltf for debug log output settings.");
+            return logs;
+        }
     }
 }

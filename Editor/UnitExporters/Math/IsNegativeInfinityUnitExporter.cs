@@ -5,7 +5,7 @@ using UnityGLTF.Interactivity.Schema;
 
 namespace UnityGLTF.Interactivity.Export
 {
-    public class IsNegativInfinityUnitExporter : IUnitExporter
+    public class IsNegativeInfinityUnitExporter : IUnitExporter
     {
         public Type unitType
         {
@@ -15,7 +15,7 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            InvokeUnitExport.RegisterInvokeExporter(typeof(float), nameof(float.IsNegativeInfinity), new IsNegativInfinityUnitExporter());
+            InvokeUnitExport.RegisterInvokeExporter(typeof(float), nameof(float.IsNegativeInfinity), new IsNegativeInfinityUnitExporter());
         }
         
         public void InitializeInteractivityNodes(UnitExporter unitExporter)

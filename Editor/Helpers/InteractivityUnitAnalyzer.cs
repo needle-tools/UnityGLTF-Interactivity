@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Editor.UnitExporters;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -34,6 +35,25 @@ namespace UnityGLTF.Interactivity
                 yield return Warning.Error("Node will not be exported with KHR_interactivity");
             else
             {
+                string infoFeedback = "";
+                string warningFeedback = "";
+                string errorFeedback = "";
+                var exporter = UnitExporterRegistry.GetUnitExporter(target);
+                if (exporter is IUnitExporterFeedback unitWithFeedback)
+                {
+                    var unitFeedback = unitWithFeedback.GetFeedback(target);
+                    if (unitFeedback != null)
+                    {
+                        if (unitFeedback.HasInfos())
+                            infoFeedback += System.Environment.NewLine + System.Environment.NewLine + unitFeedback.GetInfosAsString();
+                        if (unitFeedback.HasErrors())
+                            errorFeedback = unitFeedback.GetErrorsAsString();
+                        if (unitFeedback.HasWarnings())
+                            warningFeedback = unitFeedback.GetWarningsAsString();
+                    }
+                }
+                    
+                    
                 string[] supportedMembers = null;
                 
                 if (target is Expose expose)
@@ -44,10 +64,27 @@ namespace UnityGLTF.Interactivity
                                               +  System.Environment.NewLine 
                                               + "Supported members:"
                                               + System.Environment.NewLine + "•"
-                                              + string.Join(System.Environment.NewLine+ "•", supportedMembers));
+                                              + string.Join(System.Environment.NewLine+ "•"+infoFeedback, supportedMembers));
                 else
-                    yield return Warning.Info("Node will be exported with KHR_interactivity");
+                {
+                    yield return Warning.Info("Node will be exported with KHR_interactivity"+infoFeedback);
+                }
+
+                if (!string.IsNullOrEmpty(warningFeedback))
+                    yield return Warning.Caution(warningFeedback);
+                if (!string.IsNullOrEmpty(errorFeedback))
+                    yield return Warning.Error(errorFeedback);
             }
+
+            if (UnitExportLogging.unitLogMessages.TryGetValue(target, out var logMessages))
+            {
+                if (logMessages.HasWarnings())
+                    yield return Warning.Caution($"Last Gltf Export Warnings: {System.Environment.NewLine} {logMessages.GetWarningsAsString()}");
+                else if (logMessages.HasErrors())
+                    yield return Warning.Error($"Last Gltf Export Errors: {System.Environment.NewLine} {logMessages.GetErrorsAsString()}");
+                
+            }
+            
         }
     }
 }

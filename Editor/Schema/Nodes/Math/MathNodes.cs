@@ -207,6 +207,25 @@ namespace UnityGLTF.Interactivity.Schema
         }
     }
     
+    public class Math_Combine4x4Node : GltfInteractivityNodeSchema
+    {
+        public override string Op { get; set; } = "math/combine4x4";
+        
+        [OutputSocketDescription(GltfTypes.Float4x4)]
+        public const string IdValueOut = "value";
+
+        public static readonly string[] IdInputs = new string[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"};
+        
+        public Math_Combine4x4Node() : base()
+        {
+            for (int i = 0; i < IdInputs.Length; i++)
+                InputValueSockets.Add(IdInputs[i], new InputValueSocketDescriptor()
+                {
+                    SupportedTypes = new string[] { "float" },
+                });
+        }
+    }
+    
     public class Math_Extract3x3Node : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/extract3x3";
@@ -225,6 +244,25 @@ namespace UnityGLTF.Interactivity.Schema
         }
     }
     
+    public class Math_Combine3x3Node : GltfInteractivityNodeSchema
+    {
+        public override string Op { get; set; } = "math/combine3x3";
+        
+        [OutputSocketDescription(GltfTypes.Float3x3)]
+        public const string IdValueOut = "value";
+
+        public static readonly string[] IdInputs = new string[] {"a", "b", "c", "d", "e", "f", "g", "h", "i"};
+        
+        public Math_Combine3x3Node() : base()
+        {
+            for (int i = 0; i < IdInputs.Length; i++)
+                InputValueSockets.Add(IdInputs[i], new InputValueSocketDescriptor()
+                {
+                    SupportedTypes = new string[] { "float" },
+                });
+        }
+    }
+    
     public class Math_Extract2x2Node : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/extract2x2";
@@ -239,6 +277,25 @@ namespace UnityGLTF.Interactivity.Schema
                 {
                     SupportedTypes = new string[] { "float" },
                     expectedType =  ExpectedType.Float
+                });
+        }
+    }
+    
+    public class Math_Combine2x2Node : GltfInteractivityNodeSchema
+    {
+        public override string Op { get; set; } = "math/combine2x2";
+        
+        [OutputSocketDescription(GltfTypes.Float2x2)]
+        public const string IdValueOut = "value";
+
+        public static readonly string[] IdInputs = new string[] {"a", "b", "c", "d"};
+        
+        public Math_Combine2x2Node() : base()
+        {
+            for (int i = 0; i < IdInputs.Length; i++)
+                InputValueSockets.Add(IdInputs[i], new InputValueSocketDescriptor()
+                {
+                    SupportedTypes = new string[] { "float" },
                 });
         }
     }

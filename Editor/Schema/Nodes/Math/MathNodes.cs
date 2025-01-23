@@ -434,9 +434,11 @@ namespace UnityGLTF.Interactivity.Schema
         [OutputSocketDescriptionWithTypeDependencyFromInput(IdValueA)]
         public const string IdOut = "value";
         
-        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueB, GltfTypes.Float, GltfTypes.Float2, GltfTypes.Float3, GltfTypes.Float4)]
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueB, GltfTypes.Float, 
+            GltfTypes.Float2, GltfTypes.Float3, GltfTypes.Float4, GltfTypes.Float2x2, GltfTypes.Float3x3, GltfTypes.Float4x4)]
         public const string IdValueA = "a";
-        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueA, GltfTypes.Float, GltfTypes.Float2, GltfTypes.Float3, GltfTypes.Float4)]
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueA, GltfTypes.Float, 
+            GltfTypes.Float2, GltfTypes.Float3, GltfTypes.Float4, GltfTypes.Float2x2, GltfTypes.Float3x3, GltfTypes.Float4x4)]
         public const string IdValueB = "b";
     }
     

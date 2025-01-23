@@ -6,7 +6,7 @@ using UnityGLTF.Interactivity.Schema;
 
 namespace UnityGLTF.Interactivity.Export
 {
-    public class VectorAndMatrixExposeUnitExports : IUnitExporter
+    public class VectorQuaternionMatrixExposeUnitExports : IUnitExporter
     {
         private static readonly string[] VectorMemberIndex = new string[] { "x", "y", "z", "w" };
 
@@ -25,11 +25,13 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            var converter = new VectorAndMatrixExposeUnitExports();
+            var converter = new VectorQuaternionMatrixExposeUnitExports();
             ExposeUnitExport.RegisterExposeConvert(typeof(Vector2), converter, "x", "y");
             ExposeUnitExport.RegisterExposeConvert(typeof(Vector3), converter, "x", "y", "z");
             ExposeUnitExport.RegisterExposeConvert(typeof(Vector4), converter, "x", "y", "z", "w");
-            ExposeUnitExport.RegisterExposeConvert(typeof(Matrix4x4), converter);
+            ExposeUnitExport.RegisterExposeConvert(typeof(Matrix4x4), converter, MatrixMemberIndex);
+
+            ExposeUnitExport.RegisterExposeConvert(typeof(Quaternion), converter, "x", "y", "z", "w");
 
             for (int i = 0; i < 2; i++)
                 GetMemberUnitExport.RegisterMemberExporter(typeof(Vector2), VectorMemberIndex[i], converter);
@@ -38,7 +40,11 @@ namespace UnityGLTF.Interactivity.Export
                 GetMemberUnitExport.RegisterMemberExporter(typeof(Vector3), VectorMemberIndex[i], converter);
 
             for (int i = 0; i < 4; i++)
+            {
                 GetMemberUnitExport.RegisterMemberExporter(typeof(Vector4), VectorMemberIndex[i], converter);
+                GetMemberUnitExport.RegisterMemberExporter(typeof(Quaternion), VectorMemberIndex[i], converter);
+                
+            }
 
             for (int i = 0; i < MatrixMemberIndex.Length; i++)
                 GetMemberUnitExport.RegisterMemberExporter(typeof(Matrix4x4), MatrixMemberIndex[i], converter);
@@ -68,7 +74,7 @@ namespace UnityGLTF.Interactivity.Export
                 schema = new Math_Extract2Node();
             else if (type == typeof(Vector3))
                 schema = new Math_Extract3Node();
-            else if (type == typeof(Vector4))
+            else if (type == typeof(Vector4) || type == typeof(Quaternion))
                 schema = new Math_Extract4Node();
             else if (type == typeof(Matrix4x4))
                 schema = new Math_Extract4x4Node();

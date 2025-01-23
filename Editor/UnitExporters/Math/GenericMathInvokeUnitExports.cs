@@ -59,6 +59,7 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Min), new GenericInvokeMathInvokeUnitExporters(new Math_MinNode()));
             InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Max), new GenericInvokeMathInvokeUnitExporters(new Math_MaxNode()));
             InvokeUnitExport.RegisterInvokeExporter(typeof(Mathf), nameof(Mathf.Equals), new GenericInvokeMathInvokeUnitExporters(new Math_EqNode()));
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Matrix4x4), ".ctor", new GenericInvokeMathInvokeUnitExporters(new Math_Combine4x4Node()));
         }
         
         public GenericInvokeMathInvokeUnitExporters(GltfInteractivityNodeSchema schema) : base(schema)

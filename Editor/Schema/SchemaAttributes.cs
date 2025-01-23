@@ -60,11 +60,5 @@ namespace UnityGLTF.Interactivity.Schema
     [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true)]
     public class ConfigDescriptionAttribute : Attribute
     {
-        public string gltfValueType;
-        
-        public ConfigDescriptionAttribute(string gltfValueType)
-        {
-            this.gltfValueType = gltfValueType;
-        }
     }
 }

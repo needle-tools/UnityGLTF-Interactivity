@@ -4,7 +4,7 @@ namespace UnityGLTF.Interactivity.Schema
     {
         public override string Op { get; set; } = "variable/set";
 
-        [ConfigDescription(GltfTypes.Int)]
+        [ConfigDescription]
         public const string IdConfigVarIndex = "variable";
 
         [FlowInSocketDescription]

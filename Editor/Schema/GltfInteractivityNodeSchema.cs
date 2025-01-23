@@ -43,7 +43,7 @@ namespace UnityGLTF.Interactivity
                     
                     if (attribute is ConfigDescriptionAttribute configDescription)
                     {
-                        Configuration.Add(fieldValue, new ConfigDescriptor { Type = configDescription.gltfValueType });
+                        Configuration.Add(fieldValue, new ConfigDescriptor( ));
                     }
                     else if (attribute is OutputSocketDescriptionWithTypeDependencyFromInputAttribute outputSocketDescriptionWithExpectedType)
                     {

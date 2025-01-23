@@ -12,7 +12,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdFlowInReset = "reset";
         [OutputSocketDescription(GltfTypes.Int)]
         public const string IdOutRemainingInputs = "remainingInputs";
-        [ConfigDescription(GltfTypes.Int)]
+        [ConfigDescription]
         public const string IdConfigInputFlows = "inputFlows";
     }
 }

@@ -7,9 +7,9 @@ namespace UnityGLTF.Interactivity.Schema
         public override string Op { get; set; } = "event/onHoverOut";
         public override string Extension { get; protected set; } = KHR_node_hoverability_Factory.EXTENSION_NAME;
 
-        [ConfigDescription(GltfTypes.Int)]
+        [ConfigDescription]
         public const string IdConfigNodeIndex = "nodeIndex";
-        [ConfigDescription(GltfTypes.Bool)]
+        [ConfigDescription]
         public const string IdConfigStopPropagation = "stopPropagation";
         [FlowOutSocketDescription]
         public const string IdFlowOut = "out";

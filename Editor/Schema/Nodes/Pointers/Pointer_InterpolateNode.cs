@@ -10,9 +10,9 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdFlowOut = "out";
         [InputSocketDescription()]
         public const string IdValue = "value";
-        [ConfigDescription(GltfTypes.String)]
+        [ConfigDescription]
         public const string IdPointer = "pointer";
-        [ConfigDescription(GltfTypes.Int)]
+        [ConfigDescription]
         public const string IdPointerValueType = "type";
         
         [InputSocketDescription(GltfTypes.Float)]

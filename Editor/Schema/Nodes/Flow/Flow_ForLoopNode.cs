@@ -18,7 +18,7 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdEndIndex = "endIndex";
         [OutputSocketDescription(GltfTypes.Int)]
         public const string IdIndex = "index";
-        [ConfigDescription(GltfTypes.Int)]
+        [ConfigDescription]
         public const string IdConfigInitialIndex = "initialIndex";
     }
 }

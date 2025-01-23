@@ -40,6 +40,58 @@ namespace UnityGLTF.Interactivity
                 Debug.LogError($"Socket {socketId} not found in node {Schema.Op}");
             }
         }
+
+        public void SetSchema(GltfInteractivityNodeSchema schema, bool applySocketDescriptors, bool clearExistingSocketData = true)
+        {
+            this.Schema = schema;
+            if (applySocketDescriptors)
+            {
+                Schema = schema;
+
+                if (clearExistingSocketData)
+                {
+                    ConfigurationData.Clear();
+                    FlowSocketConnectionData.Clear();
+                    ValueSocketConnectionData.Clear();
+                    OutValueSocket.Clear();
+                    MetaData.Clear();
+                }
+                
+                foreach (var descriptor in Schema.Configuration)
+                {
+                    ConfigurationData.Add(descriptor.Key, new ConfigData());
+                }
+
+                foreach (var descriptor in Schema.InputValueSockets)
+                {
+                    ValueSocketConnectionData.Add(descriptor.Key, new ValueSocketData()
+                    {
+                        Type = GltfTypes.TypeIndexByGltfSignature(descriptor.Value.SupportedTypes[0]),
+                        typeRestriction = descriptor.Value.typeRestriction
+                    });
+                }
+                foreach (var descriptor in Schema.OutputValueSockets)
+                {
+                    if (descriptor.Value.SupportedTypes.Length == 1 && descriptor.Value.expectedType == null)
+                        OutValueSocket.Add(descriptor.Key,
+                            new ValueOutSocket {expectedType = ExpectedType.GtlfType(descriptor.Value.SupportedTypes[0])});
+                    else
+                        OutValueSocket.Add(descriptor.Key,
+                            new ValueOutSocket {expectedType = descriptor.Value.expectedType });
+                }
+
+                foreach (var descriptor in Schema.OutputFlowSockets)
+                {
+                    FlowSocketConnectionData.Add(descriptor.Key, new FlowSocketData());
+                }
+            
+                foreach (GltfInteractivityNodeSchema.MetaDataEntry descriptor in Schema.MetaDatas)
+                {
+                    MetaData.Add(descriptor.key, descriptor.value);
+                }
+            }
+                
+        }
         
         public void SetValueInSocketSource(string socketId,  GltfInteractivityNode sourceNode, string sourceSocketId, TypeRestriction typeRestriction = null)
         {
@@ -79,40 +131,7 @@ namespace UnityGLTF.Interactivity
         
         public GltfInteractivityNode(GltfInteractivityNodeSchema schema)
         {
-            Schema = schema;
-
-            foreach (var descriptor in Schema.Configuration)
-            {
-                ConfigurationData.Add(descriptor.Key, new ConfigData());
-            }
-
-            foreach (var descriptor in Schema.InputValueSockets)
-            {
-                ValueSocketConnectionData.Add(descriptor.Key, new ValueSocketData()
-                {
-                    Type = GltfTypes.TypeIndexByGltfSignature(descriptor.Value.SupportedTypes[0]),
-                    typeRestriction = descriptor.Value.typeRestriction
-                });
-            }
-            foreach (var descriptor in Schema.OutputValueSockets)
-            {
-                if (descriptor.Value.SupportedTypes.Length == 1 && descriptor.Value.expectedType == null)
-                    OutValueSocket.Add(descriptor.Key,
-                        new ValueOutSocket {expectedType = ExpectedType.GtlfType(descriptor.Value.SupportedTypes[0])});
-                else
-                    OutValueSocket.Add(descriptor.Key,
-                        new ValueOutSocket {expectedType = descriptor.Value.expectedType });
-            }
-
-            foreach (var descriptor in Schema.OutputFlowSockets)
-            {
-                FlowSocketConnectionData.Add(descriptor.Key, new FlowSocketData());
-            }
-            
-            foreach (GltfInteractivityNodeSchema.MetaDataEntry descriptor in Schema.MetaDatas)
-            {
-                MetaData.Add(descriptor.key, descriptor.value);
-            }
+            SetSchema(schema, true);
         }
         
         public virtual JObject SerializeObject()

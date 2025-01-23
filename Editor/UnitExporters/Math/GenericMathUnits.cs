@@ -30,9 +30,7 @@ namespace UnityGLTF.Interactivity.Export
                 new Math_SubNode()));
             UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Vector4Subtract),
                 new Math_SubNode()));
-
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(GenericMultiply),
-                new Math_MulNode()));
+            
             UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Vector2Multiply),
                 new Math_MulNode()));
             UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Vector3Multiply),

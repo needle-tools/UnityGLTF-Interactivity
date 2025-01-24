@@ -54,13 +54,9 @@ namespace UnityGLTF.Interactivity.Export
 
             }
             var index = unitExporter.exportContext.AddEventIfNeeded(customEvent, args);
-            if (index == -1)
-            {
-                unitExporter.IsTranslatable = false;
-                return;
-            }
-            node.ConfigurationData["event"].Value = index;
             
+            // Set the type of the event values on a later stage when we can identify the type of the input.
+            // Also in case a Event Trigger uses a NULL as input, we also check for the input types for existing events
             unitExporter.exportContext.OnBeforeSerialization += (List<GltfInteractivityNode> nodes) =>
             {
                 var customEvent = unitExporter.exportContext.customEvents[index];
@@ -75,6 +71,13 @@ namespace UnityGLTF.Interactivity.Export
                     eventValue.Value.Type = argTypeIndex;
                 }
             };
+            
+            if (index == -1)
+            {
+                unitExporter.IsTranslatable = false;
+                return;
+            }
+            node.ConfigurationData["event"].Value = index;
             
             unitExporter.MapOutFlowConnectionWhenValid(customEvent.exit, Event_SendNode.IdFlowOut, node);
         }

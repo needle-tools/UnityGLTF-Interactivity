@@ -28,7 +28,7 @@ namespace UnityGLTF.Interactivity
                 }
                 else
                 {
-                    if (unit is Literal || unit is This)
+                    if (unit is Literal || unit is This || unit is Null)
                     {
                         // ignore, these are inlined on export
                     }

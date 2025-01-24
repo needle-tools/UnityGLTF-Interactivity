@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -18,32 +19,31 @@ namespace UnityGLTF.Interactivity.Export
 
         public void InitializeInteractivityNodes(UnitExporter unitExporter)
         {
-            var customEvent = unitExporter.unit as CustomEvent;
+            var unit = unitExporter.unit as CustomEvent;
 
-            if (!customEvent.target.hasDefaultValue && !customEvent.target.hasValidConnection)
+            if (!unit.target.hasDefaultValue && !unit.target.hasValidConnection)
             {
-                UnitExportLogging.AddErrorLog(customEvent, "Could not find target node for CustomEvent");
+                UnitExportLogging.AddErrorLog(unit, "Could not find target node for CustomEvent");
                 return;
             }
             
             var node = unitExporter.CreateNode(new Event_ReceiveNode());
-            node.MapInputPortToSocketName(customEvent.name, "event");
+            node.MapInputPortToSocketName(unit.name, "event");
             
             var args = new Dictionary<string, GltfInteractivityUnitExporterNode.EventValues>();
-            args.Add("targetNodeIndex", new GltfInteractivityUnitExporterNode.EventValues {Type = GltfTypes.TypeIndex("int") });
+            args.Add("targetNodeIndex", new GltfInteractivityUnitExporterNode.EventValues {Type = GltfTypes.TypeIndexByGltfSignature("int") });
 
-            foreach (var arg in customEvent.argumentPorts)
+            foreach (var arg in unit.argumentPorts)
             {
                 var argId = arg.key;
                 var argTypeIndex = GltfTypes.TypeIndex(arg.type);
                 var newArg = new GltfInteractivityUnitExporterNode.EventValues { Type = argTypeIndex };
                 args.Add(argId, newArg);
                 // TODO: adding default values?
-
-                node.MapValueOutportToSocketName(arg, argId);
+                node.ValueOut(argId).MapToPort(arg);
             }
             
-            var index = unitExporter.exportContext.AddEventIfNeeded(customEvent, args);
+            var index = unitExporter.exportContext.AddEventIfNeeded(unit, args);
             node.ConfigurationData["event"].Value = index;
             node.ValueOut("targetNodeIndex").ExpectedType(ExpectedType.Int);
 
@@ -59,7 +59,28 @@ namespace UnityGLTF.Interactivity.Export
             node.FlowOut(Event_ReceiveNode.IdFlowOut)
                 .ConnectToFlowDestination(branchNode.FlowIn(Flow_BranchNode.IdFlowIn));
 
-            branchNode.FlowOut(Flow_BranchNode.IdFlowOutTrue).MapToControlOutput(customEvent.trigger);
+            branchNode.FlowOut(Flow_BranchNode.IdFlowOutTrue).MapToControlOutput(unit.trigger);
+            
+            
+            
+            unitExporter.exportContext.OnBeforeSerialization += (List<GltfInteractivityNode> nodes) =>
+            {
+                var customEvent = unitExporter.exportContext.customEvents[index];
+
+                foreach (var argValue in args)
+                {
+                    var eventValue = customEvent.Values.FirstOrDefault(x => x.Key == argValue.Key);
+                    if (eventValue.Value == null || eventValue.Value.Type != -1)
+                        continue;
+                    
+                    var argTypeIndex = unitExporter.exportContext.GetValueTypeForOutput(node, argValue.Key);
+                    eventValue.Value.Type = argTypeIndex;
+                    if (argTypeIndex == -1) 
+                        UnitExportLogging.AddErrorLog(unit, "Could not resolve type for event value: "+argValue.Key);
+                    else
+                        node.ValueOut(argValue.Key).ExpectedType(ExpectedType.GtlfType(argTypeIndex));
+                }
+            };
         }
     }
 }

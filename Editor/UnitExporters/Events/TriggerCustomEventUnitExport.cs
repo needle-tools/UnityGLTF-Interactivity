@@ -20,40 +20,33 @@ namespace UnityGLTF.Interactivity.Export
 
         public void InitializeInteractivityNodes(UnitExporter unitExporter)
         {
-            var customEvent = unitExporter.unit as TriggerCustomEvent;
-            if (!customEvent.target.hasDefaultValue && !customEvent.target.hasValidConnection)
+            var unit = unitExporter.unit as TriggerCustomEvent;
+            if (!unit.target.hasDefaultValue && !unit.target.hasValidConnection)
             {
-                UnitExportLogging.AddErrorLog(customEvent, "Could not find target node for CustomEvent");
+                UnitExportLogging.AddErrorLog(unit, "Could not find target node for CustomEvent");
                 return;
             }
             
             GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Event_SendNode());
             
-            unitExporter.MapInputPortToSocketName(customEvent.name, Event_SendNode.IdEvent, node);
-            unitExporter.MapInputPortToSocketName(customEvent.enter, Event_SendNode.IdFlowIn, node);
+            unitExporter.MapInputPortToSocketName(unit.name, Event_SendNode.IdEvent, node);
+            unitExporter.MapInputPortToSocketName(unit.enter, Event_SendNode.IdFlowIn, node);
             
-            node.ValueIn("targetNodeIndex").MapToInputPort(customEvent.target).SetType(TypeRestriction.LimitToInt);
+            node.ValueIn("targetNodeIndex").MapToInputPort(unit.target).SetType(TypeRestriction.LimitToInt);
             
             var args = new Dictionary<string, GltfInteractivityUnitExporterNode.EventValues>();
-            args.Add("targetNodeIndex", new GltfInteractivityUnitExporterNode.EventValues { Type = GltfTypes.TypeIndex("int") });
+            args.Add("targetNodeIndex", new GltfInteractivityUnitExporterNode.EventValues { Type = GltfTypes.TypeIndexByGltfSignature("int")  });
             
-            foreach (var arg in customEvent.arguments)
+            foreach (var arg in unit.arguments)
             {
                 var argId = arg.key;
                 var argTypeIndex = GltfTypes.TypeIndex(arg.type);
                 var eventValue = new GltfInteractivityUnitExporterNode.EventValues { Type = argTypeIndex };
                 args.Add(argId, eventValue);
-                
-                unitExporter.MapInputPortToSocketName(arg, argId, node);
-                var valueSocketData = new GltfInteractivityUnitExporterNode.ValueSocketData()
-                {
-                    Type = argTypeIndex,
-                };
-                node.ValueSocketConnectionData.Add(argId, valueSocketData);
 
-
+                node.ValueIn(argId).MapToInputPort(arg);
             }
-            var index = unitExporter.exportContext.AddEventIfNeeded(customEvent, args);
+            var index = unitExporter.exportContext.AddEventIfNeeded(unit, args);
             
             // Set the type of the event values on a later stage when we can identify the type of the input.
             // Also in case a Event Trigger uses a NULL as input, we also check for the input types for existing events
@@ -69,6 +62,10 @@ namespace UnityGLTF.Interactivity.Export
                     
                     var argTypeIndex = unitExporter.exportContext.GetValueTypeForInput(node, argValue.Key);
                     eventValue.Value.Type = argTypeIndex;
+                    if (argTypeIndex == -1)
+                        UnitExportLogging.AddErrorLog(unit, "Could not resolve type for event value: " + argValue.Key);
+                    else
+                        node.ValueIn(argValue.Key).SetType(TypeRestriction.LimitToType(argTypeIndex));
                 }
             };
             
@@ -79,7 +76,7 @@ namespace UnityGLTF.Interactivity.Export
             }
             node.ConfigurationData["event"].Value = index;
             
-            unitExporter.MapOutFlowConnectionWhenValid(customEvent.exit, Event_SendNode.IdFlowOut, node);
+            unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Event_SendNode.IdFlowOut, node);
         }
     }
 }

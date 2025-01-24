@@ -382,6 +382,48 @@ namespace UnityGLTF.Interactivity
             return varValue;
         }
 
+        public int GetValueTypeForOutput(GltfInteractivityNode node, string socketName)
+        {
+            if (!node.OutValueSocket.TryGetValue(socketName, out var socketData))
+                return -1;
+
+            int nodeIndex = nodesToSerialize.IndexOf(node);
+            for (int i = 0; i < nodesToSerialize.Count; i++)
+            {
+                var otherNode = nodesToSerialize[i];
+                if (otherNode == node)
+                    continue;
+
+                foreach (var otherSocketData in otherNode.ValueSocketConnectionData.Values)
+                {
+                    if (otherSocketData.Node == nodeIndex && otherSocketData.Socket == socketName)
+                    {
+                        if (otherSocketData.Type != -1)
+                            return otherSocketData.Type;
+
+                        if (otherSocketData.typeRestriction != null)
+                        {
+                            if (!string.IsNullOrEmpty(otherSocketData.typeRestriction.limitToType))
+                            {
+                                return GltfTypes.TypeIndexByGltfSignature(otherSocketData.typeRestriction.limitToType);
+                            }
+
+                            if (!string.IsNullOrEmpty(otherSocketData.typeRestriction.fromInputPort))
+                            {
+                                var inputType = GetValueTypeForInput(otherNode,
+                                    otherSocketData.typeRestriction.fromInputPort);
+                                if (inputType != -1)
+                                    return inputType;
+
+                            }
+                        }
+                    }
+                }
+            }
+
+            return -1;
+        }
+        
         public int GetValueTypeForInput(GltfInteractivityNode node, string socketName)
         {
             if (!node.ValueSocketConnectionData.TryGetValue(socketName, out var socketData))

@@ -47,26 +47,41 @@ namespace UnityGLTF.Interactivity.Export
                 node.ValueIn(argId).MapToInputPort(arg);
             }
             var index = unitExporter.exportContext.AddEventIfNeeded(unit, args);
-            
-            // Set the type of the event values on a later stage when we can identify the type of the input.
-            // Also in case a Event Trigger uses a NULL as input, we also check for the input types for existing events
-            unitExporter.exportContext.OnBeforeSerialization += (List<GltfInteractivityNode> nodes) =>
+
+            void ResolveTypes()
             {
                 var customEvent = unitExporter.exportContext.customEvents[index];
 
                 foreach (var argValue in args)
                 {
                     var eventValue = customEvent.Values.FirstOrDefault(x => x.Key == argValue.Key);
-                    if (eventValue.Value == null || eventValue.Value.Type != -1)
+                    if (eventValue.Value == null)
                         continue;
-                    
-                    var argTypeIndex = unitExporter.exportContext.GetValueTypeForInput(node, argValue.Key);
+
+                    int argTypeIndex = -1;
+                    if (eventValue.Value.Type == -1)
+                        argTypeIndex = unitExporter.exportContext.GetValueTypeForInput(node, argValue.Key);
+                    else
+                        argTypeIndex = eventValue.Value.Type;
+
                     eventValue.Value.Type = argTypeIndex;
                     if (argTypeIndex == -1)
                         UnitExportLogging.AddErrorLog(unit, "Could not resolve type for event value: " + argValue.Key);
                     else
                         node.ValueIn(argValue.Key).SetType(TypeRestriction.LimitToType(argTypeIndex));
                 }
+            }
+
+            // Set the type of the event values on a later stage when we can identify the type of the input.
+            // Also in case a Event Trigger uses a NULL as input, we also check for the input types for existing events
+            unitExporter.exportContext.OnNodesCreated += (List<GltfInteractivityNode> nodes) =>
+            {
+                ResolveTypes();
+            };
+
+            unitExporter.exportContext.OnBeforeSerialization += (List<GltfInteractivityNode> nodes) =>
+            {
+                ResolveTypes();
             };
             
             if (index == -1)

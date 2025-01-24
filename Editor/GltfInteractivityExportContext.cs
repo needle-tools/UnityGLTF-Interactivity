@@ -424,11 +424,34 @@ namespace UnityGLTF.Interactivity
             return -1;
         }
         
-        public int GetValueTypeForInput(GltfInteractivityNode node, string socketName)
+        public int GetValueTypeForInput(GltfInteractivityNode node, string socketName, HashSet<GltfInteractivityNode.ValueSocketData> visited = null)
         {
+            if (visited == null)
+                visited = new HashSet<GltfInteractivityNode.ValueSocketData>();
+            
             if (!node.ValueSocketConnectionData.TryGetValue(socketName, out var socketData))
                 return -1;
+            
+            if (visited.Contains(socketData))
+                return -1;
+            visited.Add(socketData);
+            
+            if (socketData.Type != -1 && socketData.Value != null)
+                return socketData.Type;
 
+            if (socketData.typeRestriction != null)
+            {
+                if (!string.IsNullOrEmpty(socketData.typeRestriction.limitToType))
+                    return GltfTypes.TypeIndexByGltfSignature(socketData.typeRestriction.limitToType);
+
+                if (!string.IsNullOrEmpty(socketData.typeRestriction.fromInputPort))
+                {
+                    int typeFromInput = GetValueTypeForInput(node, socketData.typeRestriction.fromInputPort, visited);
+                    if (typeFromInput != -1)
+                        return typeFromInput;
+                }
+            }
+            
             if (socketData.Node != null)
             {
                 var nodeIndex = socketData.Node.Value;
@@ -438,13 +461,14 @@ namespace UnityGLTF.Interactivity
                     if (inputSourceNode.OutValueSocket.TryGetValue(socketData.Socket,
                             out var sourceNodeOutSocketData))
                     {
+                        
                         if (sourceNodeOutSocketData.expectedType != null)
                         {
                             if (sourceNodeOutSocketData.expectedType.typeIndex != null)
                                 return sourceNodeOutSocketData.expectedType.typeIndex.Value;
 
                             if (sourceNodeOutSocketData.expectedType.fromInputPort != null)
-                                return GetValueTypeForInput(inputSourceNode, sourceNodeOutSocketData.expectedType.fromInputPort);
+                                return GetValueTypeForInput(inputSourceNode, sourceNodeOutSocketData.expectedType.fromInputPort, visited);
                         }
                     }
                     
@@ -522,30 +546,8 @@ namespace UnityGLTF.Interactivity
                 Debug.LogError("Event Id is empty");
                 return -1;
             }
-            GameObject target = null;
-
-            ValueInput targetValueInput;
-            if (eventUnit is TriggerCustomEvent triggerCustomEvent)
-                targetValueInput = triggerCustomEvent.target;
-            else if (eventUnit is CustomEvent customEvent)
-                targetValueInput = customEvent.target;
-            else
-                throw new ArgumentException("Event Unit type not supported: " + eventUnit.GetType().Name);
-
-            string id = null; 
-            target = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(targetValueInput, eventUnit.defaultValues, this);
-            if (target != null)
-            {
-                var targetIndex = exporter.GetTransformIndex(target.transform);
-               // id = $"node_{targetIndex}_{eventId}";
-            }
-
-            if (id == null)
-            {
-                id = eventId;
-            }
             
-            return AddEventWithIdIfNeeded(id, arguments);
+            return AddEventWithIdIfNeeded(eventId, arguments);
         }
         
         public int AddEventWithIdIfNeeded(string id, Dictionary<string, GltfInteractivityUnitExporterNode.EventValues> arguments = null)

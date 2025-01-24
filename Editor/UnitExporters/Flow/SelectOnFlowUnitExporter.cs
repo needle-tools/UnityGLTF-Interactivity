@@ -42,6 +42,7 @@ namespace UnityGLTF.Interactivity.Export
             {
                 var setVar = VariablesHelpers.SetVariable(unitExporter, varIndex, unit.valueInputs[i], unit.controlInputs[i], unit.exit);
                 setVarNodes.Add(setVar);
+                setVar.ValueIn(Variable_SetNode.IdInputValue).socket.Value.Type = -1;
             }
 
             void PostTypeResolving(bool lastTry = false)

@@ -61,19 +61,22 @@ namespace UnityGLTF.Interactivity.Export
 
             branchNode.FlowOut(Flow_BranchNode.IdFlowOutTrue).MapToControlOutput(unit.trigger);
             
-            
-            
-            unitExporter.exportContext.OnBeforeSerialization += (List<GltfInteractivityNode> nodes) =>
+            void ResolveTypes()
             {
                 var customEvent = unitExporter.exportContext.customEvents[index];
 
                 foreach (var argValue in args)
                 {
                     var eventValue = customEvent.Values.FirstOrDefault(x => x.Key == argValue.Key);
-                    if (eventValue.Value == null || eventValue.Value.Type != -1)
+                    if (eventValue.Value == null)
                         continue;
+
+                    int argTypeIndex = -1;
+                    if (eventValue.Value.Type == -1)
+                        argTypeIndex = unitExporter.exportContext.GetValueTypeForOutput(node, argValue.Key);
+                    else
+                        argTypeIndex = eventValue.Value.Type;
                     
-                    var argTypeIndex = unitExporter.exportContext.GetValueTypeForOutput(node, argValue.Key);
                     eventValue.Value.Type = argTypeIndex;
                     if (argTypeIndex == -1) 
                         UnitExportLogging.AddErrorLog(unit, "Could not resolve type for event value: "+argValue.Key);
@@ -81,6 +84,17 @@ namespace UnityGLTF.Interactivity.Export
                         node.ValueOut(argValue.Key).ExpectedType(ExpectedType.GtlfType(argTypeIndex));
                 }
             };
+  
+            unitExporter.exportContext.OnNodesCreated += (List<GltfInteractivityNode> nodes) =>
+            {
+                ResolveTypes();
+            };
+
+            unitExporter.exportContext.OnBeforeSerialization += (List<GltfInteractivityNode> nodes) =>
+            {
+                ResolveTypes();
+            };   
+            
         }
     }
 }

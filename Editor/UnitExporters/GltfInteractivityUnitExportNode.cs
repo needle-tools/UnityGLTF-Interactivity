@@ -235,7 +235,7 @@ namespace UnityGLTF.Interactivity
                 ValueSocketConnectionData.Add(pointerId, new GltfInteractivityUnitExporterNode.ValueSocketData());
             }
             
-            ValueIn(pointerId).MapToInputPort(targetInputPort);
+            ValueIn(pointerId).MapToInputPort(targetInputPort).SetType(TypeRestriction.LimitToInt);
         }
         
         public void SetupPointerTemplateAndTargetInput(string pointerId, string pointerTemplate, string valueGltfType)

@@ -28,7 +28,7 @@ namespace UnityGLTF.Interactivity
             
             // These are exported implicitly, so let's not warn.
             // TODO for some types we might want to warn if we don't support them altogether
-            if (target is Literal || target is This)
+            if (target is Literal || target is This || target is Null)
                 yield break;
             
             if (!UnitExporterRegistry.HasUnitExporter(target))

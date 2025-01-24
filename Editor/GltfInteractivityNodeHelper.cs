@@ -20,6 +20,9 @@ namespace UnityGLTF.Interactivity
 
             foreach (IUnit unit in sortedNodes)
             {
+                if (unit is Literal || unit is This || unit is Null)
+                    continue;
+                
                 UnitExporter unitExporter = UnitExporterRegistry.CreateUnitExporter(exportContext, unit);
                 if (unitExporter != null)
                 {
@@ -27,16 +30,7 @@ namespace UnityGLTF.Interactivity
                         validNodes.Add(unit, unitExporter);
                 }
                 else
-                {
-                    if (unit is Literal || unit is This || unit is Null)
-                    {
-                        // ignore, these are inlined on export
-                    }
-                    else
-                    {
-                        Debug.LogWarning("ExportNode is null for unit: " + Log(unit)+ " of type: " + unit.GetType());
-                    }
-                }
+                     Debug.LogWarning("ExportNode is null for unit: " + Log(unit)+ " of type: " + unit.GetType());
             }
 
             return validNodes;

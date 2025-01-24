@@ -260,24 +260,29 @@ namespace UnityGLTF.Interactivity
                 }
                 else
                 {
+                    UnitExportLogging.AddErrorLog(unit, "Variable not found");
                     Debug.LogError("Variable not found: " + varName);
                     return null;
                 }
             }
             else
             {
+                UnitExportLogging.AddErrorLog(unit, "Variable not found");
                 Debug.LogError("Variable not found: " + varName);
                 return null;
             }
 
             if (varType == null)
             {
+                UnitExportLogging.AddErrorLog(unit, "Unkknown variable type");
                 return null;
             }
 
             var typeIndex = GltfTypes.TypeIndex(varType);
             if (typeIndex == -1)
             {
+                UnitExportLogging.AddErrorLog(unit, "Unsupported type");
+
                 Debug.LogError("Unsupported type for variable: " + varType);
                 return null;
             }
@@ -344,7 +349,9 @@ namespace UnityGLTF.Interactivity
         {
             if (gltfTypeIndex == -1)
             {
-                throw new ArgumentException("Type not supported for variable: " + defaultValue.GetType().Name);
+                if (defaultValue != null)
+                    Debug.Log("Type not supported for variable: " + defaultValue.GetType().Name);
+                return -1;
             }
             
             if (addedGraphs.Count > 0)

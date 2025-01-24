@@ -44,18 +44,36 @@ namespace UnityGLTF.Interactivity.Export
                 setVarNodes.Add(setVar);
             }
 
-            // Update Type Index
-            unitExporter.exportContext.OnNodesCreated += (nodes =>
+            void PostTypeResolving(bool lastTry = false)
             {
-                var typeIndex = unitExporter.exportContext.GetValueTypeForInput(setVarNodes[0], Variable_SetNode.IdInputValue);
+                int typeIndex = -1;
+                foreach (var setVarNode in setVarNodes)
+                {
+                    typeIndex = unitExporter.exportContext.GetValueTypeForInput(setVarNode, Variable_SetNode.IdInputValue);
+                    if (typeIndex != -1)
+                        break;
+                }
+
+                if (typeIndex == -1)
+                {
+                    if (lastTry)
+                        UnitExportLogging.AddErrorLog(unit, "Can't resolve input type.");
+                    // We don't cancel here, to trigger later the validation process for invalid type index
+                }
                 unitExporter.exportContext.variables[varIndex].Type = typeIndex;
+                if (typeIndex == -1)
+                    return;
+                
                 getVar.ValueOut(Variable_GetNode.IdOutputValue).ExpectedType(ExpectedType.GtlfType(typeIndex));
                 foreach (var n in setVarNodes)
                 {
                     n.ValueIn(Variable_SetNode.IdInputValue).SetType(TypeRestriction.LimitToType(typeIndex));
                 }
-            });
-
+            }
+            
+            // Update Type Index
+            unitExporter.exportContext.OnNodesCreated += (nodes => { PostTypeResolving(); });
+            unitExporter.exportContext.OnBeforeSerialization += (nodes) => { PostTypeResolving(true); };
         }
     }
 }

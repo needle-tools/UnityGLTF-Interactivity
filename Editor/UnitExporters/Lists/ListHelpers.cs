@@ -250,10 +250,20 @@ namespace Editor.UnitExporters.Lists
             if (l != null)
                 return l;
 
+            if (unit is GetVariable getVarUnit)
+            {
+                var varDeclaration = context.GetVariableDeclaration(getVarUnit);
+                if (varDeclaration != null)
+                {
+                    var varUnitList = context.GetListByCreator(varDeclaration);
+                    if (varUnitList != null)
+                        return varUnitList;
+                }
+            }
+
             foreach (var input in unit.valueInputs)
             {
-                
-                if ((input.type.IsInterface && input.type == typeof(IEnumerable)) || input.type.GetInterfaces().Contains(typeof(IEnumerable)))
+                if (input.type != typeof(string) && ((input.type.IsInterface && input.type == typeof(IEnumerable)) || input.type.GetInterfaces().Contains(typeof(IEnumerable))))
                 {
                     foreach (var c in input.validConnections)
                     {

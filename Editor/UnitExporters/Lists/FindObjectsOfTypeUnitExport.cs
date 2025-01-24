@@ -46,13 +46,12 @@ namespace Editor.UnitExporters.Lists
             var transformsIndicies = transforms
                 .Select(transform => unitExporter.exportContext.exporter.GetTransformIndex(transform)).Where(trIndex => trIndex != -1);
             
-            var objectList = unitExporter.exportContext.CreateNewVariableBasedList(transformsIndicies.Count(),
+            var objectList = unitExporter.exportContext.CreateNewVariableBasedListFromUnit(unit, transformsIndicies.Count(),
                 GltfTypes.TypeIndexByGltfSignature("int"));
             
             foreach (var transformIndex in transformsIndicies)
                 objectList.AddItem(transformIndex);
 
-            objectList.listCreatorUnit = unit;
             objectList.listCreatorGraph = unitExporter.exportContext.currentGraphProcessing;
             
             ListHelpers.CreateListNodes(unitExporter, objectList);

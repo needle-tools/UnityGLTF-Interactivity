@@ -40,9 +40,7 @@ namespace Editor.UnitExporters.Lists
 
             unitExporter.ConvertValue(value, out _, out var valueTypeIndex);
             
-            var objectList = unitExporter.exportContext.CreateNewVariableBasedList(listCapacity, valueTypeIndex);
-            objectList.listCreatorUnit = unit;
-            objectList.listCreatorGraph = unitExporter.exportContext.currentGraphProcessing;
+            var objectList = unitExporter.exportContext.CreateNewVariableBasedListFromUnit(unit, listCapacity, valueTypeIndex);
             
             ListHelpers.CreateListNodes(unitExporter, objectList);
             

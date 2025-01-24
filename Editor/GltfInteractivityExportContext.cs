@@ -96,6 +96,29 @@ namespace UnityGLTF.Interactivity
             public List<ExportGraph> subGraphs = new List<ExportGraph>();
         }
 
+        public class VariableBasedListFromUnit : VariableBasedList
+        {
+            public Unit listCreatorUnit;
+
+            public VariableBasedListFromUnit(Unit listCreatorUnit,
+                GltfInteractivityExportContext context, string listId, int capacity, int gltfType) : base(context, listId, capacity, gltfType)
+            {
+                this.listCreatorUnit = listCreatorUnit;
+            }
+
+        }
+        
+        public class VariableBasedListFromGraphVariable : VariableBasedList
+        {
+            public VariableDeclaration varDeclarationSource;
+
+            public VariableBasedListFromGraphVariable(VariableDeclaration varDeclarationSource, GltfInteractivityExportContext context, string listId, int capacity, int gltfType) : base(context, listId, capacity, gltfType)
+            {
+                this.varDeclarationSource = varDeclarationSource;
+            }
+        }
+        
+        
         public class VariableBasedList
         {
             public readonly GltfInteractivityExportContext Context;
@@ -112,7 +135,7 @@ namespace UnityGLTF.Interactivity
             public GltfInteractivityUnitExporterNode.ValueOutputSocketData getCountNodeSocket;
             public GltfInteractivityUnitExporterNode.ValueOutputSocketData getValueNodeSocket;
             public GltfInteractivityUnitExporterNode.FlowInSocketData setValueFlowIn;
-            public Unit listCreatorUnit;
+ 
             public ExportGraph listCreatorGraph;
             
             public VariableBasedList(GltfInteractivityExportContext context, string listId, int capacity, int gltfType)
@@ -155,6 +178,17 @@ namespace UnityGLTF.Interactivity
                     Context.variables[CountVarId].Value = count + 1;
                 }
             }
+            
+            public void SetItem(int index, object value)
+            {
+                if (Context.variables[CountVarId].Value is int count)
+                {
+                    if (index < 0 || index > count - 1)
+                        throw new IndexOutOfRangeException("Index out of range for list. Can't set item with index: "+ index);
+                    
+                    Context.variables[StartIndex + index].Value = value;
+                }
+            }
 
         }
         
@@ -177,15 +211,36 @@ namespace UnityGLTF.Interactivity
         public VariableBasedList GetListByCreator(IUnit listCreatorUnit)
         {
             return addedVariableBasedLists
+                .Where( v => v is VariableBasedListFromUnit)
+                .Cast<VariableBasedListFromUnit>()
                 .FirstOrDefault(l => l.listCreatorUnit == listCreatorUnit && l.listCreatorGraph == currentGraphProcessing);
         }
         
-        public VariableBasedList CreateNewVariableBasedList(int capacity, int gltfType, string listId = null)
+        public VariableBasedList GetListByCreator(VariableDeclaration variable)
+        {
+            return addedVariableBasedLists
+                .Where( v => v is VariableBasedListFromGraphVariable)
+                .Cast<VariableBasedListFromGraphVariable>()
+                .FirstOrDefault(l => l.varDeclarationSource == variable && l.listCreatorGraph == currentGraphProcessing);
+        }
+        
+        public VariableBasedListFromUnit CreateNewVariableBasedListFromUnit(Unit listCreatorUnit, int capacity, int gltfType, string listId = null)
         {
             if (string.IsNullOrEmpty(listId))
                 listId = Guid.NewGuid().ToString();
-            var newVariableBasedList = new VariableBasedList(this, listId, capacity, gltfType);
+            var newVariableBasedList = new VariableBasedListFromUnit(listCreatorUnit, this, listId, capacity, gltfType);
             addedVariableBasedLists.Add(newVariableBasedList);
+            newVariableBasedList.listCreatorGraph = currentGraphProcessing;
+            return newVariableBasedList;
+        }
+        
+        public VariableBasedListFromGraphVariable CreateNewVariableBasedListFromVariable(VariableDeclaration varDeclaration, int capacity, int gltfType, string listId = null)
+        {
+            if (string.IsNullOrEmpty(listId))
+                listId = Guid.NewGuid().ToString();
+            var newVariableBasedList = new VariableBasedListFromGraphVariable(varDeclaration,this, listId, capacity, gltfType);
+            addedVariableBasedLists.Add(newVariableBasedList);
+            newVariableBasedList.listCreatorGraph = currentGraphProcessing;
             return newVariableBasedList;
         }
 
@@ -193,9 +248,9 @@ namespace UnityGLTF.Interactivity
         /// Get the value of a variable from a VariableUnit.
         /// Materials and GameObjects Values will be converted to their respective indices.
         /// </summary>
-        public object GetVariableValue(UnifiedVariableUnit unit, out string varName, out string varType)
+        public object GetVariableValue(UnifiedVariableUnit unit, out string varName, out string varType, bool checkTypeIsSupported = true)
         {
-            var rawValue = GetVariableValueRaw(unit, out varName, out varType);
+            var rawValue = GetVariableValueRaw(unit, out varName, out varType, checkTypeIsSupported);
             
             if (rawValue is GameObject gameObjectValue)
                 rawValue = exporter.GetTransformIndex(gameObjectValue.transform);
@@ -207,11 +262,45 @@ namespace UnityGLTF.Interactivity
             return rawValue;
         }
         
+        public VariableDeclaration GetVariableDeclaration(UnifiedVariableUnit unit)
+        {
+            string varName = unit.name.unit.defaultValues["name"] as string;
+            VariableDeclarations varDeclarations = null;
+            switch (unit.kind)
+            {
+                case VariableKind.Flow:
+                case VariableKind.Graph:
+                    varDeclarations = unit.graph.variables;
+                    break;
+                case VariableKind.Object:
+                    var gameObject = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(unit.@object, unit.defaultValues, this);
+                    if (gameObject != null)
+                    {
+                        varDeclarations = Variables.Object(gameObject);
+                    }
+                    break;
+                case VariableKind.Scene:
+                    varDeclarations = Variables.ActiveScene;
+                    break;
+                case VariableKind.Application:
+                    varDeclarations = Variables.Application;
+                    break;
+                case VariableKind.Saved:
+                    varDeclarations = Variables.Saved;
+                    break;
+            }
+
+            if (varDeclarations == null)
+                return null;
+            
+            return varDeclarations.GetDeclaration(varName);
+        }
+        
         /// <summary>
         /// Get the value of a variable from a VariableUnit.
         /// Materials and GameObjects Values will be returned as is.
         /// </summary>
-        public object GetVariableValueRaw(UnifiedVariableUnit unit, out string exportVarName, out string varType)
+        public object GetVariableValueRaw(UnifiedVariableUnit unit, out string exportVarName, out string varType, bool checkTypeIsSupported = true)
         {
             string varName = unit.name.unit.defaultValues["name"] as string;
 
@@ -278,13 +367,16 @@ namespace UnityGLTF.Interactivity
                 return null;
             }
 
-            var typeIndex = GltfTypes.TypeIndex(varType);
-            if (typeIndex == -1)
+            if (checkTypeIsSupported)
             {
-                UnitExportLogging.AddErrorLog(unit, "Unsupported type");
+                var typeIndex = GltfTypes.TypeIndex(varType);
+                if (typeIndex == -1)
+                {
+                    UnitExportLogging.AddErrorLog(unit, "Unsupported type");
 
-                Debug.LogError("Unsupported type for variable: " + varType);
-                return null;
+                    Debug.LogError("Unsupported type for variable: " + varType);
+                    return null;
+                }
             }
             
             return varValue;

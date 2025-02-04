@@ -437,21 +437,8 @@ namespace UnityGLTF.Interactivity
                 return -1;
             visited.Add(socketData);
             
-            if (socketData.Type != -1 && socketData.Value != null)
+            if (socketData.Type != -1 && socketData.Value != null && GltfTypes.TypeIndex(socketData.Value.GetType()) == socketData.Type)
                 return socketData.Type;
-
-            if (socketData.typeRestriction != null)
-            {
-                if (!string.IsNullOrEmpty(socketData.typeRestriction.limitToType))
-                    return GltfTypes.TypeIndexByGltfSignature(socketData.typeRestriction.limitToType);
-
-                if (!string.IsNullOrEmpty(socketData.typeRestriction.fromInputPort))
-                {
-                    int typeFromInput = GetValueTypeForInput(node, socketData.typeRestriction.fromInputPort, visited);
-                    if (typeFromInput != -1)
-                        return typeFromInput;
-                }
-            }
             
             if (socketData.Node != null)
             {
@@ -477,7 +464,22 @@ namespace UnityGLTF.Interactivity
 
                 return -1;
             }
+            
+            if (socketData.typeRestriction != null)
+            {
+                if (!string.IsNullOrEmpty(socketData.typeRestriction.limitToType))
+                    return GltfTypes.TypeIndexByGltfSignature(socketData.typeRestriction.limitToType);
 
+                if (!string.IsNullOrEmpty(socketData.typeRestriction.fromInputPort))
+                {
+                    int typeFromInput = GetValueTypeForInput(node, socketData.typeRestriction.fromInputPort, visited);
+                    if (typeFromInput != -1)
+                        return typeFromInput;
+                }
+            }
+            
+            if (socketData.Value != null)
+                return GltfTypes.TypeIndex(socketData.Value.GetType());
             return socketData.Type;
         }
         

@@ -68,6 +68,9 @@ namespace UnityGLTF.Interactivity.Export
                 if (property == null)
                     return false;
 
+                if (!property.IsStatic())
+                    return false;
+                
                 return property.GetValue(null) != null;
             }
         }
@@ -81,6 +84,9 @@ namespace UnityGLTF.Interactivity.Export
             object value = null;
             object rawValue = null;
             var field = unit.member.declaringType.GetField(unit.member.name);
+            if (!field.IsStatic())
+                return;
+            
             if (field != null)
                 rawValue = field.GetValue(null);
             else
@@ -88,7 +94,10 @@ namespace UnityGLTF.Interactivity.Export
                 var property = unit.member.declaringType.GetProperty(unit.member.name);
                 if (property == null)
                     return;
-
+                
+                if (!property.IsStatic())
+                    return;
+                
                 rawValue = property.GetValue(null);
             }
 

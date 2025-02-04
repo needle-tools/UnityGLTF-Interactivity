@@ -614,11 +614,6 @@ namespace UnityGLTF.Interactivity.Schema
         public override string Op { get; set; } = "math/sqrt";
     }
     
-    public class Math_PowNode : AbstractSameOneInOneOutNode
-    {
-        public override string Op { get; set; } = "math/pow";
-    }
-    
     public class Math_SignNode : AbstractSameOneInOneOutNode
     {
         public override string Op { get; set; } = "math/sign";
@@ -939,6 +934,19 @@ namespace UnityGLTF.Interactivity.Schema
 
         [InputSocketDescription(GltfTypes.Bool)]
         public const string IdCondition = "condition";
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueB)]
+        public const string IdValueA = "a";
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueA)]
+        public const string IdValueB = "b";
+        
+        [OutputSocketDescriptionWithTypeDependencyFromInput(IdValueA)]
+        public const string IdOutValue = "value";
+    }
+    
+    public class Math_PowNode : GltfInteractivityNodeSchema
+    {
+        public override string Op { get; set; } = "math/pow";
+        
         [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueB)]
         public const string IdValueA = "a";
         [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueA)]

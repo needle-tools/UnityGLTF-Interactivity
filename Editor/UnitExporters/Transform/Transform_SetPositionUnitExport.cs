@@ -14,8 +14,8 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Transform), nameof(Transform.position), new Transform_SetPositionUnitExport(true));
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Transform), nameof(Transform.localPosition), new Transform_SetPositionUnitExport(false));
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Transform), nameof(Transform.position), new Transform_SetPositionUnitExport(true));
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Transform), nameof(Transform.localPosition), new Transform_SetPositionUnitExport(false));
         }
         
         public Transform_SetPositionUnitExport(bool worldSpace)

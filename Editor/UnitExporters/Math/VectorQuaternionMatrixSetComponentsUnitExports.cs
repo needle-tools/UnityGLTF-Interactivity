@@ -23,25 +23,25 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Vector2), nameof(Vector2.x), new VectorQuaternionMatrixSetComponentsUnitExports(2, 0) );
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Vector2), nameof(Vector2.y), new VectorQuaternionMatrixSetComponentsUnitExports(2, 1) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Vector2), nameof(Vector2.x), new VectorQuaternionMatrixSetComponentsUnitExports(2, 0) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Vector2), nameof(Vector2.y), new VectorQuaternionMatrixSetComponentsUnitExports(2, 1) );
 
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Vector3), nameof(Vector3.x), new VectorQuaternionMatrixSetComponentsUnitExports(3, 0) );
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Vector3), nameof(Vector3.y), new VectorQuaternionMatrixSetComponentsUnitExports(3, 1) );
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Vector3), nameof(Vector3.z), new VectorQuaternionMatrixSetComponentsUnitExports(3, 2) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Vector3), nameof(Vector3.x), new VectorQuaternionMatrixSetComponentsUnitExports(3, 0) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Vector3), nameof(Vector3.y), new VectorQuaternionMatrixSetComponentsUnitExports(3, 1) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Vector3), nameof(Vector3.z), new VectorQuaternionMatrixSetComponentsUnitExports(3, 2) );
             
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Vector4), nameof(Vector4.x), new VectorQuaternionMatrixSetComponentsUnitExports(4, 0) );
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Vector4), nameof(Vector4.y), new VectorQuaternionMatrixSetComponentsUnitExports(4, 1) );
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Vector4), nameof(Vector4.z), new VectorQuaternionMatrixSetComponentsUnitExports(4, 2) );
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Vector4), nameof(Vector4.w), new VectorQuaternionMatrixSetComponentsUnitExports(4, 3) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Vector4), nameof(Vector4.x), new VectorQuaternionMatrixSetComponentsUnitExports(4, 0) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Vector4), nameof(Vector4.y), new VectorQuaternionMatrixSetComponentsUnitExports(4, 1) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Vector4), nameof(Vector4.z), new VectorQuaternionMatrixSetComponentsUnitExports(4, 2) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Vector4), nameof(Vector4.w), new VectorQuaternionMatrixSetComponentsUnitExports(4, 3) );
             
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Quaternion), nameof(Quaternion.x), new VectorQuaternionMatrixSetComponentsUnitExports(4, 0) );
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Quaternion), nameof(Quaternion.y), new VectorQuaternionMatrixSetComponentsUnitExports(4, 1) );
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Quaternion), nameof(Quaternion.z), new VectorQuaternionMatrixSetComponentsUnitExports(4, 2) );
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Quaternion), nameof(Quaternion.w), new VectorQuaternionMatrixSetComponentsUnitExports(4, 3) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Quaternion), nameof(Quaternion.x), new VectorQuaternionMatrixSetComponentsUnitExports(4, 0) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Quaternion), nameof(Quaternion.y), new VectorQuaternionMatrixSetComponentsUnitExports(4, 1) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Quaternion), nameof(Quaternion.z), new VectorQuaternionMatrixSetComponentsUnitExports(4, 2) );
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Quaternion), nameof(Quaternion.w), new VectorQuaternionMatrixSetComponentsUnitExports(4, 3) );
 
             for (int i = 0; i < 16; i++)
-                SetMemberUnitExport.RegisterMemberConvert(typeof(Matrix4x4), MatrixMemberIndex[i], new VectorQuaternionMatrixSetComponentsUnitExports(16, i) );
+                SetMemberUnitExport.RegisterMemberExporter(typeof(Matrix4x4), MatrixMemberIndex[i], new VectorQuaternionMatrixSetComponentsUnitExports(16, i) );
         }
 
         private int componentCount;

@@ -13,7 +13,7 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Renderer), nameof(Renderer.material), new Renderer_SetMaterialUnitExport());
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Renderer), nameof(Renderer.material), new Renderer_SetMaterialUnitExport());
         }
         
         public void InitializeInteractivityNodes(UnitExporter unitExporter)

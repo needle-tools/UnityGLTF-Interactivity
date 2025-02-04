@@ -16,8 +16,8 @@ namespace UnityGLTF.Interactivity.Export
         {
             InvokeUnitExport.RegisterInvokeExporter(typeof(Material), nameof(Material.SetTextureOffset), new MaterialSetTilingOffsetNode("offset"));
             InvokeUnitExport.RegisterInvokeExporter(typeof(Material), nameof(Material.SetTextureScale), new MaterialSetTilingOffsetNode("scale"));
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Material), nameof(Material.mainTextureOffset), new MaterialSetTilingOffsetNode("offset"));
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Material), nameof(Material.mainTextureScale), new MaterialSetTilingOffsetNode("scale"));
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Material), nameof(Material.mainTextureOffset), new MaterialSetTilingOffsetNode("offset"));
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Material), nameof(Material.mainTextureScale), new MaterialSetTilingOffsetNode("scale"));
         }
         
         public MaterialSetTilingOffsetNode(string property)

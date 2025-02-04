@@ -13,8 +13,8 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Transform), nameof(Transform.eulerAngles), new Transform_EulerAngles(true));
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Transform), nameof(Transform.localEulerAngles), new Transform_EulerAngles(false));
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Transform), nameof(Transform.eulerAngles), new Transform_EulerAngles(true));
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Transform), nameof(Transform.localEulerAngles), new Transform_EulerAngles(false));
         }
         
         public Transform_EulerAngles(bool worldSpace)

@@ -17,7 +17,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new SetMemberUnitExport());
         }
         
-        public static void RegisterMemberConvert(Type declaringType, string memberName, IUnitExporter unitExporter)
+        public static void RegisterMemberExporter(Type declaringType, string memberName, IUnitExporter unitExporter)
         {
             // HACK should match behaviour of InvokeNode.RegisterInvokeConvert
             _memberExportRegister[$"{declaringType.FullName}.{memberName}"] = unitExporter;

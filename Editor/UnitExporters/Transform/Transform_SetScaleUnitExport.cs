@@ -14,8 +14,8 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Transform), nameof(Transform.lossyScale), new Transform_SetScaleUnitExport(true));
-            SetMemberUnitExport.RegisterMemberConvert(typeof(Transform), nameof(Transform.localScale), new Transform_SetScaleUnitExport(false));
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Transform), nameof(Transform.lossyScale), new Transform_SetScaleUnitExport(true));
+            SetMemberUnitExport.RegisterMemberExporter(typeof(Transform), nameof(Transform.localScale), new Transform_SetScaleUnitExport(false));
         }
         
         public Transform_SetScaleUnitExport(bool worldSpace)

@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
+using Unity.VisualScripting.FullSerializer.Internal;
 using UnityGLTF.Interactivity.Schema;
 
 namespace UnityGLTF.Interactivity
@@ -29,7 +32,16 @@ namespace UnityGLTF.Interactivity
                 OutputValueSockets.Clear();
             }
             
-            var fields = GetType().GetFields();
+            var fields = new List<FieldInfo>();
+            
+            void AddFields(Type type)
+            {
+                fields.AddRange(type.GetFields());
+                if (type.BaseType != null)
+                    AddFields(type.BaseType);
+            }
+            AddFields(GetType());
+            
             foreach (var field in fields)
             {
                 if (field.FieldType != typeof(string))

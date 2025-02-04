@@ -1,4 +1,5 @@
 using System.Text;
+using Editor.Schema;
 using UnityGLTF.Interactivity.Export;
 using UnityGLTF.Interactivity.Schema;
 
@@ -44,9 +45,9 @@ namespace UnityGLTF.Interactivity
 
         public GLTFSceneExporter exporter { get; private set; }
         
-        internal List<GltfInteractivityExtension.Variable> variables = new List<GltfInteractivityExtension.Variable>();
-        internal List<GltfInteractivityExtension.CustomEvent> customEvents = new List<GltfInteractivityExtension.CustomEvent>();
-        internal List<GltfInteractivityExtension.Declaration> opDeclarations = new List<GltfInteractivityExtension.Declaration>();
+        internal List<GltfInteractivityGraph.Variable> variables = new List<GltfInteractivityGraph.Variable>();
+        internal List<GltfInteractivityGraph.CustomEvent> customEvents = new List<GltfInteractivityGraph.CustomEvent>();
+        internal List<GltfInteractivityGraph.Declaration> opDeclarations = new List<GltfInteractivityGraph.Declaration>();
         private List<UnitExporter> nodesToExport = new List<UnitExporter>();
         
         public delegate void OnBeforeSerializationDelegate(List<GltfInteractivityNode> nodes);
@@ -527,7 +528,7 @@ namespace UnityGLTF.Interactivity
             if (index != -1)
                 return index;
 
-            GltfInteractivityExtension.Variable newVariable = new GltfInteractivityExtension.Variable();
+            GltfInteractivityGraph.Variable newVariable = new GltfInteractivityGraph.Variable();
             newVariable.Id = id;
             
             newVariable.Type = gltfTypeIndex;
@@ -559,7 +560,7 @@ namespace UnityGLTF.Interactivity
                 return index;
             }
 
-            GltfInteractivityExtension.CustomEvent newEvent = new GltfInteractivityExtension.CustomEvent();
+            GltfInteractivityGraph.CustomEvent newEvent = new GltfInteractivityGraph.CustomEvent();
             newEvent.Id = id;
 
             if (arguments != null)
@@ -767,18 +768,20 @@ namespace UnityGLTF.Interactivity
             OnBeforeSerialization = null;
             // Create the extension and add nodes to it
             GltfInteractivityExtension extension = new GltfInteractivityExtension();
-            extension.Nodes = nodesToSerialize.ToArray();
+            GltfInteractivityGraph mainGraph = new GltfInteractivityGraph();
+            extension.graphs = new GltfInteractivityGraph[] {mainGraph};
+            mainGraph.Nodes = nodesToSerialize.ToArray();
             
             // !!!!!! Deactivated for now - not working in Authoring Tool, and also waiting for Spec Discussions about Types
             //extension.Types = CollectAndFilterUsedTypes();
             
             ValidateData();
             
-            extension.Types = GltfTypes.TypesMapping;
+            mainGraph.Types = GltfTypes.TypesMapping;
             
-            extension.Variables = variables.ToArray();
-            extension.CustomEvents = customEvents.ToArray();
-            extension.Declarations = opDeclarations.ToArray();
+            mainGraph.Variables = variables.ToArray();
+            mainGraph.CustomEvents = customEvents.ToArray();
+            mainGraph.Declarations = opDeclarations.ToArray();
             
             gltfRoot.AddExtension(GltfInteractivityExtension.ExtensionName, extension);
             
@@ -1379,7 +1382,7 @@ namespace UnityGLTF.Interactivity
                 var opIndex = IndexOfOp(node);
                 if (opIndex == -1)
                 {
-                    var newDeclaration = new GltfInteractivityExtension.Declaration();
+                    var newDeclaration = new GltfInteractivityGraph.Declaration();
                     opIndex = opDeclarations.Count;
                     opDeclarations.Add(newDeclaration);
                     
@@ -1387,11 +1390,11 @@ namespace UnityGLTF.Interactivity
                     if (!string.IsNullOrEmpty(node.Schema.Extension))
                     {
                         newDeclaration.extension = node.Schema.Extension;
-                        var inputs = new Dictionary<string, GltfInteractivityExtension.Declaration.ValueSocket>();
+                        var inputs = new Dictionary<string, GltfInteractivityGraph.Declaration.ValueSocket>();
                         foreach (var input in node.ValueSocketConnectionData)
                         {
                             var schemaInput = node.Schema.InputValueSockets.FirstOrDefault(i => i.Key == input.Key);
-                            var newInput = new GltfInteractivityExtension.Declaration.ValueSocket { type = GetValueTypeForInput(node, input.Key)};
+                            var newInput = new GltfInteractivityGraph.Declaration.ValueSocket { type = GetValueTypeForInput(node, input.Key)};
                             if (newInput.type == -1)
                             {
                                 // Probably it has no connection, so we use the Schema Type
@@ -1418,13 +1421,13 @@ namespace UnityGLTF.Interactivity
                         }
                         newDeclaration.inputValueSockets = inputs;
                         
-                        var outputs = new Dictionary<string, GltfInteractivityExtension.Declaration.ValueSocket>();
+                        var outputs = new Dictionary<string, GltfInteractivityGraph.Declaration.ValueSocket>();
                         
                         foreach (var output in node.OutValueSocket)
                         {
                             var schemaOutput = node.Schema.OutputValueSockets.FirstOrDefault(i => i.Key == output.Key);
 
-                            var newOutput = new GltfInteractivityExtension.Declaration.ValueSocket();
+                            var newOutput = new GltfInteractivityGraph.Declaration.ValueSocket();
                             newOutput.type = -1;
                             if (output.Value.expectedType != null)
                             {

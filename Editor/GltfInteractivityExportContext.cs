@@ -1349,28 +1349,50 @@ namespace UnityGLTF.Interactivity
 
         private void CollectedOpDeclarations()
         {
-            int IndexOfOp(GltfInteractivityNode node)
+            int IndexOfNodeOp(GltfInteractivityNode node)
             {
                 for (int i = 0; i < opDeclarations.Count; i++)
                 {
                     if (opDeclarations[i].op.Equals(node.Schema.Op))
                     {
-                        if (node.Schema.Extension != null)
+                        return i;
+                    }
+                }
+
+                return -1;
+            }
+
+            int IndexOfOp(GltfInteractivityGraph.Declaration newDeclaration)
+            {
+                for (int i = 0; i < opDeclarations.Count; i++)
+                {
+                    if (opDeclarations[i].op.Equals(newDeclaration.op))
+                    {
+                        if (!string.IsNullOrEmpty(newDeclaration.extension))
                         {
                             var opInputs = opDeclarations[i].inputValueSockets;
                             var opOutputs = opDeclarations[i].outputValueSockets;
                             
                             // Compare the input and output sockets if they match with exisiting ones
                             
-                            foreach (var input in node.Schema.InputValueSockets)
+                            foreach (var input in newDeclaration.inputValueSockets)
                             {
-                                var type = GetValueTypeForInput(node, input.Key);
                                 if (!opInputs.TryGetValue(input.Key, out var opInput))
                                     return -1;
 
-                                if (opInput.type != type)
+                                if (opInput.type != input.Value.type)
                                     return -1;
                             }
+                            
+                            foreach (var output in newDeclaration.outputValueSockets)
+                            {
+                                if (!opOutputs.TryGetValue(output.Key, out var opOutput))
+                                    return -1;
+
+                                if (opOutput.type != output.Value.type)
+                                    return -1;
+                            }
+
                         }
                         return i;
                     }
@@ -1381,7 +1403,7 @@ namespace UnityGLTF.Interactivity
             
             foreach (var node in nodesToSerialize)
             {
-                var opIndex = IndexOfOp(node);
+                var opIndex = IndexOfNodeOp(node);
                 if (opIndex == -1)
                 {
                     var newDeclaration = new GltfInteractivityGraph.Declaration();
@@ -1456,6 +1478,12 @@ namespace UnityGLTF.Interactivity
                         }
                         newDeclaration.outputValueSockets = outputs;
                     }
+
+                    var opDeclarationIndex = IndexOfOp(newDeclaration);
+                    if (opDeclarationIndex == -1)
+                        opDeclarations.Add(newDeclaration);
+                    else 
+                        opIndex = opDeclarationIndex;
                 }
 
                 node.OpDeclaration = opIndex;

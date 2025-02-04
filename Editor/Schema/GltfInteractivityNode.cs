@@ -152,7 +152,7 @@ namespace UnityGLTF.Interactivity
             
             JObject jo = new JObject
             {
-                new JProperty("op", OpDeclaration),
+                new JProperty("declaration", OpDeclaration),
                 new JProperty("configuration",configs),
                 new JProperty("values", values),
                 new JProperty("flows", flows),

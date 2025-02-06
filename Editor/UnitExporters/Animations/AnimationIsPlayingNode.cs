@@ -6,23 +6,23 @@ using UnityGLTF.Interactivity.Schema;
 
 namespace UnityGLTF.Interactivity.Export
 {
-    internal class AnimationStopNode : IUnitExporter
+    internal class AnimationIsPlayingNode : IUnitExporter
     {
         public System.Type unitType
         {
             get => typeof(InvokeMember);
         }
-
+        
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            InvokeUnitExport.RegisterInvokeExporter(typeof(Animation), nameof(Animation.Stop),
-                new AnimationStopNode());
+            InvokeUnitExport.RegisterInvokeExporter(typeof(Animation), nameof(Animation.IsPlaying), new AnimationIsPlayingNode());
+            GetMemberUnitExport.RegisterMemberExporter(typeof(Animation), nameof(Animation.isPlaying), new AnimationIsPlayingNode());
         }
 
         public void InitializeInteractivityNodes(UnitExporter unitExporter)
         {
-            InvokeMember unit = unitExporter.unit as InvokeMember;
+            var unit = unitExporter.unit as MemberUnit;
 
             GameObject target = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(
                 unit.target, unit.defaultValues, unitExporter.exportContext);
@@ -32,7 +32,7 @@ namespace UnityGLTF.Interactivity.Export
                 UnitExportLogging.AddErrorLog(unit, "Can't resolve target GameObject");
                 return;
             }
-            
+
             var animation = target.GetComponent<Animation>();
             if (!animation)
             {
@@ -41,11 +41,12 @@ namespace UnityGLTF.Interactivity.Export
             }
 
             var clip = animation.clip;
-            if (unit.inputParameters.Count > 0)
+            if (unit is InvokeMember invokeMember && invokeMember.inputParameters.Count > 0)
             {
-                if (unit.inputParameters[0].key == "%animation")
+                unitExporter.ByPassFlow(invokeMember.enter, invokeMember.exit);
+                if (invokeMember.inputParameters[0].key == "%animation")
                 {
-                    if (!unitExporter.IsInputLiteralOrDefaultValue(unit.inputParameters[0], out var animationName))
+                    if (!unitExporter.IsInputLiteralOrDefaultValue(invokeMember.inputParameters[0], out var animationName))
                     {
                         UnitExportLogging.AddErrorLog(unit, "Animation name is not a literal or default value, which is not supported.");
                         return;
@@ -70,14 +71,13 @@ namespace UnityGLTF.Interactivity.Export
                 UnitExportLogging.AddErrorLog(unit, "Animation not found in export context.");
                 return;
             }
-            
-            GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Animation_StopNode());
-            node.ValueSocketConnectionData[Animation_StopNode.IdValueAnimation].Value = animationId;
 
+            var node = unitExporter.CreateNode(new Pointer_GetNode());
+            node.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerAnimationIndex, "/animations/{" + GltfInteractivityNodeHelper.IdPointerAnimationIndex + "}/extensions/KHR_interactivity/isPlaying", GltfTypes.Bool);
+            node.ValueIn(GltfInteractivityNodeHelper.IdPointerAnimationIndex).SetValue(animationId)
+                .SetType(TypeRestriction.LimitToInt);
             
-            unitExporter.MapInputPortToSocketName(unit.enter, Animation_StopNode.IdFlowIn, node);
-            // There should only be one output flow from the Animator.Play node
-            unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Animation_StopNode.IdFlowOut, node);
+            node.FirstValueOut().MapToPort(unit.valueOutputs[0]).ExpectedType(ExpectedType.Bool);
         }
         
     }

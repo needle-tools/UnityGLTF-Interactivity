@@ -12,9 +12,7 @@ namespace UnityGLTF.Interactivity.Export
         {
             get => typeof(InvokeMember);
         }
-
-        private readonly string _stateNameKey = "%stateName";
-
+        
         [InitializeOnLoadMethod]
         private static void Register()
         {

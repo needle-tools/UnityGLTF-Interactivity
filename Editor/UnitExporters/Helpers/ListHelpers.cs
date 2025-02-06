@@ -242,6 +242,59 @@ namespace Editor.UnitExporters.Lists
             flowIn = null;
             flowOut = null;
             index = null;
+            /*
+            var subCount = unitExporter.CreateNode(new Math_SubNode());
+            subCount.ValueIn("a").ConnectToSource(GetListCountSocket(list));
+            subCount.ValueIn("b").SetValue(1);
+            subCount.FirstValueOut().ExpectedType(ExpectedType.Int);
+
+            var insertIndexPlusOne = unitExporter.CreateNode(new Math_AddNode());
+            index = insertIndexPlusOne.ValueIn("a");
+            insertIndexPlusOne.ValueIn("b").SetValue(0);
+            insertIndexPlusOne.FirstValueOut().ExpectedType(ExpectedType.Int);
+            
+            FlowHelpers.CreateCustomForLoop(unitExporter, out var startIndex, 
+                out var endIndex, out var step, 
+                out var forFlowIn, out var currentIndex, 
+                out var loopBodyOut, out var completed);
+
+            
+            var countMinusOne = unitExporter.CreateNode(new Math_SubNode());
+            countMinusOne.ValueIn("a").ConnectToSource(GetListCountSocket(list));
+            countMinusOne.ValueIn("b").SetValue(1);
+            
+            startIndex.ConnectToSource(countMinusOne.FirstValueOut());
+            
+            endIndex.ConnectToSource(insertIndexPlusOne.FirstValueOut());
+            
+            step.SetValue(-1);
+            // Increase Count
+            var setCountVar = VariablesHelpers.SetVariable(unitExporter, list.CountVarId);
+            setCountVar.FlowIn(Variable_SetNode.IdFlowIn).MapToControlInput(flowIn);
+            setCountVar.FlowOut(Variable_SetNode.IdFlowOut).ConnectToFlowDestination(forFlowIn);
+            setCountVar.ValueIn(Variable_SetNode.IdInputValue).ConnectToSource(subCount.FirstValueOut());
+            
+            // Index of item that will be move to current Index
+            var indexMinusOne = unitExporter.CreateNode(new Math_SubNode());
+            indexMinusOne.ValueIn("a").ConnectToSource(currentIndex);
+            indexMinusOne.ValueIn("b").SetValue(1);
+            
+            // Move existing items 
+            GetItem(unitExporter, list, out var getItemIndexInput, out var getItemValueOutput);
+            getItemIndexInput.ConnectToSource(indexMinusOne.FirstValueOut());
+            
+            SetItem(unitExporter, list, out var setItemIndexInput, out var setItemValueInput, out var setItemFlowIn, out var setItemFlowOut);
+            setItemIndexInput.ConnectToSource(currentIndex);
+            setItemValueInput.ConnectToSource(getItemValueOutput);
+            loopBodyOut.ConnectToFlowDestination(setItemFlowIn);
+
+            // Set the new item to index position
+            SetItem(unitExporter, list, out var setInsertItemIndexInput, out var setInsertItemValueInput, out var setInsertItemFlowIn, out var setInsertItemFlowOut);
+            completed.ConnectToFlowDestination(setInsertItemFlowIn);
+            setInsertItemFlowOut.MapToControlOutput(flowOut);
+            atIndexInputSocket = atIndexInputSocket.Link(setInsertItemIndexInput);
+            valueInputSocket = setInsertItemValueInput;
+            */
         }
 
         public static GltfInteractivityExportContext.VariableBasedList FindListByConnections(GltfInteractivityExportContext context, IUnit unit)

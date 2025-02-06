@@ -125,7 +125,12 @@ namespace UnityGLTF.Interactivity
                 // If there are no connections, then we can return the non-null default value
                 if (value.hasDefaultValue && defaultValues.ContainsKey(value.key))
                 {
-                    GameObject defaultGameObject = (GameObject)defaultValues[value.key];
+                    GameObject defaultGameObject = null;
+                    if (defaultValues[value.key] is GameObject)
+                        defaultGameObject = (GameObject)defaultValues[value.key];
+                    else if (defaultValues[value.key] is Component component)
+                        defaultGameObject = component.gameObject;
+
                     // If the value is null, then likely it's set to "this" in the UI
                     // meaning that it's pointing to the Gameobject that owns the graph
                     if (defaultGameObject == null)
@@ -144,7 +149,12 @@ namespace UnityGLTF.Interactivity
             if (value.hasValidConnection && value.connections.First().source.unit is Literal literal)
             {
                 // If there is a connection, then we can return the value of the literal
-                return literal.value as GameObject;
+                if (literal.value is GameObject)
+                    return literal.value as GameObject;
+                else if (literal.value is Component component)
+                    return component.gameObject;
+
+                return null;
             }
             else if (value.hasValidConnection && value.connections.First().source.unit is GetVariable getVariable)
             {
@@ -152,7 +162,9 @@ namespace UnityGLTF.Interactivity
                 var getVarValue = exportContext.GetVariableValueRaw(getVariable, out _, out var varType);
                 if (getVariable != null && getVarValue is GameObject gameObject) 
                     return gameObject;
-
+                else if (getVariable != null && getVarValue is Component component)
+                    return component.gameObject;
+                
                 if (varType != null)
                     return null;
                 

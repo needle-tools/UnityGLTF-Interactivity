@@ -25,7 +25,6 @@ namespace UnityGLTF.Interactivity.Export
         public void InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             InvokeMember unit = unitExporter.unit as InvokeMember;
-            GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Animation_StartNode());
 
             GameObject target = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(
                 unit.target, unit.defaultValues, unitExporter.exportContext);
@@ -36,15 +35,37 @@ namespace UnityGLTF.Interactivity.Export
                 return;
             }
 
-            // Get the state name from the node
-            if (!GltfInteractivityNodeHelper.GetDefaultValue<string>(unit, _stateNameKey, out string stateName))
+            var animation = target.GetComponent<Animation>();
+            if (!animation)
             {
-                UnitExportLogging.AddErrorLog(unit, "Invalid state name.");
+                UnitExportLogging.AddErrorLog(unit, "Target GameObject does not have an Animation component.");
                 return;
             }
+
+            var clip = animation.clip;
+            if (unit.inputParameters.Count > 0)
+            {
+                if (unit.inputParameters[0].key == "%animation")
+                {
+                    if (!unitExporter.IsInputLiteralOrDefaultValue(unit.inputParameters[0], out var animationName))
+                    {
+                        UnitExportLogging.AddErrorLog(unit, "Animation name is not a literal or default value, which is not supported.");
+                        return;
+                    }
+                    
+                    if (animationName is string animationNameString)
+                    {
+                        clip = animation.GetClip(animationNameString);
+                        if (clip == null)
+                        {
+                            UnitExportLogging.AddErrorLog(unit, "Animation not found in Animation component.");
+                            return;
+                        }
+                    }
+                }
+            }
             
-            AnimatorState animationState = AnimatorHelper.GetAnimationState(target, stateName);
-            int animationId = AnimatorHelper.GetAnimationId(animationState, unitExporter.exportContext);
+            int animationId = unitExporter.exportContext.exporter.GetAnimationId(clip, target.transform);
 
             if (animationId == -1)
             {
@@ -52,13 +73,11 @@ namespace UnityGLTF.Interactivity.Export
                 return;
             }
 
+            var node = unitExporter.CreateNode(new Animation_StartNode());
             node.ValueSocketConnectionData[Animation_StartNode.IdValueAnimation].Value = animationId;
-            node.ValueSocketConnectionData[Animation_StartNode.IdValueSpeed].Value = animationState.speed;
-
-            // TODO: Get from clip start from state cycleOffset
+            node.ValueSocketConnectionData[Animation_StartNode.IdValueSpeed].Value = 1f;
             node.ValueSocketConnectionData[Animation_StartNode.IdValueStartTime].Value = 0.0f;
 
-            AnimationClip clip = animationState.motion as AnimationClip;
             node.ValueSocketConnectionData[Animation_StartNode.IdValueEndtime].Value =
                 (clip != null && !clip.isLooping) ? clip.length : float.PositiveInfinity;
             

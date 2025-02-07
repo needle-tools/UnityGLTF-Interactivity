@@ -25,6 +25,7 @@ namespace UnityGLTF.Interactivity.Export
             
             var materialTemplate = "/materials/{" + GltfInteractivityNodeHelper.IdPointerMaterialIndex + "}/";
             string template = "";
+            bool oneMinus = false;
             
             if (unitExporter.IsInputLiteralOrDefaultValue(unit.inputParameters[0], out var floatPropertyName))
             {
@@ -35,6 +36,7 @@ namespace UnityGLTF.Interactivity.Export
                     return;
                 }
                 template = materialTemplate + gltfProperty;
+                oneMinus = map.ExportFlipValueRange;
             }
             else
             {
@@ -44,7 +46,18 @@ namespace UnityGLTF.Interactivity.Export
 
             var node = unitExporter.CreateNode(new Pointer_GetNode());
             unitExporter.ByPassFlow(unit.enter, unit.exit);
-            node.FirstValueOut().MapToPort(unit.result).ExpectedType(ExpectedType.Float);
+            
+            if (oneMinus)
+            {
+                var oneMinusNode = unitExporter.CreateNode(new Math_SubNode());
+                oneMinusNode.ValueIn("a").SetValue(1f).SetType(TypeRestriction.LimitToFloat);
+                oneMinusNode.ValueIn("b").ConnectToSource(node.FirstValueOut()).SetType(TypeRestriction.LimitToFloat);
+                
+                oneMinusNode.FirstValueOut().MapToPort(unit.result).ExpectedType(ExpectedType.Float);
+            }
+            else
+                node.FirstValueOut().MapToPort(unit.result).ExpectedType(ExpectedType.Float);
+
  
             node.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerMaterialIndex,
                 unit.target, template, GltfTypes.Float);

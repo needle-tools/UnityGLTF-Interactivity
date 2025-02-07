@@ -25,7 +25,7 @@ namespace UnityGLTF.Interactivity.Export
             
             var materialTemplate = "/materials/{" + GltfInteractivityNodeHelper.IdPointerMaterialIndex + "}/";
             string template = "";
-            
+            bool oneMinus = false;
             if (unitExporter.IsInputLiteralOrDefaultValue(unit.inputParameters[0], out var floatPropertyName))
             {
                 var gltfProperty = MaterialPointerHelper.GetPointer(unitExporter, (string)floatPropertyName, out var map);
@@ -35,6 +35,7 @@ namespace UnityGLTF.Interactivity.Export
                     return;
                 }
                 template = materialTemplate + gltfProperty;
+                oneMinus = map.ExportFlipValueRange;
             }
             else
             {
@@ -45,7 +46,16 @@ namespace UnityGLTF.Interactivity.Export
             var node = unitExporter.CreateNode(new Pointer_SetNode());
             node.FlowIn(Pointer_SetNode.IdFlowIn).MapToControlInput(unit.enter);
             node.FlowOut(Pointer_SetNode.IdFlowOut).MapToControlOutput(unit.exit);
-            node.ValueIn(Pointer_SetNode.IdValue).MapToInputPort(unit.inputParameters[1]).SetType(TypeRestriction.LimitToFloat);
+
+            if (oneMinus)
+            {
+                var oneMinusNode = unitExporter.CreateNode(new Math_SubNode());
+                oneMinusNode.ValueIn("a").SetValue(1f).SetType(TypeRestriction.LimitToFloat);
+                oneMinusNode.ValueIn("b").MapToInputPort(unit.inputParameters[1]).SetType(TypeRestriction.LimitToFloat);
+                node.ValueIn(Pointer_SetNode.IdValue).ConnectToSource(oneMinusNode.FirstValueOut());
+            }
+            else
+                node.ValueIn(Pointer_SetNode.IdValue).MapToInputPort(unit.inputParameters[1]).SetType(TypeRestriction.LimitToFloat);
  
             node.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerMaterialIndex,
                 unit.target, template, GltfTypes.Float);

@@ -52,6 +52,7 @@ namespace UnityGLTF.Interactivity
         public static readonly string IdPointerNodeIndex = "nodeIndex";
         public static readonly string IdPointerMeshIndex = "meshIndex";
         public static readonly string IdPointerMaterialIndex = "materialIndex";
+        public static readonly string IdPointerAnimationIndex = "animationIndex";
 
         public static void AddPointerConfig(GltfInteractivityNode node, string pointer, string gltfType)
         {

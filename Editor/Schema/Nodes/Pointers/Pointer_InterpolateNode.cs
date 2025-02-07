@@ -4,16 +4,22 @@ namespace UnityGLTF.Interactivity.Schema
     {
         public override string Op { get; set; } = "pointer/interpolate";
 
-        [FlowInSocketDescription]
-        public const string IdFlowIn = "in";
-        [FlowOutSocketDescription]
-        public const string IdFlowOut = "out";
-        [InputSocketDescription()]
-        public const string IdValue = "value";
         [ConfigDescription]
         public const string IdPointer = "pointer";
         [ConfigDescription]
         public const string IdPointerValueType = "type";
+
+        [FlowInSocketDescription]
+        public const string IdFlowIn = "in";
+        [FlowOutSocketDescription]
+        public const string IdFlowOut = "out";
+        [FlowOutSocketDescription]
+        public const string IdFlowOutError = "err";
+        [FlowOutSocketDescription]
+        public const string IdFlowOutDone = "done";
+        
+        [InputSocketDescription()]
+        public const string IdValue = "value";
         
         [InputSocketDescription(GltfTypes.Float)]
         public const string IdDuration = "duration";

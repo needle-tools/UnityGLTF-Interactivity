@@ -924,9 +924,46 @@ namespace UnityGLTF.Interactivity
             var sorted = new LinkedList<IUnit>();
             var visited = new Dictionary<IUnit, bool>();
 
+            void Visit(IUnit node)
+            {
+                bool inProcess;
+                bool alreadyVisited = visited.TryGetValue(node, out inProcess);
+
+                if (alreadyVisited)
+                {
+                    if (inProcess)
+                    {
+                        // TODO: Should quit the topological sort and cancel the export
+                        // throw new ArgumentException("Cyclic dependency found.");
+                    }
+                }
+                else
+                {
+                    visited[node] = true;
+
+                    // Get the dependencies from incoming connections and ignore self-references
+                    HashSet<IUnit> dependencies = new HashSet<IUnit>();
+                    foreach (IUnitConnection connection in node.connections)
+                    {
+                        if (connection.source.unit != node)
+                        {
+                            dependencies.Add(connection.source.unit);
+                        }
+                    }
+
+                    foreach (IUnit dependency in dependencies)
+                    {
+                        Visit(dependency);
+                    }
+
+                    visited[node] = false;
+                    sorted.AddLast(node);
+                }
+            }
+            
             foreach (var node in nodes)
             {
-                Visit(node, sorted, visited);
+                Visit(node);
             }
 
             return sorted;
@@ -937,9 +974,47 @@ namespace UnityGLTF.Interactivity
             var sorted = new LinkedList<int>();
             var visited = new Dictionary<int, bool>();
 
+            void Visit(int node)
+            {
+                bool inProcess;
+                bool alreadyVisited = visited.TryGetValue(node, out inProcess);
+            
+                if (alreadyVisited)
+                {
+                    if (inProcess)
+                    {
+                        // TODO: Should quit the topological sort and cancel the export
+                        // throw new ArgumentException("Cyclic dependency found.");
+                    }
+                }
+                else
+                {
+                    visited[node] = true;
+
+                    // Get the dependencies from incoming connections and ignore self-references
+                    HashSet<int> dependencies = new HashSet<int>();
+                    var currentNode = nodesToSerialize[node];
+                    foreach (var connection in currentNode.ValueSocketConnectionData)
+                    {
+                        if (connection.Value.Node != null && connection.Value.Node.HasValue)
+                        {
+                            dependencies.Add(connection.Value.Node.Value);
+                        }
+                    }
+
+                    foreach (var dependency in dependencies)
+                    {
+                        Visit(dependency);
+                    }
+
+                    visited[node] = false;
+                    sorted.AddLast(node);
+                }
+            }
+            
             foreach (var node in nodesToSerialize)
             {
-                Visit(node.Index,sorted, visited);
+                Visit(node.Index);
             }
 
             return sorted;
@@ -1073,81 +1148,6 @@ namespace UnityGLTF.Interactivity
                             flowSocket.Value.Node = node.Index;
                     }
                 }
-            }
-        }
-        
-        private void Visit(int node, LinkedList<int> sorted, Dictionary<int, bool> visited)
-        {
-            bool inProcess;
-            bool alreadyVisited = visited.TryGetValue(node, out inProcess);
-            
-            if (alreadyVisited)
-            {
-                if (inProcess)
-                {
-                    // TODO: Should quit the topological sort and cancel the export
-                    // throw new ArgumentException("Cyclic dependency found.");
-                }
-            }
-            else
-            {
-                visited[node] = true;
-
-                // Get the dependencies from incoming connections and ignore self-references
-                HashSet<int> dependencies = new HashSet<int>();
-                var currentNode = nodesToSerialize[node];
-                foreach (var connection in currentNode.ValueSocketConnectionData)
-                {
-                    if (connection.Value.Node != null && connection.Value.Node.HasValue)
-                    {
-                        dependencies.Add(connection.Value.Node.Value);
-                    }
-                }
-
-                foreach (var dependency in dependencies)
-                {
-                    Visit(dependency, sorted, visited);
-                }
-
-                visited[node] = false;
-                sorted.AddLast(node);
-            }
-        }
-        
-        private static void Visit(IUnit node, LinkedList<IUnit> sorted, Dictionary<IUnit, bool> visited)
-        {
-            bool inProcess;
-            bool alreadyVisited = visited.TryGetValue(node, out inProcess);
-
-            if (alreadyVisited)
-            {
-                if (inProcess)
-                {
-                    // TODO: Should quit the topological sort and cancel the export
-                   // throw new ArgumentException("Cyclic dependency found.");
-                }
-            }
-            else
-            {
-                visited[node] = true;
-
-                // Get the dependencies from incoming connections and ignore self-references
-                HashSet<IUnit> dependencies = new HashSet<IUnit>();
-                foreach (IUnitConnection connection in node.connections)
-                {
-                    if (connection.source.unit != node)
-                    {
-                        dependencies.Add(connection.source.unit);
-                    }
-                }
-
-                foreach (IUnit dependency in dependencies)
-                {
-                    Visit(dependency, sorted, visited);
-                }
-
-                visited[node] = false;
-                sorted.AddLast(node);
             }
         }
         

@@ -41,7 +41,7 @@ namespace UnityGLTF.Interactivity.Export
                     index++;
                 }
             }
-            return false;
+            return true;
         }
     }
 }

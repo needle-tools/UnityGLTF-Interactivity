@@ -60,7 +60,7 @@ namespace UnityGLTF.Interactivity.Export
         public static bool CanBeExported(Type declaringType, string memberName)
         {
             var field = declaringType.GetField(memberName);
-            if (field != null)
+            if (field != null && field.IsStatic())
                 return field.GetValue(null) != null;
             else
             {

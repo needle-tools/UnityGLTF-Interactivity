@@ -165,7 +165,6 @@ namespace Editor.UnitExporters.Lists
             flowInSocket.MapToControlInput(flowIn);
             flowOutSocket.MapToControlOutput(flowOut);
         }
-
         
         public static void SetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, ValueInput indexInput, ValueInput valueInput,
             ControlInput flowIn, ControlOutput flowOut)
@@ -265,7 +264,7 @@ namespace Editor.UnitExporters.Lists
             
             // Set new Count
             var setCountVar = VariablesHelpers.SetVariable(unitExporter, list.CountVarId);
-            setCountVar.ValueIn(Pointer_SetNode.IdValue).ConnectToSource(countMinusOne.FirstValueOut());
+            setCountVar.ValueIn(Variable_SetNode.IdInputValue).ConnectToSource(countMinusOne.FirstValueOut());
             forLoop.FlowOut(Flow_ForLoopNode.IdCompleted).ConnectToFlowDestination(setCountVar.FlowIn(Variable_SetNode.IdFlowIn));
 
             flowOut = setCountVar.FlowOut(Variable_SetNode.IdFlowOut);

@@ -84,10 +84,8 @@ namespace UnityGLTF.Interactivity.Export
             object value = null;
             object rawValue = null;
             var field = unit.member.declaringType.GetField(unit.member.name);
-            if (!field.IsStatic())
-                return;
             
-            if (field != null)
+            if (field != null && field.IsStatic())
                 rawValue = field.GetValue(null);
             else
             {

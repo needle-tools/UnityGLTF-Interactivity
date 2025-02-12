@@ -1,16 +1,9 @@
 using System;
-using System.Collections;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
-//namespace UnityGLTF.Interactivity.Units
 namespace Unity.VisualScripting
 {
-    /// <summary>
-    /// Interpolates the value of a field or property over time via reflection.
-    /// </summary>
-    [SpecialUnit]
-    public sealed class InterpolateMember : MemberUnit, IGraphElementWithData, IGraphEventListener
+    public abstract class AbstractMaterialInterpolate<TValueType> : Unit, IGraphElementWithData, IGraphEventListener
     {
         public sealed class Data : IGraphElementData
         {
@@ -19,31 +12,30 @@ namespace Unity.VisualScripting
 
             public float time;
 
-            public object lastSetValue;
-            public object startValue;
+            public TValueType lastSetValue;
+            public TValueType startValue;
 
-            public object endValue;
+            public TValueType endValue;
 
             public float duration;
-            
+
+            public string valueName;
+
+            public Material material;
             public Vector2 pointA;
             public Vector2 pointB;
             
             public Delegate update;
         }
-
-        public InterpolateMember() : base() { }
-
-        public InterpolateMember(Member member) : base(member) { }
-
+        
+        protected virtual TValueType defaultValue { get; }
+        protected virtual string defaultValueName { get; }
         
         [DoNotSerialize]
-        [Unity.VisualScripting.MemberFilter(Fields = true, Properties = true, ReadOnly = false)]
-        public Member setter
-        {
-            get => member;
-            set => member = value;
-        }
+        public ValueInput target { get; private set; }
+        
+        [DoNotSerialize]
+        public ValueInput valueName { get; private set; }
 
         [DoNotSerialize]
         [PortLabelHidden]
@@ -51,7 +43,7 @@ namespace Unity.VisualScripting
 
         [DoNotSerialize]
         [PortLabel("Target Value")]
-        public ValueInput input { get; private set; }
+        public ValueInput targetValue { get; private set; }
 
         [DoNotSerialize]
         [PortLabel("Point A")]
@@ -60,50 +52,37 @@ namespace Unity.VisualScripting
         [DoNotSerialize]
         [PortLabel("Point B")]
         public ValueInput pointB { get; private set; }
-
         
         [DoNotSerialize]
         [PortLabel("Duration")]
         public ValueInput duration { get; private set; }
         
-        /// <summary>
-        /// The target object used when setting the value.
-        /// </summary>
-        [DoNotSerialize]
-        [PortLabel("Target")]
-        [PortLabelHidden]
-        public ValueOutput targetOutput { get; private set; }
-
         [DoNotSerialize]
         public ControlOutput assigned { get; private set; }
 
         [DoNotSerialize]
         public ControlOutput done { get; private set; }
-
         
         protected override void Definition()
         {
-            base.Definition();
+            target = ValueInput(typeof(Material), nameof(target));
+            target.SetDefaultValue(typeof(Material).PseudoDefault());
+            
             assign = ControlInput(nameof(assign), Assign);
+            Requirement(target, assign);
 
             assigned = ControlOutput(nameof(assigned));
             done = ControlOutput(nameof(done));
             Succession(assign, assigned);
             Succession(assign, done);
-            
-            if (member.requiresTarget)
-            {
-                Requirement(target, assign);
-            }
 
-            input = ValueInput(member.type, nameof(input));
-            Requirement(input, assign);
-            
-            if (member.allowsNull)
-            {
-                input.AllowsNull();
-            }
-            input.SetDefaultValue(member.type.PseudoDefault());
+            valueName = ValueInput(typeof(string), nameof(valueName));
+            valueName.SetDefaultValue(defaultValueName);
+            Requirement(valueName, assign);
+
+            targetValue = ValueInput(typeof(TValueType), nameof(targetValue));
+            targetValue.SetDefaultValue(defaultValue);
+            Requirement(targetValue, assign);
             
             duration = ValueInput(typeof(float), nameof(duration));
             duration.SetDefaultValue(1f);
@@ -118,11 +97,6 @@ namespace Unity.VisualScripting
             Requirement(pointB, assign);
         }
 
-        protected override bool IsMemberValid(Member member)
-        {
-            return member.isAccessor && member.isSettable;
-        }
-        
         private ControlOutput Assign(Flow flow)
         {
             StartNewInterpolation(flow);
@@ -182,75 +156,20 @@ namespace Unity.VisualScripting
             }
         }
 
-        protected void StartNewInterpolation(Flow flow)
+        protected virtual void StartNewInterpolation(Flow flow)
         {
             var data = flow.stack.GetElementData<Data>(this);
             data.running = true;
             
             data.duration = flow.GetValue<float>(this.duration);
+            data.material = flow.GetValue<Material>(target);
+            data.valueName = flow.GetValue<string>(valueName);
             data.pointA = flow.GetValue<Vector2>(pointA); 
             data.pointB = flow.GetValue<Vector2>(pointB);
             data.time = 0f;
-            
-            data.endValue = flow.GetConvertedValue(input);
-            data.startValue = member.Get(flow.GetValue(this.target, member.targetType));
-            data.lastSetValue = data.startValue;
         }
-
-        protected bool SetValue(Flow flow, Data data, object newValue)
-        {
-            var target = flow.GetValue(this.target, member.targetType);
-
-            var currentSetValue = member.Get(target);
-            switch (data.lastSetValue)
-            {
-                case float f:
-                    if (Math.Abs((float)currentSetValue - f) > 0.0001f)
-                    {
-                        return false;
-                    }
-
-                    break;
-                case Vector2 v2:
-                    var diff2 = v2 - (Vector2)currentSetValue;
-                    if (diff2.magnitude > 0.0001f)
-                        return false;
-                    break;
-                case Vector3 v3:
-                    var diff3 = v3 - (Vector3)currentSetValue;
-                    if (diff3.magnitude > 0.0001f)
-                        return false;
-                    break;
-                case Vector4 v4:
-                    var diff4 = v4 - (Vector4)currentSetValue;
-                    if (diff4.magnitude > 0.0001f)
-                        return false;
-                    break;
-                case Quaternion q:
-                    var diffQ = q.eulerAngles - ((Quaternion)currentSetValue).eulerAngles;
-                    if (diffQ.magnitude > 0.0001f)
-                        return false;
-                    break;
-                case Color c:
-                    var diff = c - (Color)currentSetValue;
-                    float d = Mathf.Abs(diff.r) + Mathf.Abs(diff.g) + Mathf.Abs(diff.b) + Mathf.Abs(diff.a);
-                    if (d > 0.0001f)
-                        return false;
-                    break;
-                case Matrix4x4 m:
-                    for (int i = 0; i < 4; i++)
-                    {
-                        var diffM = m.GetColumn(0) - ((Matrix4x4)currentSetValue).GetColumn(0);
-                        if (diffM.magnitude > 0.0001f)
-                            return false;
-                    }
-                    break;
-            }
-            
-            member.Set(target, newValue);
-
-            return true;
-        }
+        
+        protected abstract bool SetValue(Flow flow, Data data, TValueType newValue);
 
         public void Update(Flow flow)
         {
@@ -266,22 +185,23 @@ namespace Unity.VisualScripting
             var stack = flow.PreserveStack();
             var t = data.time / data.duration;
             var currentValue = InterpolateHelper.BezierInterpolate(data.pointA, data.pointB, data.startValue, data.endValue, t);
-            if (!SetValue(flow, data, currentValue))
+            if (!SetValue(flow, data, (TValueType)currentValue))
             {
                 // Stop the interpolation if the value was changed externally
                 data.running = false;
             }
             else
             {
-                data.lastSetValue = currentValue;
+                data.lastSetValue = (TValueType)currentValue;
             }
        
             if (!data.running || data.time >= data.duration)
             {
                 bool callDone = data.running;
+                
                 if (data.running)
                     SetValue(flow, data, data.endValue);
-
+                
                 data.running = false;
 
                 flow.RestoreStack(stack);
@@ -292,21 +212,5 @@ namespace Unity.VisualScripting
 
             flow.DisposePreservedStack(stack);
         }
-        
-        #region Analytics
-
-        public override AnalyticsIdentifier GetAnalyticsIdentifier()
-        {
-            var aid = new AnalyticsIdentifier
-            {
-                Identifier = $"{member.targetType.FullName}.{member.name}(Interpolate)",
-                Namespace = member.targetType.Namespace,
-            };
-            aid.Hashcode = aid.Identifier.GetHashCode();
-            return aid;
-        }
-
-        #endregion
     }
-    
 }

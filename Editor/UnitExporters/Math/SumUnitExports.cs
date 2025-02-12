@@ -32,7 +32,7 @@ namespace UnityGLTF.Interactivity.Export
             _unitType = unitType;
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit;
             GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Math_AddNode());
@@ -65,7 +65,7 @@ namespace UnityGLTF.Interactivity.Export
                 unitExporter.MapInputPortToSocketName(b, Math_AddNode.IdValueB, node);
                 unitExporter.MapValueOutportToSocketName(sum, Math_AddNode.IdOut, node);
             }
-            
+            return true;
         }
     }
 }

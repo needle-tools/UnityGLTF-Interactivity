@@ -19,7 +19,7 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Random), nameof(Random.Range), new RandomRangeUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as InvokeMember;
 
@@ -65,6 +65,7 @@ namespace UnityGLTF.Interactivity.Export
             }
             
             unitExporter.ByPassFlow(unit.enter, unit.exit);
+            return true;
         }
     }
 }

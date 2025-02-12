@@ -16,7 +16,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new SetVariableUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as SetVariable;
             
@@ -54,6 +54,7 @@ namespace UnityGLTF.Interactivity.Export
             {
                 unitExporter.ByPassValue(unit.input, unit.output);
             }
+            return true;
         }
     }
 }

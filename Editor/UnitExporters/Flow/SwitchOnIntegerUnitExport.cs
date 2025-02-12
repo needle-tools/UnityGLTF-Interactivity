@@ -16,7 +16,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new SwitchOnIntegerUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as SwitchOnInteger;
             var node = unitExporter.CreateNode(new Flow_SwitchNode());
@@ -36,6 +36,7 @@ namespace UnityGLTF.Interactivity.Export
 
             node.FlowOut(Flow_SwitchNode.IdFDefaultFlowOut).MapToControlOutput(unit.@default);
             node.ValueIn(Flow_SwitchNode.IdSelection).MapToInputPort(unit.selector);
+            return true;
         }
     }
 }

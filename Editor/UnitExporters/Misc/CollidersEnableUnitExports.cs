@@ -17,7 +17,7 @@ namespace UnityGLTF.Interactivity.Export
             GetMemberUnitExport.RegisterMemberExporter(typeof(Collider), nameof(Collider.enabled), new CollidersGetEnableUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as GetMember;
                 
@@ -30,6 +30,7 @@ namespace UnityGLTF.Interactivity.Export
                 unit.target, SelectableExtensionHelper.PointerTemplate,
                 GltfTypes.Bool);
             selectableNode.ValueOut(Pointer_GetNode.IdValue).MapToPort(unit.value);
+            return true;
         }
     }
     
@@ -43,7 +44,7 @@ namespace UnityGLTF.Interactivity.Export
             SetMemberUnitExport.RegisterMemberExporter(typeof(Collider), nameof(Collider.enabled), new CollidersSetEnableUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as SetMember;
             var selectableNode = unitExporter.CreateNode(new Pointer_SetNode());
@@ -58,6 +59,7 @@ namespace UnityGLTF.Interactivity.Export
             selectableNode.ValueIn(Pointer_SetNode.IdValue).MapToInputPort(unit.input);
             
             selectableNode.FlowOut(Pointer_SetNode.IdFlowOut).MapToControlOutput(unit.assigned);
+            return true;
         }
     }
 }

@@ -19,19 +19,19 @@ namespace Editor.UnitExporters.Lists
             UnitExporterRegistry.RegisterExporter(new GetListItemUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as GetListItem;
             var list = ListHelpers.FindListByConnections(unitExporter.exportContext, unit);
             if (list == null)
             {
                 Debug.LogError("Can't resolve list detection by connections.");
-                return;
+                return false;
             }
             
             ListHelpers.GetItem(unitExporter, list, unit.index, out var socket);
             socket.MapToPort(unit.item);
-
+            return true;
         }
     }
 }

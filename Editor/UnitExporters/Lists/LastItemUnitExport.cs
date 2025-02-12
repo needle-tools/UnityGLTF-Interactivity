@@ -18,7 +18,7 @@ namespace Editor.UnitExporters.Lists
             UnitExporterRegistry.RegisterExporter(new LastItemUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as LastItem;
 
@@ -26,7 +26,7 @@ namespace Editor.UnitExporters.Lists
             if (list == null)
             {
                 Debug.LogError("Could not find list for LastItem unit");
-                return;
+                return false;
             }
             
             var subNode = unitExporter.CreateNode(new Math_SubNode());
@@ -36,6 +36,7 @@ namespace Editor.UnitExporters.Lists
             
             ListHelpers.GetItem(unitExporter, list, subNode.ValueOut("value"), out var itemValue);
             itemValue.MapToPort(unit.lastItem);
+            return true;
         }
     }
 }

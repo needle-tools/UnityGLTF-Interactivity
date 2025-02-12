@@ -15,7 +15,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new GenericMultiplyUnitExporter());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as GenericMultiply;
             
@@ -37,6 +37,7 @@ namespace UnityGLTF.Interactivity.Export
                     mulNode.FirstValueOut().ExpectedType(ExpectedType.Float4x4);
                 }
             };
+            return true;
         }
     }
 }

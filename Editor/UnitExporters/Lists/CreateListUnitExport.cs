@@ -19,7 +19,7 @@ namespace Editor.UnitExporters.Lists
         }
         
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as CreateList;
 
@@ -29,13 +29,13 @@ namespace Editor.UnitExporters.Lists
             if (firstInput == null)
             {
                 Debug.LogError("Can't resolve list detection by connections.");
-                return;
+                return false;
             }
 
             if (!unitExporter.IsInputLiteralOrDefaultValue(firstInput as ValueInput, out var value))
             {
                 Debug.LogError("Currently only literals are supported for list creation.");
-                return;
+                return false;
             }
 
             unitExporter.ConvertValue(value, out _, out var valueTypeIndex);
@@ -52,7 +52,7 @@ namespace Editor.UnitExporters.Lists
                     objectList.AddItem(convertedValue);
                 }
             }
-            
+            return true;
         }
 
         public UnitLogs GetFeedback(IUnit unit)

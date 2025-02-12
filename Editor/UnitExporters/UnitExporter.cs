@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -111,28 +112,24 @@ namespace UnityGLTF.Interactivity.Export
             this.Graph = exportContext.currentGraphProcessing;
             this.scriptMachineGameObject = exportContext.ActiveScriptMachine.gameObject;
 
-            Debug.Log("ExportNode: " + unit + " with converter: " + exporter);
-
             InitializeInteractivityNode();
-
-            // If node is null then an error prevented it from being initialized
-            // and this node is invalid.
-            IsTranslatable = _nodes != null && _nodes.Count > 0;
             
             if (!IsTranslatable)
                 UnitExportLogging.AddErrorLog(unit, "Could not be exported to GLTF.");
         }
-
-
+        
         private void InitializeInteractivityNode()
         {
-            exporter.InitializeInteractivityNodes(this);
-
-            if (Nodes == null || Nodes.Length == 0)
+            try
+            {
+                IsTranslatable = exporter.InitializeInteractivityNodes(this);
+            }
+            catch (Exception e)
+            {
                 IsTranslatable = false;
-            
-            if (!IsTranslatable)
-                _nodes.Clear();
+                UnitExportLogging.AddErrorLog(unit, "Error initializing interactivity nodes: " + e.Message);
+                Console.WriteLine(e);
+            }
         }
 
         public void ConvertValue(object originalValue, out object convertedValue, out int typeIndex)

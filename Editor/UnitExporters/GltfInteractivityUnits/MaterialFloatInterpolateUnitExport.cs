@@ -18,7 +18,7 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
             UnitExporterRegistry.RegisterExporter(new MaterialFloatInterpolateUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as MaterialFloatInterpolate;
             
@@ -33,7 +33,7 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
                 if (gltfProperty == null)
                 {
                     UnitExportLogging.AddErrorLog(unit, "color property name is not supported.");
-                    return;
+                    return false;
                 }
 
                 // TODO: Flip
@@ -42,7 +42,7 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
             else
             {
                 UnitExportLogging.AddErrorLog(unit, "color property name is not a literal or default value, which is not supported.");
-                return;
+                return false;
             } 
             
             var node = unitExporter.CreateNode(new Pointer_InterpolateNode());
@@ -57,6 +57,7 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
             node.FlowOut(Pointer_InterpolateNode.IdFlowOutDone).MapToControlOutput(unit.done);
             
             node.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerMaterialIndex, unit.target, template, valueType);
+            return true;
         }
     }
 }

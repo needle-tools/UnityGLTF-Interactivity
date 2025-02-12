@@ -16,14 +16,14 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new SelectOnFlowUnitExporter());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as SelectOnFlow;
 
             if (unit.branchCount == 0)
             {
                 UnitExportLogging.AddWarningLog(unit, "No branches. Will be skipped.");
-                return;
+                return false;
             }
             
             var setVarNodes = new List<GltfInteractivityUnitExporterNode>();
@@ -75,6 +75,7 @@ namespace UnityGLTF.Interactivity.Export
             // Update Type Index
             unitExporter.exportContext.OnNodesCreated += (nodes => { PostTypeResolving(); });
             unitExporter.exportContext.OnBeforeSerialization += (nodes) => { PostTypeResolving(true); };
+            return true;
         }
     }
 }

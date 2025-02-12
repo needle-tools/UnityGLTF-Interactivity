@@ -17,7 +17,7 @@ namespace UnityGLTF.Interactivity.Export
 
         public Type unitType { get => typeof(InvokeMember); }
 
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as InvokeMember;
             
@@ -30,6 +30,7 @@ namespace UnityGLTF.Interactivity.Export
 
             unitExporter.MapValueOutportToSocketName(unit.result, Type_FloatToIntNode.IdValueResult, floatToIntNode);
             unitExporter.ByPassFlow(unit.enter, unit.exit);
+            return true;
          }
         
     }

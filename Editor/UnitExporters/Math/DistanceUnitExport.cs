@@ -36,7 +36,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new Vector4DistanceUnitExporter());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var subNode = unitExporter.CreateNode( new Math_SubNode());
             subNode.ValueIn("a").MapToInputPort(unitExporter.unit.valueInputs[0]);
@@ -46,6 +46,7 @@ namespace UnityGLTF.Interactivity.Export
             var lengthNode = unitExporter.CreateNode( new Math_LenghNode());
             lengthNode.ValueIn("a").ConnectToSource(subNode.FirstValueOut()).SetType(TypeRestriction.LimitToFloat3);
             lengthNode.FirstValueOut().MapToPort(unitExporter.unit.valueOutputs[0]);
+            return true;
         }
     }
 }

@@ -22,14 +22,14 @@ namespace Editor.UnitExporters.Lists
             InvokeUnitExport.RegisterInvokeExporter(typeof(UnityEngine.Object), nameof(UnityEngine.Object.FindObjectsByType), new FindObjectsOfTypeUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as InvokeMember;
 
             if (!GltfInteractivityNodeHelper.GetDefaultValue(unit, "%type", out Type type))
-                return;
+                return false;
             if (!GltfInteractivityNodeHelper.GetDefaultValue(unit, "%sortMode", out FindObjectsSortMode sortMode)) 
-                return;
+                return false;
 
             var objects = Object.FindObjectsByType(type, FindObjectsSortMode.None);
             var transforms = objects.Select(obj =>
@@ -58,6 +58,7 @@ namespace Editor.UnitExporters.Lists
             
             
             unitExporter.ByPassFlow(unit.enter, unit.exit);
+            return true;
         }
         
         public UnitLogs GetFeedback(IUnit unit)

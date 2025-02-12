@@ -17,7 +17,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new GetVariableUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as GetVariable;
             
@@ -39,7 +39,7 @@ namespace UnityGLTF.Interactivity.Export
                             // TODO: because we don't create any node here,
                             // we would get a false-error message that this Unit could not be exported.
                             // We would need to add a Return Bool for error handling in UnitExporter in the future 
-                            return;
+                            return false;
                         }
                         
                         // Create list
@@ -69,13 +69,13 @@ namespace UnityGLTF.Interactivity.Export
                         if (listCapacity == 0)
                         {
                             UnitExportLogging.AddErrorLog(unit, "List/Array requires at least 1 element. The exported list capacity will be limited to the existing length.");
-                            return;
+                            return false;
                         }
                         
                         if (valueTypeIndex == -1)
                         {
                             UnitExportLogging.AddErrorLog(unit, "Unsupported list type");
-                            return;
+                            return false;
                         }
                         var objectList = unitExporter.exportContext.CreateNewVariableBasedListFromVariable(declaration, listCapacity, valueTypeIndex);
                         ListHelpers.CreateListNodes(unitExporter, objectList);
@@ -85,7 +85,7 @@ namespace UnityGLTF.Interactivity.Export
                     }
                     
                     // We cancel here, since we don't want to create a gltf variable for the list
-                    return;
+                    return false;
                 }
             }
             
@@ -93,12 +93,13 @@ namespace UnityGLTF.Interactivity.Export
             if (typeIndex == -1)
             {
                 UnitExportLogging.AddErrorLog(unit, "Unsupported type");
-                return;
+                return false;
             }
             
             var variableIndex = unitExporter.exportContext.AddVariableIfNeeded(unit);
             VariablesHelpers.GetVariable(unitExporter, variableIndex, out var valueSocket);
             valueSocket.MapToPort(unit.value);
+            return true;
         }
     }
 }

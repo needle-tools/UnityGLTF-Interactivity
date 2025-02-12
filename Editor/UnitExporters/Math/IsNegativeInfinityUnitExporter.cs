@@ -18,11 +18,11 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(float), nameof(float.IsNegativeInfinity), new IsNegativeInfinityUnitExporter());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as InvokeMember;
             if (unit.valueInputs.Count == 0)
-                return;
+                return false;
             
             var node = unitExporter.CreateNode(new Math_IsInfNode());
             node.ValueIn("a").MapToInputPort(unit.valueInputs[0]);
@@ -37,6 +37,7 @@ namespace UnityGLTF.Interactivity.Export
             and.ValueOut("value").MapToPort(unit.result);
             
             unitExporter.ByPassFlow(unit.enter, unit.exit);
+            return true;
         }
     }
 }

@@ -51,12 +51,13 @@ namespace UnityGLTF.Interactivity.Export
             this.gltfType = gltfType;
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as InvokeMember;
             LerpClampedHelper.AddClampedLerp(unitExporter, gltfType);
 
             unitExporter.ByPassFlow(unit.enter, unit.exit);
+            return true;
          }
     }
 
@@ -80,9 +81,10 @@ namespace UnityGLTF.Interactivity.Export
             this.gltfType = gltfType;
         }
 
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             LerpClampedHelper.AddClampedLerp(unitExporter, gltfType);
+            return true;
         }
     }
 }

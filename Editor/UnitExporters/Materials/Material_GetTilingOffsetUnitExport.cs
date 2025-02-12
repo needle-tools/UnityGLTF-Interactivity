@@ -27,7 +27,7 @@ namespace UnityGLTF.Interactivity.Export
             this.isOffset = isOffset;
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             ValueInput target = null;
             
@@ -65,7 +65,7 @@ namespace UnityGLTF.Interactivity.Export
                     if (gltfProperty == null)
                     {
                         UnitExportLogging.AddErrorLog(invokeMember, "texture property name is not supported.");
-                        return;
+                        return false;
                     }
 
                     if (isOffset)
@@ -79,7 +79,7 @@ namespace UnityGLTF.Interactivity.Export
                 else
                 {
                     UnitExportLogging.AddErrorLog(invokeMember, "texture property name is not a literal or default value, which is not supported.");
-                    return;
+                    return false;
                 } 
                 
                 var node = unitExporter.CreateNode(new Pointer_GetNode());
@@ -96,7 +96,7 @@ namespace UnityGLTF.Interactivity.Export
                     unitExporter.MapValueOutportToSocketName(invokeMember.result, Pointer_GetNode.IdValue, node);
                 
             }
-
+            return true;
         }
     }
 }

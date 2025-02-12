@@ -17,7 +17,7 @@ namespace Editor.UnitExporters.Lists
             UnitExporterRegistry.RegisterExporter(new AddListItemUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as AddListItem;
 
@@ -25,11 +25,12 @@ namespace Editor.UnitExporters.Lists
             if (list == null)
             {
                 Debug.LogError("Could not find list for SetListItem");
-                return;
+                return false;
             }
             
             ListHelpers.AddItem(unitExporter, list, unit.item, unit.enter, unit.exit);
             unitExporter.ByPassValue(unit.listInput, unit.listOutput);
+            return true;
         }
 
         public UnitLogs GetFeedback(IUnit unit)

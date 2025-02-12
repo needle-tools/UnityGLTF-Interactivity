@@ -26,7 +26,7 @@ namespace UnityGLTF.Interactivity
                 UnitExporter unitExporter = UnitExporterRegistry.CreateUnitExporter(exportContext, unit);
                 if (unitExporter != null)
                 {
-                    if (unitExporter.IsTranslatable)
+                    if (unitExporter.IsTranslatable && unitExporter.Nodes.Length > 0)
                         validNodes.Add(unit, unitExporter);
                 }
                 else

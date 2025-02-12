@@ -17,7 +17,7 @@ namespace Editor.UnitExporters.Lists
             UnitExporterRegistry.RegisterExporter(new ForEachLoopUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as ForEach;
             
@@ -41,7 +41,7 @@ namespace Editor.UnitExporters.Lists
             forLoop.ValueOut(Flow_ForLoopNode.IdIndex).MapToPort(unit.currentIndex);
             
             getItemValueSocket.MapToPort(unit.currentItem);
-            
+            return true;
         }
     }
 }

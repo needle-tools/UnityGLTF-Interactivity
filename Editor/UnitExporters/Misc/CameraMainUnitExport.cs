@@ -17,8 +17,9 @@ namespace UnityGLTF.Interactivity.Export
             GetMemberUnitExport.RegisterMemberExporter(typeof(Camera), nameof(Camera.main), new CameraMainUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
+            return true;
         }
     }
 }

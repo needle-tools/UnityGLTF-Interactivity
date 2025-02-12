@@ -18,7 +18,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new WaitForFlowUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as WaitForFlow;
             var node = unitExporter.CreateNode(new Flow_WaitAllNode());
@@ -33,6 +33,7 @@ namespace UnityGLTF.Interactivity.Export
             }
             
             unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Flow_WaitAllNode.IdFlowOutCompleted, node);
+            return true;
         }
     }
 }

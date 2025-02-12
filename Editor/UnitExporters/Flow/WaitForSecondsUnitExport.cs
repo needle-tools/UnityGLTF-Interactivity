@@ -11,11 +11,10 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            //NodeConvertRegistry.RegisterImport(new OnSelectNode());
             UnitExporterRegistry.RegisterExporter(new WaitForSecondsUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as WaitForSecondsUnit;
             var node = unitExporter.CreateNode(new Flow_SetDelayNode());
@@ -25,6 +24,7 @@ namespace UnityGLTF.Interactivity.Export
             unitExporter.MapInputPortToSocketName(unit.seconds, Flow_SetDelayNode.IdDuration, node);
             unitExporter.MapInputPortToSocketName(unit.enter, Flow_SetDelayNode.IdFlowIn, node);
             // TODO: cancel, done, err, lastDelayIndex ... maybe custom Unit also with a Static Dict. for delay index
+            return true;
         }
     }
 }

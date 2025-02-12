@@ -26,11 +26,12 @@ namespace UnityGLTF.Interactivity.Export
             _valueOption = valueOption;
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as GetMember;
             TimeHelpers.AddTickNode(unitExporter, _valueOption, out var valueSocket);
             valueSocket.MapToPort(unit.value);
+            return true;
         }
     }
 }

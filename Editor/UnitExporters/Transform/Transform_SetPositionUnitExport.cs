@@ -23,7 +23,7 @@ namespace UnityGLTF.Interactivity.Export
             this.worldSpace = worldSpace;
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             // TODO: World Space conversion
             
@@ -32,6 +32,7 @@ namespace UnityGLTF.Interactivity.Export
            
            if (unit.chainable && unit.output.hasValidConnection)
                unitExporter.ByPassValue(unit.input, unit.output);
+           return true;
         }
     }
 }

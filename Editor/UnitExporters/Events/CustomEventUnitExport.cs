@@ -17,14 +17,14 @@ namespace UnityGLTF.Interactivity.Export
         
         public System.Type unitType { get => typeof(CustomEvent); }
 
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as CustomEvent;
 
             if (!unit.target.hasDefaultValue && !unit.target.hasValidConnection)
             {
                 UnitExportLogging.AddErrorLog(unit, "Could not find target node for CustomEvent");
-                return;
+                return false;
             }
             
             var node = unitExporter.CreateNode(new Event_ReceiveNode());
@@ -94,7 +94,7 @@ namespace UnityGLTF.Interactivity.Export
             {
                 ResolveTypes();
             };   
-            
+            return true;
         }
     }
 }

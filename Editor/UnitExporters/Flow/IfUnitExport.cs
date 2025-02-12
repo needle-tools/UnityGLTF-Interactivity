@@ -17,7 +17,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new IfUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as Unity.VisualScripting.If;
             var node = unitExporter.CreateNode(new Flow_BranchNode());
@@ -26,6 +26,7 @@ namespace UnityGLTF.Interactivity.Export
             unitExporter.MapInputPortToSocketName(unit.condition, Flow_BranchNode.IdCondition, node);
             unitExporter.MapOutFlowConnectionWhenValid(unit.ifTrue, Flow_BranchNode.IdFlowOutTrue, node);
             unitExporter.MapOutFlowConnectionWhenValid(unit.ifFalse, Flow_BranchNode.IdFlowOutFalse, node);
+            return true;
         }
     }
 }

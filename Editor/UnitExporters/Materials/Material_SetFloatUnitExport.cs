@@ -16,12 +16,12 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Material), nameof(Material.SetFloat), new Material_SetFloatUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as InvokeMember;
             
             if (unit.target == null)
-                return;
+                return false;
             
             var materialTemplate = "/materials/{" + GltfInteractivityNodeHelper.IdPointerMaterialIndex + "}/";
             string template = "";
@@ -32,7 +32,7 @@ namespace UnityGLTF.Interactivity.Export
                 if (gltfProperty == null)
                 {
                     UnitExportLogging.AddErrorLog(unit, "float property name is not supported.");
-                    return;
+                    return false;
                 }
                 template = materialTemplate + gltfProperty;
                 oneMinus = map.ExportFlipValueRange;
@@ -40,7 +40,7 @@ namespace UnityGLTF.Interactivity.Export
             else
             {
                 UnitExportLogging.AddErrorLog(unit, "float property name is not a literal or default value, which is not supported.");
-                return;
+                return false;
             }
 
             var node = unitExporter.CreateNode(new Pointer_SetNode());
@@ -60,6 +60,7 @@ namespace UnityGLTF.Interactivity.Export
             node.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerMaterialIndex,
                 unit.target, template, GltfTypes.Float);
             
+            return true;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Transform), nameof(Transform.Translate), new Transform_TranslateUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
            var unit = unitExporter.unit as Unity.VisualScripting.InvokeMember;
            
@@ -43,6 +43,7 @@ namespace UnityGLTF.Interactivity.Export
            //TODO: translate of non self
 
            TransformHelpers.SetLocalPosition(unitExporter, unit.target,  add.FirstValueOut(), unit.enter, unit.exit);
+           return true;
         }
     }
 }

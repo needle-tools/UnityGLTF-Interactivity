@@ -16,7 +16,7 @@ namespace UnityGLTF.Interactivity.Export
                 new GameObject_SetActiveUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as InvokeMember;
             
@@ -41,6 +41,7 @@ namespace UnityGLTF.Interactivity.Export
                 GltfTypes.Bool);
             
             selectableNode.FlowOut(Pointer_SetNode.IdFlowOut).MapToControlOutput(unit.exit);
+            return true;
         }
     }
 }

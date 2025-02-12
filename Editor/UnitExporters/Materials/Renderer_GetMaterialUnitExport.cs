@@ -16,7 +16,7 @@ namespace UnityGLTF.Interactivity.Export
             GetMemberUnitExport.RegisterMemberExporter(typeof(Renderer), nameof(Renderer.material), new Renderer_GetMaterialUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as GetMember;
      
@@ -34,6 +34,7 @@ namespace UnityGLTF.Interactivity.Export
             
             unitExporter.MapValueOutportToSocketName(unit.value, Pointer_GetNode.IdValue, getMaterial);
         
+            return true;
         }
     }
 }

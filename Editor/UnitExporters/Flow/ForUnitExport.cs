@@ -17,7 +17,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new ForUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as Unity.VisualScripting.For;
             GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Flow_ForLoopNode());
@@ -53,7 +53,7 @@ namespace UnityGLTF.Interactivity.Export
                 loopBody.MapToControlOutput(unit.body);
                 completed.MapToControlOutput(unit.exit);
             }
-            
+            return true;
         }
     }
 }

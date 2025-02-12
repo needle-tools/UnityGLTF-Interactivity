@@ -13,11 +13,10 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            //NodeConvertRegistry.RegisterImport(new OnSelectNode());
             UnitExporterRegistry.RegisterExporter(new SequenceUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as Sequence;
             var node = unitExporter.CreateNode(new Flow_SequenceNode());
@@ -42,7 +41,7 @@ namespace UnityGLTF.Interactivity.Export
                     index++;
                 }
             }
-            
+            return false;
         }
     }
 }

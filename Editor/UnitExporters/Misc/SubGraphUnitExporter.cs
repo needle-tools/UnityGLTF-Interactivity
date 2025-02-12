@@ -15,15 +15,20 @@ namespace UnityGLTF.Interactivity.Export
         private class SubGraphInputNode : IUnitExporter
         {
             public Type unitType {get => typeof(GraphInput); }
-            public void InitializeInteractivityNodes(UnitExporter unitExporter)
-            { }
+            public bool InitializeInteractivityNodes(UnitExporter unitExporter)
+            {  
+                return true;
+            }
         }
         
         private class SubGraphOutputNode : IUnitExporter
         {
             public Type unitType {get => typeof(GraphOutput); }
-            public void InitializeInteractivityNodes(UnitExporter unitExporter)
-            { }
+
+            public bool InitializeInteractivityNodes(UnitExporter unitExporter)
+            {
+                return true;
+            }
         }
         
         [InitializeOnLoadMethod]
@@ -36,7 +41,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new SubGraphOutputNode());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as SubgraphUnit;
 
@@ -92,6 +97,7 @@ namespace UnityGLTF.Interactivity.Export
                         unitExporter.ByPassValue(port, subGraphExport, vOutput, unitExporter.Graph);
                 }
             }
+            return true;
         }
     }
 }

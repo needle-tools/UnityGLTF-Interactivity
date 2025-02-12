@@ -19,11 +19,10 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Quaternion), nameof(Quaternion.Euler), new QuaternionEulerUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var invokeMember = unitExporter.unit as InvokeMember;
 
-            GltfInteractivityUnitExporterNode combineInput = null;
             GltfInteractivityUnitExporterNode.ValueOutputSocketData result;
             if (invokeMember.valueInputs.Count == 1)
             {
@@ -42,6 +41,7 @@ namespace UnityGLTF.Interactivity.Export
 
             result.MapToPort(invokeMember.result);
             unitExporter.ByPassFlow(invokeMember.enter, invokeMember.exit);
+            return true;
         }
     }
 }

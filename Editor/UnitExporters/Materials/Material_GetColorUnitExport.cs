@@ -17,12 +17,12 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Material), nameof(Material.GetColor), new Material_GetColorUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as MemberUnit;
             
             if (unit.target == null)
-                return;
+                return false;
             
             
             var materialTemplate = "/materials/{" + GltfInteractivityNodeHelper.IdPointerMaterialIndex + "}/";
@@ -47,7 +47,7 @@ namespace UnityGLTF.Interactivity.Export
                     if (gltfProperty == null)
                     {
                         UnitExportLogging.AddErrorLog(unit, "color property name is not supported.");
-                        return;
+                        return false;
                     }
 
                     hasAlpha = map.ExportKeepColorAlpha;
@@ -56,7 +56,7 @@ namespace UnityGLTF.Interactivity.Export
                 else
                 {
                     UnitExportLogging.AddErrorLog(unit, "color property name is not a literal or default value, which is not supported.");
-                    return;
+                    return false;
                 }
                 var node = unitExporter.CreateNode(new Pointer_GetNode());
                 unitExporter.ByPassFlow(invokeMember.enter, invokeMember.exit);
@@ -82,6 +82,7 @@ namespace UnityGLTF.Interactivity.Export
                     combine.FirstValueOut().MapToPort(invokeMember.result).ExpectedType(ExpectedType.Float4);
                 }
             }
+            return true;
         }
     }
 }

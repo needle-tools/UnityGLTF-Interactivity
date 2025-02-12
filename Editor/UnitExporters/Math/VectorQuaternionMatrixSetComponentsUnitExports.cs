@@ -53,7 +53,7 @@ namespace UnityGLTF.Interactivity.Export
             this.componentCount = componentCount;
         }
 
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var setMember = unitExporter.unit as SetMember;
             
@@ -84,7 +84,7 @@ namespace UnityGLTF.Interactivity.Export
                     break;
                 default:
                     Debug.LogError("Unsupported component count: " + componentCount);
-                    return;
+                    return false;
             }
             
             var extractNode = unitExporter.CreateNode(extractSchema);
@@ -104,6 +104,7 @@ namespace UnityGLTF.Interactivity.Export
             unitExporter.ByPassValue(setMember.input, setMember.output);
             combineNode.FirstValueOut().MapToPort(setMember.targetOutput);
             unitExporter.ByPassFlow(setMember.assign, setMember.assigned);
+            return true;
         }
     }
 }

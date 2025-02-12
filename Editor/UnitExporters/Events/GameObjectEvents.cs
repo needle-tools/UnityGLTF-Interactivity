@@ -40,7 +40,7 @@ namespace UnityGLTF.Interactivity.Export
         {
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as TVisualGraphUnit;
             GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new TNodeSchema());
@@ -48,12 +48,12 @@ namespace UnityGLTF.Interactivity.Export
             if (!unit.valueInputs.TryGetValue("target", out var targetInput))
             {
                 UnitExportLogging.AddErrorLog(unit, "Could not find target node for CustomEvent");
-                return;
+                return false;
             }
 
             if (!unit.controlOutputs.TryGetValue("trigger", out var triggerOutput))
             {
-                return;
+                return false;
             }
             
             // NodeIndex's value should equal the ID of the object referenced by the target value input.
@@ -62,8 +62,7 @@ namespace UnityGLTF.Interactivity.Export
             if (target == null)
             {
                 UnitExportLogging.AddErrorLog(unit, "No target object found.");
-                unitExporter.IsTranslatable = false;
-                return;
+                return false;
             }
 
             int targetIndex = unitExporter.exportContext.exporter.GetTransformIndex(target.transform);
@@ -148,6 +147,7 @@ namespace UnityGLTF.Interactivity.Export
                 }
             
             }
+            return true;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace UnityGLTF.Interactivity.Export
         }
         
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as InvokeMember;
             
@@ -28,7 +28,7 @@ namespace UnityGLTF.Interactivity.Export
             if (!addBabylon && !addADBE)
             {
                 UnitExportLogging.AddWarningLog(unit,"No debug log output selected for Debug.Log unit. Skipping export. See Project Settings > UnityGltf");
-                return;
+                return false;
             }
             
             var sequence_node = unitExporter.CreateNode(new Flow_SequenceNode());
@@ -63,6 +63,7 @@ namespace UnityGLTF.Interactivity.Export
             unitExporter.MapOutFlowConnectionWhenValid(unit.exit, "2", sequence_node);
             
             unitExporter.MapInputPortToSocketName(unit.enter, Flow_SequenceNode.IdFlowIn, sequence_node);
+            return true;
         }
 
         public UnitLogs GetFeedback(IUnit unit)

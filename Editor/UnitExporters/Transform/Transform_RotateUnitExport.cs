@@ -20,7 +20,7 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Transform), nameof(Transform.Rotate), new Transform_RotateUnitExport());
         }
 
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             // TODO: World Space conversion
 
@@ -81,6 +81,7 @@ namespace UnityGLTF.Interactivity.Export
 
 
             unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Pointer_SetNode.IdFlowOut, setRotation);
+            return true;
         }
     }
 }

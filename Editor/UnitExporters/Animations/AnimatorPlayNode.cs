@@ -25,7 +25,7 @@ namespace UnityGLTF.Interactivity.Export
                 new AnimatorPlayNode());
         }
 
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             InvokeMember unit = unitExporter.unit as InvokeMember;
             GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Animation_StartNode());
@@ -36,14 +36,14 @@ namespace UnityGLTF.Interactivity.Export
             if (target == null)
             {
                 UnitExportLogging.AddErrorLog(unit, "Can't resolve target GameObject");
-                return;
+                return false;
             }
 
             // Get the state name from the node
             if (!GltfInteractivityNodeHelper.GetDefaultValue<string>(unit, _stateNameKey, out string stateName))
             {
                 UnitExportLogging.AddErrorLog(unit, "Invalid state name.");
-                return;
+                return false;
             }
             
             AnimatorState animationState = AnimatorHelper.GetAnimationState(target, stateName);
@@ -52,7 +52,7 @@ namespace UnityGLTF.Interactivity.Export
             if (animationId == -1)
             {
                 UnitExportLogging.AddErrorLog(unit, "Animation not found in export context.");
-                return;
+                return false;
             }
 
             node.ValueSocketConnectionData[Animation_StartNode.IdValueAnimation].Value = animationId;
@@ -68,6 +68,7 @@ namespace UnityGLTF.Interactivity.Export
             unitExporter.MapInputPortToSocketName(unit.enter, Animation_StartNode.IdFlowIn, node);
             // There should only be one output flow from the Animator.Play node
             unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Animation_StartNode.IdFlowOut, node);
+            return true;
         }
         
     }

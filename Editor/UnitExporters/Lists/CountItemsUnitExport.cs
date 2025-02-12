@@ -19,7 +19,7 @@ namespace Editor.UnitExporters.Lists
             UnitExporterRegistry.RegisterExporter(new CountItemsUnitExport()); 
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var countItems = unitExporter.unit as CountItems;
             var list = ListHelpers.FindListByConnections(unitExporter.exportContext, countItems);
@@ -27,10 +27,11 @@ namespace Editor.UnitExporters.Lists
             if (list == null)
             {
                 Debug.LogError("Can't resolve list detection by connections.");
-                return;
+                return false;
             }
             
             ListHelpers.GetListCount(list, countItems.count);
+            return true;
         }
     }
 }

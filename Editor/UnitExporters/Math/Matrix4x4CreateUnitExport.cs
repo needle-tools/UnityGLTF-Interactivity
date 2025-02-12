@@ -22,7 +22,7 @@ namespace UnityGLTF.Interactivity.Export
             InvokeUnitExport.RegisterInvokeExporter(typeof(Matrix4x4), ".ctor", new Matrix4x4CreateUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as InvokeMember;
 
@@ -45,6 +45,7 @@ namespace UnityGLTF.Interactivity.Export
                     index++;
                 }
             }
+            return true;
         }
     }
 }

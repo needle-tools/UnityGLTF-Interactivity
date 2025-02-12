@@ -20,7 +20,7 @@ namespace UnityGLTF.Interactivity.Export
                 new AnimationStopNode());
         }
 
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             InvokeMember unit = unitExporter.unit as InvokeMember;
 
@@ -30,14 +30,14 @@ namespace UnityGLTF.Interactivity.Export
             if (target == null)
             {
                 UnitExportLogging.AddErrorLog(unit, "Can't resolve target GameObject");
-                return;
+                return false;
             }
             
             var animation = target.GetComponent<Animation>();
             if (!animation)
             {
                 UnitExportLogging.AddErrorLog(unit, "Target GameObject does not have an Animation component.");
-                return;
+                return false;
             }
 
             var clip = animation.clip;
@@ -48,7 +48,7 @@ namespace UnityGLTF.Interactivity.Export
                     if (!unitExporter.IsInputLiteralOrDefaultValue(unit.inputParameters[0], out var animationName))
                     {
                         UnitExportLogging.AddErrorLog(unit, "Animation name is not a literal or default value, which is not supported.");
-                        return;
+                        return false;
                     }
                     
                     if (animationName is string animationNameString)
@@ -57,7 +57,7 @@ namespace UnityGLTF.Interactivity.Export
                         if (clip == null)
                         {
                             UnitExportLogging.AddErrorLog(unit, "Animation not found in Animation component.");
-                            return;
+                            return false;
                         }
                     }
                 }
@@ -68,7 +68,7 @@ namespace UnityGLTF.Interactivity.Export
             if (animationId == -1)
             {
                 UnitExportLogging.AddErrorLog(unit, "Animation not found in export context.");
-                return;
+                return false;
             }
             
             GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Animation_StopNode());
@@ -78,6 +78,7 @@ namespace UnityGLTF.Interactivity.Export
             unitExporter.MapInputPortToSocketName(unit.enter, Animation_StopNode.IdFlowIn, node);
             // There should only be one output flow from the Animator.Play node
             unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Animation_StopNode.IdFlowOut, node);
+            return true;
         }
         
     }

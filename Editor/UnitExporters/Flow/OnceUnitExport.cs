@@ -18,7 +18,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new OnceUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var once = unitExporter.unit as Once;
             var onceVarName = "once"+once.guid.ToString();
@@ -54,6 +54,7 @@ namespace UnityGLTF.Interactivity.Export
                 resetVar.ValueSocketConnectionData[Variable_SetNode.IdInputValue].Value = false;
                 unitExporter.MapInputPortToSocketName(once.reset, Variable_SetNode.IdFlowIn, resetVar);
             }
+            return true;
         }
     }
 }

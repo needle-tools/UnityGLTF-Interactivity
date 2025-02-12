@@ -18,13 +18,13 @@ namespace UnityGLTF.Interactivity.Export
         public System.Type unitType { get => typeof(TriggerCustomEvent); }
         
 
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as TriggerCustomEvent;
             if (!unit.target.hasDefaultValue && !unit.target.hasValidConnection)
             {
                 UnitExportLogging.AddErrorLog(unit, "Could not find target node for CustomEvent");
-                return;
+                return false;
             }
             
             GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Event_SendNode());
@@ -86,12 +86,12 @@ namespace UnityGLTF.Interactivity.Export
             
             if (index == -1)
             {
-                unitExporter.IsTranslatable = false;
-                return;
+                return false;
             }
             node.ConfigurationData["event"].Value = index;
             
             unitExporter.MapOutFlowConnectionWhenValid(unit.exit, Event_SendNode.IdFlowOut, node);
+            return true;
         }
     }
 }

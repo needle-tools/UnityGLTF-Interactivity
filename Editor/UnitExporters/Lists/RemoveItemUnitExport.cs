@@ -16,7 +16,7 @@ namespace Editor.UnitExporters.Lists
             UnitExporterRegistry.RegisterExporter(new RemoveItemUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as RemoveListItemAt;
             
@@ -24,10 +24,11 @@ namespace Editor.UnitExporters.Lists
             if (list == null)
             {
                 Debug.LogError("Could not find list for RemoveListItemAt unit");
-                return;
+                return false;
             }
             
             ListHelpers.RemoveListItemAt(unitExporter, list, unit.index, unit.enter, unit.exit);
+            return true;
         }
     }
 }

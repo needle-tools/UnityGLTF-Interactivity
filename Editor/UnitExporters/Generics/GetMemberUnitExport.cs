@@ -75,7 +75,7 @@ namespace UnityGLTF.Interactivity.Export
             }
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as GetMember;
 
@@ -91,19 +91,16 @@ namespace UnityGLTF.Interactivity.Export
             {
                 var property = unit.member.declaringType.GetProperty(unit.member.name);
                 if (property == null)
-                    return;
+                    return false;
                 
                 if (!property.IsStatic())
-                    return;
+                    return false;
                 
                 rawValue = property.GetValue(null);
             }
 
             if (rawValue == null)
-            {
-                unitExporter.IsTranslatable = false;
-                return;
-            }
+                return false;
             
             if (rawValue is Double d)
                 value = (float)d;
@@ -121,9 +118,8 @@ namespace UnityGLTF.Interactivity.Export
             {
                 Debug.LogError("Unsupported type to get static value: " + value.GetType()+ " from " + unit.member.declaringType);
                 UnitExportLogging.AddErrorLog(unit, "Unsupported type: "+value.GetType().ToString());
-                unitExporter.IsTranslatable = false;
                 // Unsupported type
-                return;
+                return false;
             }
             var node = unitExporter.CreateNode(new Variable_GetNode());
 
@@ -133,7 +129,7 @@ namespace UnityGLTF.Interactivity.Export
             node.ConfigurationData["variable"].Value = variableIndex;
             
             unitExporter.MapValueOutportToSocketName(unit.value, Variable_GetNode.IdOutputValue, node); 
-            
+            return true;
         }
     }
 }

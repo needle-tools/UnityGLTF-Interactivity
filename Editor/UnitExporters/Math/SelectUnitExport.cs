@@ -17,7 +17,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new SelectUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as Unity.VisualScripting.SelectUnit;
             var node = unitExporter.CreateNode(new Math_SelectNode());
@@ -26,6 +26,7 @@ namespace UnityGLTF.Interactivity.Export
             unitExporter.MapInputPortToSocketName(unit.ifTrue, Math_SelectNode.IdValueA, node);
             unitExporter.MapInputPortToSocketName(unit.ifFalse, Math_SelectNode.IdValueB, node);
             unitExporter.MapValueOutportToSocketName(unit.selection, Math_SelectNode.IdOutValue, node);
+            return true;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace UnityGLTF.Interactivity.Export
             this.schema = schema;
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as CreateStruct;
             var node = unitExporter.CreateNode(schema);
@@ -45,6 +45,7 @@ namespace UnityGLTF.Interactivity.Export
             node.FirstValueOut().MapToPort(unit.valueOutputs[0]);
             
             unitExporter.ByPassFlow(unit.enter, unit.exit);
+            return true;
         }
     }
 }

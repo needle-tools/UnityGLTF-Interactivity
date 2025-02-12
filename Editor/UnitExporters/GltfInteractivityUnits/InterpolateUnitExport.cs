@@ -18,7 +18,7 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
             UnitExporterRegistry.RegisterExporter(new InterpolateUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             // TODO: worlds space conversion
             
@@ -64,7 +64,7 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
             if (string.IsNullOrEmpty(pointerTemplate))
             { 
                 UnitExportLogging.AddErrorLog(unit, "Can't resolve target type for InterpolateMember. Maybe it's not supported.");
-                return;
+                return false;
 
             }
             
@@ -81,7 +81,7 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
             
             
             node.SetupPointerTemplateAndTargetInput(pointerId, unit.target, pointerTemplate, valueType);
-
+            return true;
         }
     }
 }

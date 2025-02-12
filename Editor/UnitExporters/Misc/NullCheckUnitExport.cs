@@ -15,7 +15,7 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new NullCheckUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as NullCheck;
 
@@ -29,6 +29,7 @@ namespace UnityGLTF.Interactivity.Export
             branch.FlowIn(Flow_BranchNode.IdFlowIn).MapToControlInput(unit.enter);
             branch.FlowOut(Flow_BranchNode.IdFlowOutTrue).MapToControlOutput(unit.ifNull);
             branch.FlowOut(Flow_BranchNode.IdFlowOutFalse).MapToControlOutput(unit.ifNotNull);
+            return true;
         }
     }
 }

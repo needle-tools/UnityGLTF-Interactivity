@@ -19,7 +19,7 @@ namespace UnityGLTF.Interactivity.Export
 
     public interface IUnitExporter : IUnitTypeExporter
     {
-        void InitializeInteractivityNodes(UnitExporter unitExporter);
+        bool InitializeInteractivityNodes(UnitExporter unitExporter);
     }
     
     public static class UnitExporterRegistry

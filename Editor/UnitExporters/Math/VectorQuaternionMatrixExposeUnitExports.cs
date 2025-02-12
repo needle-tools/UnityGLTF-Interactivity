@@ -50,7 +50,7 @@ namespace UnityGLTF.Interactivity.Export
                 GetMemberUnitExport.RegisterMemberExporter(typeof(Matrix4x4), MatrixMemberIndex[i], converter);
         }
 
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var exposeUnit = unitExporter.unit as Expose;
             var getMemberNode = unitExporter.unit as GetMember;
@@ -80,7 +80,7 @@ namespace UnityGLTF.Interactivity.Export
                 schema = new Math_Extract4x4Node();
             
             if (schema == null)
-                return;
+                return false;
 
             bool isMatrix = schema.OutputValueSockets.Count == 16;
             
@@ -123,7 +123,7 @@ namespace UnityGLTF.Interactivity.Export
                 foreach (var outport in exposeUnit.members)
                     AddMember(outport.Key, outport.Value);
             }
-
+            return true;
         }
     }
 }

@@ -16,18 +16,19 @@ namespace Editor.UnitExporters.Lists
             UnitExporterRegistry.RegisterExporter(new ClearListUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as ClearList;
             var list = ListHelpers.FindListByConnections(unitExporter.exportContext, unit);
             if (list == null)
             {
                 Debug.LogError("Could not find list for ClearList unit");
-                return;
+                return false;
             }
             
             ListHelpers.ClearList(unitExporter, list, unit.enter, unit.exit);
             unitExporter.ByPassValue(unit.listInput, unit.listOutput);
+            return true;
         }
     }
 }

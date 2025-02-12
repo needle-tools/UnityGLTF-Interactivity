@@ -24,12 +24,13 @@ namespace UnityGLTF.Interactivity.Export
             this.worldSpace = worldSpace;
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             // TODO: World Space conversion
             
            var unit = unitExporter.unit as Unity.VisualScripting.GetMember;
            TransformHelpers.GetLocalRotation(unitExporter, unit.target, unit.value);
+           return true;
         }
     }
 }

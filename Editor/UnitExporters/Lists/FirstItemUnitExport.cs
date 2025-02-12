@@ -16,18 +16,19 @@ namespace Editor.UnitExporters.Lists
             UnitExporterRegistry.RegisterExporter(new FirstItemUnitExport());
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as FirstItem;
             var list = ListHelpers.FindListByConnections(unitExporter.exportContext, unit);
             if (list == null)
             {
                 Debug.LogError("Could not find list for FirstItem unit");
-                return;
+                return false;
             }
             
             VariablesHelpers.GetVariable(unitExporter, list.StartIndex, out var startIndex);
             startIndex.MapToPort(unit.firstItem);
+            return true;
         }
     }
 }

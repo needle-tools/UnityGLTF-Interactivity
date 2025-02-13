@@ -27,19 +27,24 @@ namespace UnityGLTF.Interactivity.Export
             var getScale = unitExporter.CreateNode(new Pointer_GetNode());
             getScale.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerMaterialIndex, targetMaterial, pointerToTextureTransformScale, GltfTypes.Float2);
                    
-            var multiplyScale = unitExporter.CreateNode(new Math_MulNode());
-            multiplyScale.ValueIn("a").SetValue(new Vector2(0f, 1f));
-            multiplyScale.ValueIn("b").ConnectToSource(getScale.FirstValueOut()).SetType(TypeRestriction.LimitToFloat2);
-                    
-            var sub1 = unitExporter.CreateNode(new Math_SubNode());
-            sub1.ValueIn(Math_SubNode.IdValueA).SetValue(new Vector2(0f, 1f));
-            uvOffset = sub1.ValueIn(Math_SubNode.IdValueB).SetType(TypeRestriction.LimitToFloat2);
+            var extractScale = unitExporter.CreateNode(new Math_Extract2Node());
+            extractScale.ValueIn(Math_Extract2Node.IdValueIn).ConnectToSource(getScale.FirstValueOut()).SetType(TypeRestriction.LimitToFloat2);
 
+            var extractOffset = unitExporter.CreateNode(new Math_Extract2Node());
+            uvOffset = extractOffset.ValueIn(Math_Extract2Node.IdValueIn).SetType(TypeRestriction.LimitToFloat2);
+                  
+            var sub1 = unitExporter.CreateNode(new Math_SubNode());
+            sub1.ValueIn(Math_SubNode.IdValueA).SetValue(1f);
+            sub1.ValueIn(Math_SubNode.IdValueB).ConnectToSource(extractOffset.ValueOut(Math_Extract2Node.IdValueOutY));
+            
             var sub2 = unitExporter.CreateNode(new Math_SubNode());
             sub2.ValueIn(Math_SubNode.IdValueA).ConnectToSource(sub1.FirstValueOut());
-            sub2.ValueIn(Math_SubNode.IdValueB).ConnectToSource(multiplyScale.FirstValueOut()).SetType(TypeRestriction.LimitToFloat2);
-                    
-            convertedUvOffset = sub2.FirstValueOut();
+            sub2.ValueIn(Math_SubNode.IdValueB).ConnectToSource(extractScale.ValueOut(Math_Extract2Node.IdValueOutY)).SetType(TypeRestriction.LimitToFloat);
+            
+            var combine = unitExporter.CreateNode(new Math_Combine2Node());
+            combine.ValueIn(Math_Combine2Node.IdValueA).ConnectToSource(extractOffset.ValueOut(Math_Extract2Node.IdValueOutX));
+            combine.ValueIn(Math_Combine2Node.IdValueB).ConnectToSource(sub2.FirstValueOut());
+            convertedUvOffset = combine.FirstValueOut();
         }
 
       

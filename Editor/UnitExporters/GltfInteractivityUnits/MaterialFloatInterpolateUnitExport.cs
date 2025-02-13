@@ -26,6 +26,7 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
             var template = materialTemplate;
             
             var valueType = GltfTypes.Float;
+            GltfInteractivityUnitExporterNode.ValueOutputSocketData convertedValue = null;
             
             if (unitExporter.IsInputLiteralOrDefaultValue(unit.valueName, out var floatPropertyName))
             {
@@ -36,7 +37,13 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
                     return false;
                 }
 
-                // TODO: Flip
+                if (map.ExportFlipValueRange)
+                {
+                    var flipNode = unitExporter.CreateNode(new Math_SubNode());
+                    flipNode.ValueIn("a").SetValue(1f);
+                    flipNode.ValueIn("b").MapToInputPort(unit.targetValue);
+                    convertedValue = flipNode.ValueOut("out").ExpectedType(ExpectedType.Float);
+                }
                 template = materialTemplate + gltfProperty;
             }
             else
@@ -50,7 +57,11 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
             node.FlowIn(Pointer_InterpolateNode.IdFlowIn).MapToControlInput(unit.assign);
             node.FlowOut(Pointer_InterpolateNode.IdFlowOut).MapToControlOutput(unit.assigned);
             
-            node.ValueIn(Pointer_InterpolateNode.IdValue).MapToInputPort(unit.targetValue);
+            if (convertedValue == null)
+                node.ValueIn(Pointer_InterpolateNode.IdValue).MapToInputPort(unit.targetValue);
+            else
+                node.ValueIn(Pointer_InterpolateNode.IdValue).ConnectToSource(convertedValue);
+            
             node.ValueIn(Pointer_InterpolateNode.IdDuration).MapToInputPort(unit.duration);
             node.ValueIn(Pointer_InterpolateNode.IdPoint1).MapToInputPort(unit.pointA);
             node.ValueIn(Pointer_InterpolateNode.IdPoint2).MapToInputPort(unit.pointB);

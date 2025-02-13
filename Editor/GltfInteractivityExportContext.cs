@@ -274,7 +274,7 @@ namespace UnityGLTF.Interactivity
                     varDeclarations = unit.graph.variables;
                     break;
                 case VariableKind.Object:
-                    var gameObject = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(unit.valueInputs["@object"], unit.defaultValues, this);
+                    var gameObject = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(unit.valueInputs["object"], unit.defaultValues, this);
                     if (gameObject != null)
                     {
                         varDeclarations = Variables.Object(gameObject);
@@ -319,7 +319,7 @@ namespace UnityGLTF.Interactivity
                     break;
                 case VariableKind.Object:
 
-                    var gameObject = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(unit.valueInputs["@object"], unit.defaultValues, this);
+                    var gameObject = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(unit.valueInputs["object"], unit.defaultValues, this);
                     if (gameObject != null)
                     {
                         varDeclarations = Variables.Object(gameObject);

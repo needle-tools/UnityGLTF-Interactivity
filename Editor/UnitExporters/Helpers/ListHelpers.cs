@@ -206,7 +206,6 @@ namespace Editor.UnitExporters.Lists
                 else
                     indexInput = indexInput.Link(eq.ValueIn("a"));
                 eq.ValueIn("b").SetValue(index);
-                eq.FirstValueOut().ExpectedType(ExpectedType.Int);
 
                 var sel = unitExporter.CreateNode(new Math_SelectNode());
                 sel.ValueIn(Math_SelectNode.IdCondition).ConnectToSource(eq.FirstValueOut());

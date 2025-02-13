@@ -824,9 +824,9 @@ namespace UnityGLTF.Interactivity.Schema
         [OutputSocketDescription(GltfTypes.Bool)]
         public const string IdOut = "value";
         
-        [InputSocketDescription(GltfTypes.Float)]
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueB, GltfTypes.Float, GltfTypes.Int)]
         public const string IdValueA = "a";
-        [InputSocketDescription(GltfTypes.Float)]
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueA, GltfTypes.Float, GltfTypes.Int)]
         public const string IdValueB = "b";
     }
 
@@ -837,9 +837,9 @@ namespace UnityGLTF.Interactivity.Schema
         [OutputSocketDescription(GltfTypes.Bool)]
         public const string IdOut = "value";
         
-        [InputSocketDescription(GltfTypes.Float)]
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueB, GltfTypes.Float, GltfTypes.Int)]
         public const string IdValueA = "a";
-        [InputSocketDescription(GltfTypes.Float)]
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueA, GltfTypes.Float, GltfTypes.Int)]
         public const string IdValueB = "b";
     }
     
@@ -860,9 +860,9 @@ namespace UnityGLTF.Interactivity.Schema
         [OutputSocketDescription(GltfTypes.Bool)]
         public const string IdOut = "value";
         
-        [InputSocketDescription(GltfTypes.Float)]
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueB, GltfTypes.Float, GltfTypes.Int)]
         public const string IdValueA = "a";
-        [InputSocketDescription(GltfTypes.Float)]
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueA, GltfTypes.Float, GltfTypes.Int)]
         public const string IdValueB = "b";
     }
     
@@ -873,9 +873,9 @@ namespace UnityGLTF.Interactivity.Schema
         [OutputSocketDescription(GltfTypes.Bool)]
         public const string IdOut = "value";
         
-        [InputSocketDescription(GltfTypes.Float)]
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueB, GltfTypes.Float, GltfTypes.Int)]
         public const string IdValueA = "a";
-        [InputSocketDescription(GltfTypes.Float)]
+        [InputSocketDescriptionWithTypeDependencyFromOtherPort(IdValueA, GltfTypes.Float, GltfTypes.Int)]
         public const string IdValueB = "b";
     }
     

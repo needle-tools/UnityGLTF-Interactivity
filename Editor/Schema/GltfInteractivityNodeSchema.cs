@@ -90,6 +90,8 @@ namespace UnityGLTF.Interactivity
                         
                         if (newIn.SupportedTypes == null || newIn.SupportedTypes.Length == 0)
                             newIn.SupportedTypes = GltfTypes.allTypes;
+                        if (newIn.SupportedTypes != null && newIn.SupportedTypes.Length == 1)
+                            newIn.typeRestriction = TypeRestriction.LimitToType(newIn.SupportedTypes[0]);
                         
                         InputValueSockets.Add(fieldValue, newIn);
                     }

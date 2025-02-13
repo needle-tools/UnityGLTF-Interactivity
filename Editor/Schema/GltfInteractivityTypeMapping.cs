@@ -154,7 +154,7 @@ namespace UnityGLTF.Interactivity
             if (fromTypeSignature == "int" && toTypeSignature == "float")
                 return new Type_IntToFloatNode();
             else if (fromTypeSignature == "int" && toTypeSignature == "bool")
-                return new Type_FloatToIntNode();
+                return new Type_IntToBoolNode();
             else if (fromTypeSignature == "float" && toTypeSignature == "int")
                 return new Type_FloatToIntNode();
             else if (fromTypeSignature == "float" && toTypeSignature == "bool")

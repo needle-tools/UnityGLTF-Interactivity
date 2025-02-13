@@ -5,17 +5,66 @@ namespace Unity.VisualScripting
 {
     public static class InterpolateHelper
     {
-        
-        private static Vector2 cubicBezier(float t, Vector2 p0, Vector2 p1)
+        public static bool AreValuesEqual(object valueA, object valueB)
         {
-            return cubicBezier(t,
+            switch (valueA)
+            {
+                case float f:
+                    if (Mathf.Abs((float)valueB - f) > 0.0001f)
+                    {
+                        return false;
+                    }
+
+                    break;
+                case Vector2 v2:
+                    var diff2 = v2 - (Vector2)valueB;
+                    if (diff2.magnitude > 0.0001f)
+                        return false;
+                    break;
+                case Vector3 v3:
+                    var diff3 = v3 - (Vector3)valueB;
+                    if (diff3.magnitude > 0.0001f)
+                        return false;
+                    break;
+                case Vector4 v4:
+                    var diff4 = v4 - (Vector4)valueB;
+                    if (diff4.magnitude > 0.0001f)
+                        return false;
+                    break;
+                case Quaternion q:
+                    var diffQ = q.eulerAngles - ((Quaternion)valueB).eulerAngles;
+                    if (diffQ.magnitude > 0.0001f)
+                        return false;
+                    break;
+                case Color c:
+                    var diff = c - (Color)valueB;
+                    float d = Mathf.Abs(diff.r) + Mathf.Abs(diff.g) + Mathf.Abs(diff.b) + Mathf.Abs(diff.a);
+                    if (d > 0.0001f)
+                        return false;
+                    break;
+                case Matrix4x4 m:
+                    for (int i = 0; i < 4; i++)
+                    {
+                        var diffM = m.GetColumn(0) - ((Matrix4x4)valueB).GetColumn(0);
+                        if (diffM.magnitude > 0.0001f)
+                            return false;
+                    }
+                    break;
+            }
+
+            return true;
+        }
+        
+        private static Vector2 CubicBezier(float t, Vector2 p0, Vector2 p1)
+        {
+            return CubicBezier(t,
                 new Vector2(0f, 0f),
                 new Vector2(p0.x, p0.y),
                 new Vector2(p1.x, p1.y),
                 new Vector2(1f, 1f));
         }
         
-        private static Vector2 cubicBezier (float t, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
+        private static Vector2 CubicBezier (float t, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
         {
             float u = 1 - t;
             float tt = t * t;
@@ -32,7 +81,7 @@ namespace Unity.VisualScripting
 
         public static object BezierInterpolate(Vector2 pointAValue, Vector2 pointBValue, object currentValue, object targetValue, float f)
         {
-            var bezier = cubicBezier(f, pointAValue, pointBValue);
+            var bezier = CubicBezier(f, pointAValue, pointBValue);
             f = bezier.y;
             if (currentValue is Vector2 currentVector2)
             {

@@ -59,13 +59,10 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
                 }
             }
             
-            
-
             if (string.IsNullOrEmpty(pointerTemplate))
             { 
                 UnitExportLogging.AddErrorLog(unit, "Can't resolve target type for InterpolateMember. Maybe it's not supported.");
                 return false;
-
             }
             
             var node = unitExporter.CreateNode(new Pointer_InterpolateNode());
@@ -78,7 +75,6 @@ namespace Editor.UnitExporters.GltfInteractivityUnits
             node.ValueIn(Pointer_InterpolateNode.IdPoint1).MapToInputPort(unit.pointA);
             node.ValueIn(Pointer_InterpolateNode.IdPoint2).MapToInputPort(unit.pointB);
             node.FlowOut(Pointer_InterpolateNode.IdFlowOutDone).MapToControlOutput(unit.done);
-            
             
             node.SetupPointerTemplateAndTargetInput(pointerId, unit.target, pointerTemplate, valueType);
             return true;

@@ -249,7 +249,7 @@ namespace UnityGLTF.Interactivity
         /// Get the value of a variable from a VariableUnit.
         /// Materials and GameObjects Values will be converted to their respective indices.
         /// </summary>
-        public object GetVariableValue(UnifiedVariableUnit unit, out string varName, out string varType, bool checkTypeIsSupported = true)
+        public object GetVariableValue(IUnifiedVariableUnit unit, out string varName, out string varType, bool checkTypeIsSupported = true)
         {
             var rawValue = GetVariableValueRaw(unit, out varName, out varType, checkTypeIsSupported);
             
@@ -263,7 +263,7 @@ namespace UnityGLTF.Interactivity
             return rawValue;
         }
         
-        public VariableDeclaration GetVariableDeclaration(UnifiedVariableUnit unit)
+        public VariableDeclaration GetVariableDeclaration(IUnifiedVariableUnit unit)
         {
             string varName = unit.name.unit.defaultValues["name"] as string;
             VariableDeclarations varDeclarations = null;
@@ -274,7 +274,7 @@ namespace UnityGLTF.Interactivity
                     varDeclarations = unit.graph.variables;
                     break;
                 case VariableKind.Object:
-                    var gameObject = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(unit.@object, unit.defaultValues, this);
+                    var gameObject = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(unit.valueInputs["@object"], unit.defaultValues, this);
                     if (gameObject != null)
                     {
                         varDeclarations = Variables.Object(gameObject);
@@ -301,7 +301,7 @@ namespace UnityGLTF.Interactivity
         /// Get the value of a variable from a VariableUnit.
         /// Materials and GameObjects Values will be returned as is.
         /// </summary>
-        public object GetVariableValueRaw(UnifiedVariableUnit unit, out string exportVarName, out string varType, bool checkTypeIsSupported = true)
+        public object GetVariableValueRaw(IUnifiedVariableUnit unit, out string exportVarName, out string varType, bool checkTypeIsSupported = true)
         {
             string varName = unit.name.unit.defaultValues["name"] as string;
 
@@ -319,7 +319,7 @@ namespace UnityGLTF.Interactivity
                     break;
                 case VariableKind.Object:
 
-                    var gameObject = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(unit.@object, unit.defaultValues, this);
+                    var gameObject = GltfInteractivityNodeHelper.GetGameObjectFromValueInput(unit.valueInputs["@object"], unit.defaultValues, this);
                     if (gameObject != null)
                     {
                         varDeclarations = Variables.Object(gameObject);
@@ -483,7 +483,7 @@ namespace UnityGLTF.Interactivity
             return socketData.Type;
         }
         
-        public int AddVariableIfNeeded(UnifiedVariableUnit unit)
+        public int AddVariableIfNeeded(IUnifiedVariableUnit unit)
         {
             var varValue = GetVariableValue(unit, out string varName, out string varType);
 

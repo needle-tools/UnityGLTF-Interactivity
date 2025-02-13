@@ -1,14 +1,11 @@
 using System;
 using UnityEngine;
 
-//namespace UnityGLTF.Interactivity.Units
 namespace Unity.VisualScripting
 {
-    /// <summary>
-    /// Interpolates the value of a field or property over time via reflection.
-    /// </summary>
-    [SpecialUnit]
-    public sealed class InterpolateMember : MemberUnit, IGraphElementWithData, IGraphEventListener
+    [UnitCategory("Variables")]
+    [UnitTitle("Variable Interpolate")]
+    public class VariableInterpolate : Unit, IUnifiedVariableUnit, IGraphElementWithData, IGraphEventListener
     {
         public sealed class Data : IGraphElementData
         {
@@ -23,33 +20,41 @@ namespace Unity.VisualScripting
             public object endValue;
 
             public float duration;
-            
+
             public Vector2 pointA;
             public Vector2 pointB;
             
             public Delegate update;
         }
-
-        public InterpolateMember() : base() { }
-
-        public InterpolateMember(Member member) : base(member) { }
-
         
-        [DoNotSerialize]
-        [Unity.VisualScripting.MemberFilter(Fields = true, Properties = true, ReadOnly = false)]
-        public Member setter
-        {
-            get => member;
-            set => member = value;
-        }
+        /// <summary>
+        /// The kind of variable.
+        /// </summary>
+        [Serialize, Inspectable, UnitHeaderInspectable]
+        public VariableKind kind { get; set; }
 
+        /// <summary>
+        /// The name of the variable.
+        /// </summary>
+        [DoNotSerialize]
+        [PortLabelHidden]
+        public ValueInput name { get; private set; }
+
+        /// <summary>
+        /// The source of the variable.
+        /// </summary>
+        [DoNotSerialize]
+        [PortLabelHidden]
+        [NullMeansSelf]
+        public ValueInput @object { get; private set; }
+        
         [DoNotSerialize]
         [PortLabelHidden]
         public ControlInput assign { get; private set; }
 
         [DoNotSerialize]
         [PortLabel("Target Value")]
-        public ValueInput input { get; private set; }
+        public ValueInput targetValue { get; private set; }
 
         [DoNotSerialize]
         [PortLabel("Point A")]
@@ -58,30 +63,26 @@ namespace Unity.VisualScripting
         [DoNotSerialize]
         [PortLabel("Point B")]
         public ValueInput pointB { get; private set; }
-
         
         [DoNotSerialize]
         [PortLabel("Duration")]
         public ValueInput duration { get; private set; }
         
-        /// <summary>
-        /// The target object used when setting the value.
-        /// </summary>
-        [DoNotSerialize]
-        [PortLabel("Target")]
-        [PortLabelHidden]
-        public ValueOutput targetOutput { get; private set; }
-
         [DoNotSerialize]
         public ControlOutput assigned { get; private set; }
 
         [DoNotSerialize]
         public ControlOutput done { get; private set; }
-
         
         protected override void Definition()
-        {
-            base.Definition();
+        {       
+            name = ValueInput(nameof(name), string.Empty);
+
+            if (kind == VariableKind.Object)
+            {
+                @object = ValueInput<GameObject>(nameof(@object), null).NullMeansSelf();
+            }
+            
             assign = ControlInput(nameof(assign), Assign);
 
             assigned = ControlOutput(nameof(assigned));
@@ -89,19 +90,8 @@ namespace Unity.VisualScripting
             Succession(assign, assigned);
             Succession(assign, done);
             
-            if (member.requiresTarget)
-            {
-                Requirement(target, assign);
-            }
-
-            input = ValueInput(member.type, nameof(input));
-            Requirement(input, assign);
-            
-            if (member.allowsNull)
-            {
-                input.AllowsNull();
-            }
-            input.SetDefaultValue(member.type.PseudoDefault());
+            targetValue = ValueInput<object>(nameof(targetValue)).AllowsNull();
+            Requirement(targetValue, assign);
             
             duration = ValueInput(typeof(float), nameof(duration));
             duration.SetDefaultValue(1f);
@@ -116,11 +106,6 @@ namespace Unity.VisualScripting
             Requirement(pointB, assign);
         }
 
-        protected override bool IsMemberValid(Member member)
-        {
-            return member.isAccessor && member.isSettable;
-        }
-        
         private ControlOutput Assign(Flow flow)
         {
             StartNewInterpolation(flow);
@@ -180,7 +165,7 @@ namespace Unity.VisualScripting
             }
         }
 
-        protected void StartNewInterpolation(Flow flow)
+        protected virtual void StartNewInterpolation(Flow flow)
         {
             var data = flow.stack.GetElementData<Data>(this);
             data.running = true;
@@ -189,22 +174,48 @@ namespace Unity.VisualScripting
             data.pointA = flow.GetValue<Vector2>(pointA); 
             data.pointB = flow.GetValue<Vector2>(pointB);
             data.time = 0f;
-            
-            data.endValue = flow.GetConvertedValue(input);
-            data.startValue = member.Get(flow.GetValue(this.target, member.targetType));
-            data.lastSetValue = data.startValue;
+            data.lastSetValue = GetValue(flow);
+            data.startValue = data.lastSetValue;
+            data.endValue = flow.GetValue<object>(targetValue);
+        }
+
+        private VariableDeclarations GetDeclarations(Flow flow)
+        {
+            switch (kind)
+            {
+                case VariableKind.Flow:
+                    return flow.variables;
+                case VariableKind.Graph:
+                    return Variables.Graph(flow.stack);
+                case VariableKind.Object:
+                    return Variables.Object(flow.GetValue<GameObject>(@object));
+                case VariableKind.Scene:
+                    return Variables.Scene(flow.stack.scene);
+                case VariableKind.Application:
+                    return Variables.Application;
+                case VariableKind.Saved:
+                    return Variables.Saved;
+                default:
+                    throw new UnexpectedEnumValueException<VariableKind>(kind);
+            }
+        }
+        
+        private object GetValue(Flow flow)
+        {
+            var name = flow.GetValue<string>(this.name);
+            var variables = GetDeclarations(flow);
+            return variables.Get(name);
         }
 
         protected bool SetValue(Flow flow, Data data, object newValue)
         {
-            var target = flow.GetValue(this.target, member.targetType);
-
-            var currentSetValue = member.Get(target);
+            var name = flow.GetValue<string>(this.name);
+            var currentSetValue = GetValue(flow);
             if (!InterpolateHelper.AreValuesEqual(data.lastSetValue, currentSetValue))
                 return false;
-            
-            member.Set(target, newValue);
 
+            var variables = GetDeclarations(flow);
+            variables.Set(name, newValue);
             return true;
         }
 
@@ -235,9 +246,10 @@ namespace Unity.VisualScripting
             if (!data.running || data.time >= data.duration)
             {
                 bool callDone = data.running;
+                
                 if (data.running)
                     SetValue(flow, data, data.endValue);
-
+                
                 data.running = false;
 
                 flow.RestoreStack(stack);
@@ -248,21 +260,5 @@ namespace Unity.VisualScripting
 
             flow.DisposePreservedStack(stack);
         }
-        
-        #region Analytics
-
-        public override AnalyticsIdentifier GetAnalyticsIdentifier()
-        {
-            var aid = new AnalyticsIdentifier
-            {
-                Identifier = $"{member.targetType.FullName}.{member.name}(Interpolate)",
-                Namespace = member.targetType.Namespace,
-            };
-            aid.Hashcode = aid.Identifier.GetHashCode();
-            return aid;
-        }
-
-        #endregion
     }
-    
 }

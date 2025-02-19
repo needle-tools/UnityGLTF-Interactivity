@@ -103,6 +103,11 @@ namespace UnityGLTF.Interactivity.Export
             AddNode(newNode);
             return newNode;
         }
+        
+        public void AddCustomNode(GltfInteractivityUnitExporterNode node)
+        {
+            AddNode(node);
+        }
 
         public UnitExporter(GltfInteractivityExportContext exportContext, IUnitExporter exporter, IUnit unit)
         {

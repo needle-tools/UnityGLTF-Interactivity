@@ -16,7 +16,11 @@ namespace UnityGLTF.Interactivity.Export
     {
         public IUnitExporter GetExporter(IUnit unit);
     }
+    
+    public interface ICoroutineWait { }
 
+    public interface ICoroutineAwaiter { }
+    
     public interface IUnitExporter : IUnitTypeExporter
     {
         bool InitializeInteractivityNodes(UnitExporter unitExporter);

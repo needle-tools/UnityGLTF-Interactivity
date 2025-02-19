@@ -199,7 +199,11 @@ namespace UnityGLTF.Interactivity
         private List<VariableBasedList> addedVariableBasedLists = new List<VariableBasedList>();
                
         private List<GltfInteractivityNode> nodesToSerialize = new List<GltfInteractivityNode>();
-
+        public List<GltfInteractivityNode> Nodes
+        {
+            get => nodesToSerialize;
+        }
+        
         internal ExportGraph currentGraphProcessing { get; private set; } = null;
         
         public GltfInteractivityExportPlugin plugin;
@@ -755,7 +759,7 @@ namespace UnityGLTF.Interactivity
             
             PostIndexTopologicalSort();  
             
-            CollectedOpDeclarations();
+            CollectOpDeclarations();
 
             StringBuilder sb = new StringBuilder();
             foreach (var g in graphBypasses)
@@ -1347,7 +1351,7 @@ namespace UnityGLTF.Interactivity
         }
 
 
-        private void CollectedOpDeclarations()
+        private void CollectOpDeclarations()
         {
             int IndexOfNodeOp(GltfInteractivityNode node)
             {

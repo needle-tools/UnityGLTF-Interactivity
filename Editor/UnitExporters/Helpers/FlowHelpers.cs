@@ -39,6 +39,70 @@ namespace UnityGLTF.Interactivity.Export
 
             return false;
         }
+        
+         public static void CreateCustomForLoopWithFlowStep(UnitExporter unitExporter, 
+            out GltfInteractivityUnitExporterNode.ValueInputSocketData startIndex,
+            out GltfInteractivityUnitExporterNode.ValueInputSocketData endIndex,
+            out GltfInteractivityUnitExporterNode.ValueInputSocketData step,
+            out GltfInteractivityUnitExporterNode.FlowInSocketData flowIn,
+            out GltfInteractivityUnitExporterNode.FlowInSocketData nextStepIn,
+            out GltfInteractivityUnitExporterNode.ValueOutputSocketData currentIndex,
+            out GltfInteractivityUnitExporterNode.FlowOutSocketData loopBodyOut,
+            out GltfInteractivityUnitExporterNode.FlowOutSocketData completed)
+        {
+            var indexVar = unitExporter.exportContext.AddVariableWithIdIfNeeded("ForLoopIndex"+System.Guid.NewGuid().ToString(), 0, VariableKind.Scene, typeof(int));
+            
+            var startSequ = unitExporter.CreateNode(new Flow_SequenceNode());
+            flowIn = startSequ.FlowIn(Flow_SequenceNode.IdFlowIn);
+            
+            var setStartIndexVar = VariablesHelpers.SetVariable(unitExporter, indexVar);
+            var branch  = unitExporter.CreateNode(new Flow_BranchNode());
+            
+            startSequ.FlowOut("1").ConnectToFlowDestination(setStartIndexVar.FlowIn(Variable_SetNode.IdFlowIn));
+            startSequ.FlowOut("2").ConnectToFlowDestination(branch.FlowIn(Flow_BranchNode.IdFlowIn)); 
+            
+            completed = branch.FlowOut(Flow_BranchNode.IdFlowOutFalse);
+            loopBodyOut = branch.FlowOut(Flow_BranchNode.IdFlowOutTrue);
+            
+            
+            startIndex = setStartIndexVar.ValueIn(Variable_SetNode.IdInputValue);
+
+            var ascendingCondition = unitExporter.CreateNode(new Math_LeNode());
+            startIndex = startIndex.Link(ascendingCondition.ValueIn("a"));
+            endIndex = ascendingCondition.ValueIn("b");
+            
+            VariablesHelpers.GetVariable(unitExporter, indexVar, out var indexVarValue);
+            currentIndex = indexVarValue;
+            
+            var addNode = unitExporter.CreateNode(new Math_AddNode());
+            addNode.ValueIn("a").ConnectToSource(indexVarValue).SetType(TypeRestriction.LimitToInt);
+            step = addNode.ValueIn("b").SetType(TypeRestriction.LimitToInt);
+            addNode.FirstValueOut().ExpectedType(ExpectedType.Int);
+            
+            var setCurrentIndexVar = VariablesHelpers.SetVariable(unitExporter, indexVar);
+            setCurrentIndexVar.ValueIn(Variable_SetNode.IdInputValue).ConnectToSource(addNode.FirstValueOut());
+            
+            var sequence = unitExporter.CreateNode(new Flow_SequenceNode());
+
+            nextStepIn = sequence.FlowIn(Flow_SequenceNode.IdFlowIn);
+            sequence.FlowOut("1").ConnectToFlowDestination(setCurrentIndexVar.FlowIn(Variable_SetNode.IdFlowIn));
+            sequence.FlowOut("2").ConnectToFlowDestination(branch.FlowIn(Flow_BranchNode.IdFlowIn));     
+            
+            var ascendingIndexCondition = unitExporter.CreateNode(new Math_LtNode());
+            ascendingIndexCondition.ValueIn("a").ConnectToSource(indexVarValue);
+            endIndex = endIndex.Link(ascendingIndexCondition.ValueIn("b"));
+            
+            var descendingIndexCondition = unitExporter.CreateNode(new Math_GtNode());
+            descendingIndexCondition.ValueIn("a").ConnectToSource(indexVarValue);
+            endIndex = endIndex.Link(descendingIndexCondition.ValueIn("b"));
+            
+            var conditionSelect = unitExporter.CreateNode(new Math_SelectNode());
+            conditionSelect.ValueIn("a").ConnectToSource(ascendingIndexCondition.FirstValueOut());
+            conditionSelect.ValueIn("b").ConnectToSource(descendingIndexCondition.FirstValueOut());
+            conditionSelect.ValueIn("condition").ConnectToSource(ascendingCondition.FirstValueOut());
+            
+            branch.ValueIn(Flow_BranchNode.IdCondition).ConnectToSource(conditionSelect.FirstValueOut());
+        }
 
         public static void CreateCustomForLoop(UnitExporter unitExporter, 
             out GltfInteractivityUnitExporterNode.ValueInputSocketData startIndex,

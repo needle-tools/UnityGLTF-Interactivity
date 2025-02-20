@@ -22,7 +22,7 @@ namespace UnityGLTF.Interactivity.Export
             this.worldSpace = worldSpace;
         }
         
-        public void InitializeInteractivityNodes(UnitExporter unitExporter)
+        public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             // TODO: World Space conversion
             
@@ -30,6 +30,7 @@ namespace UnityGLTF.Interactivity.Export
             QuaternionHelpers.CreateQuaternionFromEuler(unitExporter, unit.input, out var quaternion);
             
             TransformHelpers.SetLocalRotation(unitExporter, unit.target, quaternion, unit.assign, unit.assigned);
+            return true;
         }
     }
 }

@@ -17,7 +17,11 @@ namespace UnityGLTF.Interactivity.Export
             GetMemberUnitExport.RegisterMemberExporter(typeof(Vector2), nameof(Vector2.magnitude), new GenericGetMemberMathExporters(new Math_LenghNode()));
             GetMemberUnitExport.RegisterMemberExporter(typeof(Vector3), nameof(Vector3.magnitude), new GenericGetMemberMathExporters(new Math_LenghNode()));
             GetMemberUnitExport.RegisterMemberExporter(typeof(Vector4), nameof(Vector3.magnitude), new GenericGetMemberMathExporters(new Math_LenghNode()));
-       }
+            
+            GetMemberUnitExport.RegisterMemberExporter(typeof(Matrix4x4), nameof(Matrix4x4.determinant), new GenericInvokeMathInvokeUnitExporters(new Math_DeterminantNode()));
+            GetMemberUnitExport.RegisterMemberExporter(typeof(Matrix4x4), nameof(Matrix4x4.transpose), new GenericInvokeMathInvokeUnitExporters(new Math_TransposeNode()));
+            GetMemberUnitExport.RegisterMemberExporter(typeof(Matrix4x4), nameof(Matrix4x4.inverse), new GenericInvokeMathInvokeUnitExporters(new Math_InverseNode()));
+        }
         
         public GenericGetMemberMathExporters(GltfInteractivityNodeSchema schema) : base(schema)
         {

@@ -4,7 +4,7 @@ using UnityGLTF.Interactivity.Schema;
 
 namespace UnityGLTF.Interactivity.Export
 {
-    public class ForUnitExport : IUnitExporter
+    public class ForUnitExport : IUnitExporter, ICoroutineAwaiter, ICoroutineWait
     {
         public Type unitType
         {
@@ -20,10 +20,12 @@ namespace UnityGLTF.Interactivity.Export
         public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
             var unit = unitExporter.unit as Unity.VisualScripting.For;
-            GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Flow_ForLoopNode());
-
-            if (unitExporter.IsInputLiteralOrDefaultValue(unit.step, out var defaultStepValue) && (int)defaultStepValue == 1)
+            
+            bool coroutine = CoroutineHelper.CoroutineRequired(unit);
+            
+            if (!coroutine && unitExporter.IsInputLiteralOrDefaultValue(unit.step, out var defaultStepValue) && (int)defaultStepValue == 1)
             {
+                GltfInteractivityUnitExporterNode node = unitExporter.CreateNode(new Flow_ForLoopNode());
                 // TODO: set inital index > also... why even using it
                 node.ConfigurationData[Flow_ForLoopNode.IdConfigInitialIndex].Value = 0;
                 
@@ -39,19 +41,50 @@ namespace UnityGLTF.Interactivity.Export
             else
             {
                 // possible that Step is not +1, wo we need the custom For Loop
-                FlowHelpers.CreateCustomForLoop(unitExporter, out var startIndex,
-                    out var endIndex, out var step, 
-                    out var flowIn, out var currentIndex, 
-                    out var loopBody, out var completed );
                 
-                startIndex.MapToInputPort(unit.firstIndex);
-                endIndex.MapToInputPort(unit.lastIndex);
+                if (!coroutine)
+                {
+                    FlowHelpers.CreateCustomForLoop(unitExporter, out var startIndex,
+                        out var endIndex, out var step, 
+                        out var flowIn, out var currentIndex, 
+                        out var loopBody, out var completed );
+                    
+                    startIndex.MapToInputPort(unit.firstIndex);
+                    endIndex.MapToInputPort(unit.lastIndex);
 
-                step.MapToInputPort(unit.step);
-                flowIn.MapToControlInput(unit.enter);
-                currentIndex.MapToPort(unit.currentIndex);
-                loopBody.MapToControlOutput(unit.body);
-                completed.MapToControlOutput(unit.exit);
+                    step.MapToInputPort(unit.step);
+                    flowIn.MapToControlInput(unit.enter);
+                    currentIndex.MapToPort(unit.currentIndex);
+                    loopBody.MapToControlOutput(unit.body);
+                    completed.MapToControlOutput(unit.exit);
+                }
+                else
+                {
+                    FlowHelpers.CreateCustomForLoopWithFlowStep(unitExporter, out var startIndex,
+                        out var endIndex, out var step, 
+                        out var flowIn,  out var nextStep, out var currentIndex, 
+                        out var loopBody, out var completed );
+                    
+                    startIndex.MapToInputPort(unit.firstIndex);
+                    endIndex.MapToInputPort(unit.lastIndex);
+
+                    step.MapToInputPort(unit.step);
+                    flowIn.MapToControlInput(unit.enter);
+                    currentIndex.MapToPort(unit.currentIndex);
+                    loopBody.MapToControlOutput(unit.body);
+                    completed.MapToControlOutput(unit.exit);
+                    
+                    var awaiter = CoroutineHelper.AddCoroutineAwaiter(unitExporter, loopBody.socket.Key);
+                    awaiter.FlowOutDoneSocket().ConnectToFlowDestination(nextStep);
+                    
+                    unitExporter.exportContext.OnNodesCreated += (nodes) =>
+                    {
+                        var awaiter = CoroutineHelper.FindCoroutineAwaiter(unitExporter, flowIn.node);
+                        if (awaiter == null)
+                            return;
+                        awaiter.AddCoroutineWait(unitExporter, completed.node, completed.socket.Key);
+                    };
+                }
             }
             return true;
         }

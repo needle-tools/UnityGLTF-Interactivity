@@ -14,6 +14,34 @@ namespace Editor.UnitExporters.Helpers
         {
             return new CoroutineAwaiterNode(unitExporter, outFlowSocket);
         }
+
+        public static bool CoroutineRequired(Unit unit)
+        {
+            var  visited = new HashSet<IUnit>();
+            visited.Add(unit);
+            
+            var queue = new Queue<IUnit>();
+            queue.Enqueue(unit);
+            
+            while (queue.Count > 0)
+            {
+                var currentUnit = queue.Dequeue();
+
+                if (currentUnit.controlInputs.Any(input => input.requiresCoroutine))
+                    return true;
+                
+                foreach (var output in currentUnit.controlOutputs.Where( c => c.hasValidConnection))
+                {
+                    if (!visited.Contains(output.connection.destination.unit))
+                    {
+                        visited.Add(output.connection.destination.unit);   
+                        queue.Enqueue(output.connection.destination.unit);
+                    }
+                }
+            }
+
+            return false;
+        }
         
         public static CoroutineAwaiterNode FindCoroutineAwaiter(UnitExporter unitExporter, GltfInteractivityUnitExporterNode coroutineNode)
         {

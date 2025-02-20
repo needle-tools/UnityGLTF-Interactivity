@@ -1,7 +1,5 @@
-using System;
 using System.Linq;
 using Unity.VisualScripting;
-using UnityEngine;
 using UnityGLTF.Interactivity.Schema;
 using UnityGLTF.Plugins;
 

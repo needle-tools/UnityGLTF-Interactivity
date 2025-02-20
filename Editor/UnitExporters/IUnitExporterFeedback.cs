@@ -1,7 +1,7 @@
 using Unity.VisualScripting;
 using UnityGLTF.Interactivity;
 
-namespace Editor.UnitExporters
+namespace UnityGLTF.Interactivity.Export
 {
     public interface IUnitExporterFeedback
     {

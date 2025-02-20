@@ -2,11 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityGLTF.Interactivity;
-using UnityGLTF.Interactivity.Export;
 using UnityGLTF.Interactivity.Schema;
 
-namespace Editor.UnitExporters.Helpers
+namespace UnityGLTF.Interactivity.Export
 {
     public static class CoroutineHelper
     {

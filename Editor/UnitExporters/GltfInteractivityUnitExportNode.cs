@@ -193,7 +193,6 @@ namespace UnityGLTF.Interactivity
 
         public FlowInSocketData FlowIn(string socketName)
         {
-            // TODO
             var socket = new FlowInSocketData(this, new KeyValuePair<string, FlowSocketData>(socketName, new FlowSocketData()));
             return socket;
         }

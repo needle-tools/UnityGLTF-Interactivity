@@ -898,7 +898,10 @@ namespace UnityGLTF.Interactivity
             foreach (var customEventValue in customEvents.SelectMany(c => c.Values))
                 usedTypeIndices.Add(customEventValue.Value.Type);
             
-            foreach (var declaration in opDeclarations.SelectMany( d => d.inputValueSockets.Values).Concat(opDeclarations.SelectMany( d => d.outputValueSockets.Values)))
+            foreach (var declaration in 
+                     opDeclarations.Where(d => d.inputValueSockets != null).SelectMany( d => d.inputValueSockets.Values)
+                         .Concat(
+                             opDeclarations.Where(d => d.outputValueSockets != null).SelectMany( d => d.outputValueSockets.Values)))
                 usedTypeIndices.Add(declaration.type);
             
             foreach (var node in nodesToSerialize)
@@ -940,8 +943,8 @@ namespace UnityGLTF.Interactivity
             foreach (var customEventValue in customEvents.SelectMany(c => c.Values))
                 customEventValue.Value.Type = typesIndexReplacement[customEventValue.Value.Type];
 
-            foreach (var declaration in opDeclarations.SelectMany(d => d.inputValueSockets.Values)
-                         .Concat(opDeclarations.SelectMany(d => d.outputValueSockets.Values)))
+            foreach (var declaration in opDeclarations.Where(d => d.inputValueSockets != null).SelectMany(d => d.inputValueSockets.Values)
+                         .Concat(opDeclarations.Where(d => d.outputValueSockets != null).SelectMany(d => d.outputValueSockets.Values)))
                 declaration.type = typesIndexReplacement[declaration.type];
             
             return types.ToArray();

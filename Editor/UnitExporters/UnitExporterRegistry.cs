@@ -17,6 +17,20 @@ namespace UnityGLTF.Interactivity.Export
         public IUnitExporter GetExporter(IUnit unit);
     }
     
+    [Flags]
+    public enum MemberAccess
+    {
+        Get = 4,
+        Set = 2,
+        Invoke = 1,
+        None = 0
+    }
+    
+    public interface IMemberUnitExporter : IUnitTypeExporter
+    {
+        IEnumerable<(Type type,string member, MemberAccess access)> SupportedMembers { get; }
+    }
+    
     public interface ICoroutineWait { }
 
     public interface ICoroutineAwaiter { }
@@ -28,9 +42,13 @@ namespace UnityGLTF.Interactivity.Export
     
     public static class UnitExporterRegistry
     {
-
         private static Dictionary<System.Type, IUnitTypeExporter> _exportRegistry =
             new Dictionary<System.Type, IUnitTypeExporter>();
+
+        public static ReadOnlyDictionary<System.Type, IUnitTypeExporter> Exporters
+        { 
+            get => new ReadOnlyDictionary<Type, IUnitTypeExporter>(_exportRegistry);
+        }
 
         // TODO: find a better way to register export converters, a more static way aproach would be better. No need for instances her
         public static void RegisterExporter(IUnitTypeExporter nodeConvert)

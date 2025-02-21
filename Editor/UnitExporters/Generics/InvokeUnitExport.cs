@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
 
 namespace UnityGLTF.Interactivity.Export
 {
-    public class InvokeUnitExport : IUnitExporterProvider
+    public class InvokeUnitExport : IUnitExporterProvider, IMemberUnitExporter
     {
         public Type unitType
         {
@@ -18,6 +19,7 @@ namespace UnityGLTF.Interactivity.Export
         }
                 
         private static Dictionary<Type, TypeInvokes> _invokeExportRegister = new Dictionary<Type, TypeInvokes>();
+        public IEnumerable<(Type type, string member, MemberAccess access)> SupportedMembers => _invokeExportRegister.SelectMany( x => x.Value.invokes.Select( m => (x.Key, m.Key, MemberAccess.Invoke)));
         
         public static void RegisterInvokeExporter(Type type, string invokeName, IUnitExporter unitExporter)
         {

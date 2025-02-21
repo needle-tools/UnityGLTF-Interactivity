@@ -13,6 +13,8 @@ namespace UnityGLTF.Interactivity.Export
         }
         
         private static Dictionary<Type, IUnitExporter> _createStructRegister = new Dictionary<Type, IUnitExporter>();
+        
+        public IEnumerable<Type> SupportedTypes => _createStructRegister.Keys;
 
         [InitializeOnLoadMethod]
         private static void Register()

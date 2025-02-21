@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
 
@@ -14,7 +15,8 @@ namespace UnityGLTF.Interactivity.Export
         
         private static Dictionary<Type, (IUnitExporter converter, string[] supportedMembers)> _exposeExportRegister = new Dictionary<Type, (IUnitExporter, string[])>();
         
-        
+        public IEnumerable<(Type, string[] members)> SupportedMembers => _exposeExportRegister.Select(pair => (pair.Key, pair.Value.supportedMembers));
+      
         [InitializeOnLoadMethod]
         private static void Register()
         {

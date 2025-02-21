@@ -761,13 +761,14 @@ namespace UnityGLTF.Interactivity
             
             CollectOpDeclarations();
 
+            /*
             StringBuilder sb = new StringBuilder();
             foreach (var g in graphBypasses)
             {
                 sb.AppendLine($"INPUT FROM: {g.Key.port.key} [{g.Key.port.unit.ToString()}] ({g.Key.port.graph.title}) TO: {g.Value.port.key} [{g.Value.port.unit.ToString()}] ({g.Value.port.graph.title})");
-                
             }
             Debug.Log("GRAPH BYPASSES: "+sb.ToString());
+            */
             
             OnBeforeSerialization?.Invoke(nodesToSerialize);
             // Clear the events

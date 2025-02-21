@@ -6,14 +6,14 @@ using UnityGLTF.Interactivity.Schema;
 
 namespace UnityGLTF.Interactivity.Export
 {
-    public class Transform_GetWorldToLocalMatrix : IUnitExporter
+    public class Transform_GetWorldToLocalMatrixUnitExport : IUnitExporter
     {
         public Type unitType { get => typeof(GetMember); }
         
         [InitializeOnLoadMethod]
         private static void Register()
         {
-            GetMemberUnitExport.RegisterMemberExporter(typeof(Transform), nameof(Transform.worldToLocalMatrix), new Transform_GetWorldToLocalMatrix());
+            GetMemberUnitExport.RegisterMemberExporter(typeof(Transform), nameof(Transform.worldToLocalMatrix), new Transform_GetWorldToLocalMatrixUnitExport());
         }
         
         public bool InitializeInteractivityNodes(UnitExporter unitExporter)

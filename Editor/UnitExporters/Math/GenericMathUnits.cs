@@ -16,8 +16,6 @@ namespace UnityGLTF.Interactivity.Export
         [InitializeOnLoadMethod]
         public static void Register()
         {
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(SelectUnitExport),
-                new Math_SelectNode()));
             UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Equal), new Math_EqNode()));
 
             UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(GenericSubtract),

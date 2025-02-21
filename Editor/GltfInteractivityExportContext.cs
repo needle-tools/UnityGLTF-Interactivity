@@ -793,6 +793,8 @@ namespace UnityGLTF.Interactivity
             gltfRoot.AddExtension(GltfInteractivityExtension.ExtensionName, extension);
             
             exporter.DeclareExtensionUsage(GltfInteractivityExtension.ExtensionName);
+            
+            OutputUnitLogs();
         }
 
         /// <summary>
@@ -818,6 +820,27 @@ namespace UnityGLTF.Interactivity
             AfterSceneExport(exporter, gltfRoot, scriptMachines);
         }
 
+        private void OutputUnitLogs()
+        {
+            if (UnitExportLogging.unitLogMessages.Count == 0)
+                return;
+
+            var sb = new StringBuilder();
+            
+            foreach (var unitLog in UnitExportLogging.unitLogMessages)
+            {
+                sb.AppendLine("Unit: "+unitLog.Key.ToString());
+                foreach (var info in unitLog.Value.infos)
+                    sb.AppendLine("   Info: "+info);
+                foreach (var warning in unitLog.Value.warnings)
+                    sb.AppendLine("   Warning: "+warning);
+                foreach (var error in unitLog.Value.errors)
+                    sb.AppendLine("   Error: "+error);
+            }
+            
+            Debug.Log("Unit Export Logs: "+System.Environment.NewLine+ sb.ToString());
+        }
+        
         private void PostIndexTopologicalSort()
         {
             // Resort the nodes after resolving the connections

@@ -306,27 +306,14 @@ namespace UnityGLTF.Interactivity.Export
                     }
                 }
             }
-
-            var sb = new StringBuilder();
-            sb.AppendLine("Resolving " + this.unit.ToString());
-            foreach (var g in Graph.bypasses)
-            {
-                sb.AppendLine(
-                    $"INPUT FROM: {g.Key} [{g.Key.unit.ToString()}] ({g.Key.graph.title}) TO: {g.Value.key} [{g.Value.unit.ToString()}] ({g.Value.graph.title})");
-            }
-
-            sb.AppendLine("");
-
+            
             // Resolve Input Socket Connections
             foreach (var input in inputPortToSocketNameMapping)
             {
                 var inputPortGraph = Graph;
                 IUnitInputPort inputPort = input.Key;
-                sb.AppendLine(
-                    $"Resolving input: org: {inputPort.key} ({inputPort.unit} from {inputPort.unit.graph.title} ");
                 inputPort = ResolveBypass(inputPort, ref inputPortGraph);
-                sb.AppendLine($"Resolved input: {inputPort.key} ({inputPort.unit} from {inputPort.unit.graph.title} ");
-
+   
                 if (inputPort.hasValidConnection)
                 {
                     var firstConnection = inputPort.connections.First();
@@ -347,9 +334,7 @@ namespace UnityGLTF.Interactivity.Export
                     }
                 }
             }
-
-            Debug.Log(sb.ToString());
-
+            
             foreach (var n in nodeInputPortToSocketNameMapping)
             {
                 if (!n.Value.node.ValueSocketConnectionData.ContainsKey(n.Value.socketName))
@@ -482,9 +467,7 @@ namespace UnityGLTF.Interactivity.Export
                 return;
 
             foreach (var valueOut in valueOutput.validConnections)
-            {
                 Graph.bypasses.Add(valueOut.destination.connections.First().destination, valueInput);
-            }
         }
 
         public void ByPassValue(ValueInput valueInput, GltfInteractivityExportContext.ExportGraph inputGraph,

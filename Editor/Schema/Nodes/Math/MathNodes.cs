@@ -47,6 +47,43 @@ namespace UnityGLTF.Interactivity.Schema
         public const string IdValueA = "a";
     }
     
+    public class Math_MatComposeNode : GltfInteractivityNodeSchema
+    {
+        public override string Op { get; set; } = "math/matCompose";
+        
+        [OutputSocketDescription(GltfTypes.Float4x4)]
+        public const string IdOut = "value";
+        
+        [InputSocketDescription(GltfTypes.Float3)]
+        public const string IdInputTranslation = "translation";
+       
+        [InputSocketDescription(GltfTypes.Float4)]
+        public const string IdInputRotation = "rotation";
+        
+        [InputSocketDescription(GltfTypes.Float3)]
+        public const string IdInputScale = "scale";
+    }
+    
+    public class Math_MatDecomposeNode : GltfInteractivityNodeSchema
+    {
+        public override string Op { get; set; } = "math/matDecompose";
+        
+        [InputSocketDescription(GltfTypes.Float4x4)]
+        public const string IdInput = "a";
+        
+        [OutputSocketDescription(GltfTypes.Float3)]
+        public const string IdOutputTranslation = "translation";
+       
+        [OutputSocketDescription(GltfTypes.Float4)]
+        public const string IdOutputRotation = "rotation";
+        
+        [OutputSocketDescription(GltfTypes.Float3)]
+        public const string IdOutputScale = "scale";
+        
+        [OutputSocketDescription(GltfTypes.Bool)]
+        public const string IdOutputIsValid = "isValid";
+    }
+    
     public class Math_Transform_Float2Node : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/transform";

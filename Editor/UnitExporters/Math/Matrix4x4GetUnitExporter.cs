@@ -36,6 +36,8 @@ namespace UnityGLTF.Interactivity.Export
             {
                 case nameof(Matrix4x4.GetPosition):
                     extract.ValueOut(Math_MatDecomposeNode.IdOutputTranslation).MapToPort(resultSocket);
+                    var invoke = unit as InvokeMember;
+                    unitExporter.ByPassFlow(invoke.enter, invoke.exit);
                     break;
                 case nameof(Matrix4x4.lossyScale):
                     extract.ValueOut(Math_MatDecomposeNode.IdOutputScale).MapToPort(resultSocket);

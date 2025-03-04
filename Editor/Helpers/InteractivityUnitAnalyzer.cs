@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Editor.UnitExporters;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
@@ -14,13 +15,40 @@ namespace UnityGLTF.Interactivity
     [UsedImplicitly]
     public class InteractivityUnitAnalyzer: UnitAnalyser<IUnit>
     {
+        private GLTFSettings gltfSettings;
+        private GltfInteractivityExportPlugin interactivityPlugin;
+        
         public InteractivityUnitAnalyzer(GraphReference reference, IUnit target) : base(reference, target)
         {
             TypeCache.GetTypesDerivedFrom<IUnitExporter>();
         }
 
+        private bool InteractivityPluginEnabled()
+        {
+            if (!gltfSettings)
+            {
+                gltfSettings = GLTFSettings.GetOrCreateSettings();
+                interactivityPlugin = null;
+            }
+
+            if (!interactivityPlugin)
+            {
+                var plugin = gltfSettings.ExportPlugins.FirstOrDefault(p => p is GltfInteractivityExportPlugin);
+                if (plugin != null)
+                    interactivityPlugin = plugin as GltfInteractivityExportPlugin;
+            }
+
+            if (interactivityPlugin)
+                return interactivityPlugin.Enabled;
+            else
+                return false;
+        }
+
         protected override IEnumerable<Warning> Warnings()
         {
+            if (!InteractivityPluginEnabled())
+                yield break;
+            
             foreach (var baseWarning in base.Warnings())
             {
                 yield return baseWarning;

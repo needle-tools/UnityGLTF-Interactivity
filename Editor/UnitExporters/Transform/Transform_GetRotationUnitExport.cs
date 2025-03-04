@@ -26,10 +26,11 @@ namespace UnityGLTF.Interactivity.Export
         
         public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
-            // TODO: World Space conversion
-            
            var unit = unitExporter.unit as Unity.VisualScripting.GetMember;
-           TransformHelpers.GetLocalRotation(unitExporter, unit.target, unit.value);
+           if (worldSpace)
+                TransformHelpers.GetWorldRotation(unitExporter, unit.target, unit.value);
+           else
+                TransformHelpers.GetLocalRotation(unitExporter, unit.target, unit.value);
            return true;
         }
     }

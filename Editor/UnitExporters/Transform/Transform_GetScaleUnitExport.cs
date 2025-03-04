@@ -26,19 +26,13 @@ namespace UnityGLTF.Interactivity.Export
         
         public bool InitializeInteractivityNodes(UnitExporter unitExporter)
         {
-            // TODO: World Space conversion
-            
            var unit = unitExporter.unit as Unity.VisualScripting.GetMember;
            
-           var getScale = unitExporter.CreateNode(new Pointer_GetNode());
+           if (worldSpace)
+               TransformHelpers.GetWorldScale(unitExporter, unit.target, unit.value);
+           else
+               TransformHelpers.GetLocalScale(unitExporter, unit.target, unit.value);
            
-           getScale.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
-               unit.target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/scale", GltfTypes.Float3);
-           
-           getScale.OutValueSocket[Pointer_GetNode.IdValue].expectedType = ExpectedType.GtlfType("float3");
-
-           unitExporter.MapValueOutportToSocketName(unit.value, Pointer_GetNode.IdValue, getScale);
-  
            return true;
         }
     }

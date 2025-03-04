@@ -5,6 +5,27 @@ namespace UnityGLTF.Interactivity.Export
 {
     public static class TransformHelpers
     {
+        public static void GetLocalScale(UnitExporter unitExporter, ValueInput target,
+            out GltfInteractivityUnitExporterNode.ValueOutputSocketData scaleOutput)
+        {
+            var getScale = unitExporter.CreateNode(new Pointer_GetNode());
+            getScale.FirstValueOut().ExpectedType(ExpectedType.Float3);
+
+            SpaceConversionHelpers.AddSpaceConversionNodes(unitExporter, getScale.FirstValueOut(),
+                out var convertedOutput);
+            scaleOutput = convertedOutput;
+            scaleOutput.ExpectedType(ExpectedType.Float3);
+            
+            getScale.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/scale", GltfTypes.Float3);
+        }
+
+        public static void GetLocalScale(UnitExporter unitExporter, ValueInput target, ValueOutput scaleOutput)
+        {
+            GetLocalScale(unitExporter, target, out var scaleOutputData);
+            scaleOutputData.MapToPort(scaleOutput);
+        }
+        
         public static void GetLocalPosition(UnitExporter unitExporter, ValueInput target,
             out GltfInteractivityUnitExporterNode.ValueOutputSocketData positionOutput)
         {
@@ -123,6 +144,122 @@ namespace UnityGLTF.Interactivity.Export
             setRotation.ValueIn(Pointer_SetNode.IdValue).ConnectToSource(convertedRotation);
             setRotation.FlowOut(Pointer_SetNode.IdFlowOut).MapToControlOutput(flowOut);
             setRotation.FlowIn(Pointer_SetNode.IdFlowIn).MapToControlInput(flowIn);
+        }
+        
+        public static void GetWorldPosition(UnitExporter unitExporter, ValueInput target,
+            out GltfInteractivityUnitExporterNode.ValueOutputSocketData worldPosition)
+        {
+            
+            if (GltfInteractivityNodeHelper.IsMainCameraInInput(target))
+            {
+                var getPosition = unitExporter.CreateNode(new Pointer_GetNode());
+                getPosition.FirstValueOut().ExpectedType(ExpectedType.Float3);
+
+                SpaceConversionHelpers.AddSpaceConversionNodes(unitExporter, getPosition.FirstValueOut(),
+                    out worldPosition);
+                worldPosition.ExpectedType(ExpectedType.Float3);
+
+                GltfInteractivityNodeHelper.AddPointerConfig(getPosition, "/activeCamera/position", GltfTypes.Float3);
+                return;
+            }
+            
+            var worldMatrix = unitExporter.CreateNode(new Pointer_GetNode());
+            worldMatrix.FirstValueOut().ExpectedType(ExpectedType.Float4x4);
+            worldMatrix.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/globalMatrix", GltfTypes.Float4x4);
+   
+            
+            var decompose = unitExporter.CreateNode(new Math_MatDecomposeNode());
+            decompose.ValueIn(Math_MatDecomposeNode.IdInput).ConnectToSource(worldMatrix.FirstValueOut());
+            var gltfWorldPosition = decompose.ValueOut(Math_MatDecomposeNode.IdOutputTranslation);
+
+            SpaceConversionHelpers.AddSpaceConversionNodes(unitExporter, gltfWorldPosition,
+                out var convertedOutput);
+
+            worldPosition = convertedOutput;
+        }
+        
+        public static void GetWorldPosition(UnitExporter unitExporter, ValueInput target, ValueOutput positionOutput)
+        {
+            GetWorldPosition(unitExporter, target, out var positionOutputData);
+            positionOutputData.MapToPort(positionOutput);
+        }
+        
+        public static void GetWorldScale(UnitExporter unitExporter, ValueInput target,
+            out GltfInteractivityUnitExporterNode.ValueOutputSocketData worldScale)
+        {
+            
+            if (GltfInteractivityNodeHelper.IsMainCameraInInput(target))
+            {
+                var getPosition = unitExporter.CreateNode(new Pointer_GetNode());
+                getPosition.FirstValueOut().ExpectedType(ExpectedType.Float3);
+
+                SpaceConversionHelpers.AddSpaceConversionNodes(unitExporter, getPosition.FirstValueOut(),
+                    out worldScale);
+                worldScale.ExpectedType(ExpectedType.Float3);
+
+                GltfInteractivityNodeHelper.AddPointerConfig(getPosition, "/activeCamera/position", GltfTypes.Float3);
+                return;
+            }
+            
+            var worldMatrix = unitExporter.CreateNode(new Pointer_GetNode());
+            worldMatrix.FirstValueOut().ExpectedType(ExpectedType.Float4x4);
+            worldMatrix.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/globalMatrix", GltfTypes.Float4x4);
+   
+            
+            var decompose = unitExporter.CreateNode(new Math_MatDecomposeNode());
+            decompose.ValueIn(Math_MatDecomposeNode.IdInput).ConnectToSource(worldMatrix.FirstValueOut());
+            var gltfWorldScale = decompose.ValueOut(Math_MatDecomposeNode.IdOutputScale);
+
+            SpaceConversionHelpers.AddSpaceConversionNodes(unitExporter, gltfWorldScale,
+                out var convertedOutput);
+
+            worldScale = convertedOutput;
+        }
+        
+        public static void GetWorldScale(UnitExporter unitExporter, ValueInput target, ValueOutput scaleOutput)
+        {
+            GetWorldScale(unitExporter, target, out var scaleOutputData);
+            scaleOutputData.MapToPort(scaleOutput);
+        }
+        
+        public static void GetWorldRotation(UnitExporter unitExporter, ValueInput target,
+            out GltfInteractivityUnitExporterNode.ValueOutputSocketData worldRotation)
+        {
+            
+            if (GltfInteractivityNodeHelper.IsMainCameraInInput(target))
+            {
+                var getPosition = unitExporter.CreateNode(new Pointer_GetNode());
+                getPosition.FirstValueOut().ExpectedType(ExpectedType.Float4);
+
+                SpaceConversionHelpers.AddSpaceConversionNodes(unitExporter, getPosition.FirstValueOut(),
+                    out worldRotation);
+                worldRotation.ExpectedType(ExpectedType.Float4);
+
+                GltfInteractivityNodeHelper.AddPointerConfig(getPosition, "/activeCamera/rotation", GltfTypes.Float4);
+                return;
+            }
+            
+            var worldMatrix = unitExporter.CreateNode(new Pointer_GetNode());
+            worldMatrix.FirstValueOut().ExpectedType(ExpectedType.Float4x4);
+            worldMatrix.SetupPointerTemplateAndTargetInput(GltfInteractivityNodeHelper.IdPointerNodeIndex,
+                target, "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex + "}/globalMatrix", GltfTypes.Float4x4);
+            
+            var decompose = unitExporter.CreateNode(new Math_MatDecomposeNode());
+            decompose.ValueIn(Math_MatDecomposeNode.IdInput).ConnectToSource(worldMatrix.FirstValueOut());
+            var gltfWorldRotation = decompose.ValueOut(Math_MatDecomposeNode.IdOutputRotation);
+
+            SpaceConversionHelpers.AddRotationSpaceConversionNodes(unitExporter, gltfWorldRotation,
+                out var convertedOutput);
+
+            worldRotation = convertedOutput;
+        }
+        
+        public static void GetWorldRotation(UnitExporter unitExporter, ValueInput target, ValueOutput value)
+        {
+            GetWorldRotation(unitExporter, target, out var valueSocket);
+            valueSocket.MapToPort(value);
         }
     }
 }

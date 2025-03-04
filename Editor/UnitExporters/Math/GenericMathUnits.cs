@@ -59,25 +59,7 @@ namespace UnityGLTF.Interactivity.Export
                 new Math_RemNode()));
             UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Vector4Modulo),
                 new Math_RemNode()));
-
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(ScalarMinimum),
-                new Math_MinNode()));
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Vector2Minimum),
-                new Math_MinNode()));
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Vector3Minimum),
-                new Math_MinNode()));
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Vector4Minimum),
-                new Math_MinNode()));
-
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(ScalarMaximum),
-                new Math_MaxNode()));
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Vector2Maximum),
-                new Math_MaxNode()));
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Vector3Maximum),
-                new Math_MaxNode()));
-            UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Vector4Maximum),
-                new Math_MaxNode()));
-
+            
             UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Less), new Math_LtNode()));
             UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(LessOrEqual), new Math_LeNode()));
             UnitExporterRegistry.RegisterExporter(new GenericMathUnitExporters(typeof(Greater), new Math_GtNode()));

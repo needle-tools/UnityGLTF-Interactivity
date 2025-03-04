@@ -128,6 +128,20 @@ namespace UnityGLTF.Interactivity.Export
             try
             {
                 IsTranslatable = exporter.InitializeInteractivityNodes(this);
+                if (IsTranslatable)
+                {
+                    // Check for Chaining and Bypass Target Value
+                    if (unit is InvokeMember invokeMemberUnit)
+                    {
+                        if (invokeMemberUnit.supportsChaining && invokeMemberUnit.chainable)
+                            ByPassValue(invokeMemberUnit.target, invokeMemberUnit.targetOutput);
+                    }
+                    if (unit is SetMember setMemberUnit)
+                    {
+                        if (setMemberUnit.supportsChaining && setMemberUnit.chainable)
+                            ByPassValue(setMemberUnit.target, setMemberUnit.targetOutput);
+                    }
+                }
             }
             catch (Exception e)
             {

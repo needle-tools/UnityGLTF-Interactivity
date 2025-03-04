@@ -30,8 +30,6 @@ namespace UnityGLTF.Interactivity.Export
            var unit = unitExporter.unit as Unity.VisualScripting.SetMember;
            TransformHelpers.SetLocalPosition(unitExporter, unit.target, unit.input, unit.assign, unit.assigned);
            
-           if (unit.chainable && unit.output.hasValidConnection)
-               unitExporter.ByPassValue(unit.input, unit.output);
            return true;
         }
     }

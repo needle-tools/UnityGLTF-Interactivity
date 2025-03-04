@@ -161,5 +161,44 @@ namespace UnityGLTF.Interactivity.Export
             
             whileNode.ValueIn(Flow_WhileNode.IdCondition).ConnectToSource(conditionSelect.FirstValueOut());
         }
+
+        public static void CreateConditionalWaiting(UnitExporter unitExporter,
+            out GltfInteractivityUnitExporterNode.ValueInputSocketData condition, 
+            out GltfInteractivityUnitExporterNode.FlowInSocketData flowIn,
+            bool waitForTrue,
+            out GltfInteractivityUnitExporterNode.FlowOutSocketData flowOutWhenDone)
+        {
+               var setVarStart = unitExporter.CreateNode(new Variable_SetNode());
+            var setVarFinish = unitExporter.CreateNode(new Variable_SetNode());
+            var getVar = unitExporter.CreateNode(new Variable_GetNode());
+            var varId = unitExporter.exportContext.AddVariableWithIdIfNeeded("waitWhile"+System.Guid.NewGuid(), false, VariableKind.Graph, typeof(bool));
+            var tick = unitExporter.CreateNode(new Event_OnTickNode());
+            var branch = unitExporter.CreateNode(new Flow_BranchNode());
+            var waitingBranch = unitExporter.CreateNode(new Flow_BranchNode());
+            
+            setVarStart.ConfigurationData[Variable_SetNode.IdConfigVarIndex].Value = varId;
+            setVarFinish.ConfigurationData[Variable_SetNode.IdConfigVarIndex].Value = varId;
+            setVarFinish.ValueIn(Variable_SetNode.IdInputValue).SetValue(false);
+            setVarStart.ValueIn(Variable_SetNode.IdInputValue).SetValue(true);
+            
+            getVar.ConfigurationData[Variable_SetNode.IdConfigVarIndex].Value = varId;
+
+            flowIn = setVarStart.FlowIn(Variable_SetNode.IdFlowIn); 
+            setVarStart.FlowOut(Variable_SetNode.IdFlowOut)
+                .ConnectToFlowDestination(branch.FlowIn(Flow_BranchNode.IdFlowIn));
+            
+            tick.FlowOut(Event_OnTickNode.IdFlowOut).ConnectToFlowDestination(waitingBranch.FlowIn(Flow_BranchNode.IdFlowIn));
+            waitingBranch.ValueIn(Flow_BranchNode.IdCondition).ConnectToSource(getVar.FirstValueOut());
+            waitingBranch.FlowOut(Flow_BranchNode.IdFlowOutTrue)
+                .ConnectToFlowDestination(branch.FlowIn(Flow_BranchNode.IdFlowIn));
+
+            condition = branch.ValueIn(Flow_BranchNode.IdCondition);
+
+            var conditionFlow = waitForTrue ? Flow_BranchNode.IdFlowOutTrue : Flow_BranchNode.IdFlowOutFalse;
+            branch.FlowOut(conditionFlow)
+                .ConnectToFlowDestination(setVarFinish.FlowIn(Variable_SetNode.IdFlowIn));
+
+            flowOutWhenDone = setVarFinish.FlowOut(Variable_SetNode.IdFlowOut);
+        }
     }
 }

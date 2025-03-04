@@ -40,6 +40,9 @@ namespace UnityGLTF.Interactivity.Export
         public static bool HasMemberConvert(Type declaringType, string memberName)
         {
             if (string.IsNullOrEmpty(memberName)) return false;
+
+            if (GetMemberGenericStaticValueExporter.CanBeExported(declaringType, memberName))
+                return true;
             
             if (_memberExportRegister.TryGetValue(declaringType, out var typeInvokes))
             {

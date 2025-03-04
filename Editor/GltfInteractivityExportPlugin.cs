@@ -19,6 +19,10 @@ namespace UnityGLTF.Interactivity
             public bool ADBEConsole = true;
             public bool BabylonLog = false;
         }
+        
+        // Disabled by default until Gltf Interactivity spec is ratified
+        public override bool EnabledByDefault => false;
+        
         public override string DisplayName => GltfInteractivityExtension.ExtensionName;
         public override string Description => "Exports flow graph data for Visual Scripting ScriptMachines.";
         

@@ -605,11 +605,11 @@ namespace UnityGLTF.Interactivity
                 nodeExtensions = new Dictionary<string, IExtension>();
                 ActiveGltfRoot.Nodes[nodeIndex].Extensions = nodeExtensions;
             }
-            if (!nodeExtensions.ContainsKey(KHR_node_visbility_Factory.EXTENSION_NAME))
+            if (!nodeExtensions.ContainsKey(KHR_node_visibility_Factory.EXTENSION_NAME))
             {
-                nodeExtensions.Add(KHR_node_visbility_Factory.EXTENSION_NAME, new KHR_node_visbility());
+                nodeExtensions.Add(KHR_node_visibility_Factory.EXTENSION_NAME, new KHR_node_visibility());
             }
-            exporter.DeclareExtensionUsage(KHR_node_visbility_Factory.EXTENSION_NAME, false);
+            exporter.DeclareExtensionUsage(KHR_node_visibility_Factory.EXTENSION_NAME, false);
         }
         
         public void AddVisibilityExtensionToAllNodes()
@@ -623,13 +623,13 @@ namespace UnityGLTF.Interactivity
                     node.Extensions = nodeExtensions;
                 }
 
-                if (!nodeExtensions.ContainsKey(KHR_node_visbility_Factory.EXTENSION_NAME))
+                if (!nodeExtensions.ContainsKey(KHR_node_visibility_Factory.EXTENSION_NAME))
                 {
-                    nodeExtensions.Add(KHR_node_visbility_Factory.EXTENSION_NAME, new KHR_node_visbility());
+                    nodeExtensions.Add(KHR_node_visibility_Factory.EXTENSION_NAME, new KHR_node_visibility());
                 }
             }
 
-            exporter.DeclareExtensionUsage(KHR_node_visbility_Factory.EXTENSION_NAME, false);
+            exporter.DeclareExtensionUsage(KHR_node_visibility_Factory.EXTENSION_NAME, false);
         }
         
         public void AddSelectabilityExtensionToNode(int nodeIndex)

@@ -8,7 +8,7 @@ namespace UnityGLTF.Interactivity.Export
     public static class VisibleExtensionHelper
     {
         public static readonly string PointerTemplate = "/nodes/{" + GltfInteractivityNodeHelper.IdPointerNodeIndex +
-                                                        "}/extensions/"+KHR_node_visbility_Factory.EXTENSION_NAME+"/"+nameof(KHR_node_visbility.visible); 
+                                                        "}/extensions/"+KHR_node_visibility_Factory.EXTENSION_NAME+"/"+nameof(KHR_node_visibility.visible); 
         
         public static void AddExtension(UnitExporter unitExporter, IUnit unit, GltfInteractivityUnitExporterNode node)
         {

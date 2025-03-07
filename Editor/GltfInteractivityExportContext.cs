@@ -823,7 +823,10 @@ namespace UnityGLTF.Interactivity
         private void OutputUnitLogs()
         {
             if (UnitExportLogging.unitLogMessages.Count == 0)
+            {
+                Debug.Log("Successfull Exported without any warnings!");
                 return;
+            }
 
             var sb = new StringBuilder();
             
@@ -838,7 +841,7 @@ namespace UnityGLTF.Interactivity
                     sb.AppendLine("   Error: "+error);
             }
             
-            Debug.Log("Unit Export Logs: "+System.Environment.NewLine+ sb.ToString());
+            Debug.LogWarning("Exported with warnings/errors: "+System.Environment.NewLine+ sb.ToString());
         }
         
         private void PostIndexTopologicalSort()

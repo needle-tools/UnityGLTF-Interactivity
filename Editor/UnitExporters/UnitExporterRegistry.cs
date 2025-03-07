@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -28,7 +30,7 @@ namespace UnityGLTF.Interactivity.Export
     
     public interface IMemberUnitExporter : IUnitTypeExporter
     {
-        IEnumerable<(Type type,string member, MemberAccess access)> SupportedMembers { get; }
+        IEnumerable<(Type type, string member, MemberAccess access)> SupportedMembers { get; }
     }
     
     public interface ICoroutineWait { }
@@ -55,7 +57,7 @@ namespace UnityGLTF.Interactivity.Export
         {
             if (_exportRegistry.ContainsKey(nodeConvert.unitType))
             {
-                Debug.LogError("ExportNodeConvert already registered for unitType: " + nodeConvert.unitType.ToString());
+                Debug.LogError("A UnitExporter is already registered for Unit Type: " + nodeConvert.unitType.ToString() +" Trying to register: " + nodeConvert.GetType().ToString());
                 return;
             }
 

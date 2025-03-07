@@ -1,5 +1,23 @@
 namespace UnityGLTF.Interactivity.Schema
 {
+
+    public class Math_SwitchNode : GltfInteractivityNodeSchema
+    {
+        public override string Op { get; set; } = "math/switch";
+        
+        [ConfigDescription]
+        public const string IdConfigCases = "cases";
+        
+        [InputSocketDescription(GltfTypes.Int)]
+        public const string IdSelection = "selection";
+        
+        [InputSocketDescription(GltfTypes.Bool, GltfTypes.Float, GltfTypes.Float2, GltfTypes.Float3, GltfTypes.Float4, GltfTypes.Int, GltfTypes.Float2x2, GltfTypes.Float3x3, GltfTypes.Float4x4)]
+        public const string IdDefaultValue = "default";
+        
+        [OutputSocketDescriptionWithTypeDependencyFromInput(IdDefaultValue)]
+        public const string IdOut = "value";
+    }
+    
     public class Math_MatMulNode : GltfInteractivityNodeSchema
     {
         public override string Op { get; set; } = "math/matmul";

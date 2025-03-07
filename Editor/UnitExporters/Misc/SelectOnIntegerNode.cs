@@ -18,45 +18,25 @@ namespace UnityGLTF.Interactivity.Export
         {
             var unit = unitExporter.unit as SelectOnInteger;
             
-            GltfInteractivityUnitExporterNode prevSelectNode = null;
+            var switchNode = unitExporter.CreateNode(new Math_SwitchNode());
+            int[] cases = new int[unit.branches.Count];
+
             for (int i = 0; i < unit.branches.Count; i++)
-            { 
-                // Equal Node: Value A = Selector, Value B = Branch Key
-                
-                var equalNode = unitExporter.CreateNode(new Math_EqNode());
-                
-                unitExporter.MapInputPortToSocketName(unit.selector, Math_EqNode.IdValueA, equalNode);
+                cases[i] = (int)unit.branches[i].Key;
 
-                equalNode.ValueIn("a").SetType(TypeRestriction.LimitToInt);
-                equalNode.ValueIn("b").SetType(TypeRestriction.LimitToInt);
-                
-                equalNode.ValueSocketConnectionData[Math_EqNode.IdValueB].Value = (int)unit.branches[i].Key;
-                equalNode.ValueSocketConnectionData[Math_EqNode.IdValueB].Type = GltfTypes.TypeIndexByGltfSignature("int");
-                
-                // Select Node: Value A = Branch Value, Value B =
-                var selectNode = unitExporter.CreateNode(new Math_SelectNode());
-                
-                unitExporter.MapInputPortToSocketName(unit.branches[i].Value, Math_SelectNode.IdValueA, selectNode);
+            switchNode.ValueIn(Math_SwitchNode.IdDefaultValue).MapToInputPort(unit.@default);
 
-                unitExporter.MapInputPortToSocketName(Math_EqNode.IdOut, equalNode, Math_SelectNode.IdCondition, selectNode);
-                if (i == 0)
-                {
-                    if (!unit.@default.hasDefaultValue && !unit.@default.hasValidConnection)
-                    {
-                        selectNode.ValueSocketConnectionData[Math_SelectNode.IdValueB].Value = null;
-                        selectNode.ValueSocketConnectionData[Math_SelectNode.IdValueB].Type = -1;
-                    }
-                    else
-                        unitExporter.MapInputPortToSocketName(unit.@default, Math_SelectNode.IdValueB, selectNode);
-                    
-                }
-                else
-                    unitExporter.MapInputPortToSocketName(Math_SelectNode.IdOutValue, prevSelectNode, Math_SelectNode.IdValueB, selectNode);
-
-                prevSelectNode = selectNode;
+            switchNode.ValueIn(Math_SwitchNode.IdSelection).MapToInputPort(unit.selector);
+            var valueout = switchNode.ValueOut(Math_SwitchNode.IdOut).MapToPort(unit.selection);
+            
+            switchNode.ConfigurationData[Math_SwitchNode.IdConfigCases].Value = cases;
+            for (int i = 0; i < unit.branches.Count; i++)
+            {
+                var branch = unit.branches[i];
+                var inPort = switchNode.ValueIn(branch.Key.ToString()).MapToInputPort(branch.Value);
+                valueout.ExpectedType(ExpectedType.FromInputSocket(inPort.socket.Key));
             }
             
-            unitExporter.MapValueOutportToSocketName(unit.selection, Math_SelectNode.IdOutValue, prevSelectNode);
             return true;
         }
     }

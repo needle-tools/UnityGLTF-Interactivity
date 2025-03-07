@@ -188,39 +188,27 @@ namespace Editor.UnitExporters.Lists
 
         public static void GetItem(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, out GltfInteractivityUnitExporterNode.ValueInputSocketData indexInput, out GltfInteractivityUnitExporterNode.ValueOutputSocketData valueOutput)
         {
-            indexInput = null;
-            // Get Values
+            var varType = unitExporter.exportContext.variables[list.StartIndex].Type;
+           
+            var switchNode = unitExporter.CreateNode(new Math_SwitchNode());
+            indexInput = switchNode.ValueIn(Math_SwitchNode.IdSelection).SetType(TypeRestriction.LimitToInt);
+            valueOutput = switchNode.ValueOut(Math_SwitchNode.IdOut).ExpectedType(ExpectedType.GtlfType(varType));
             
-            GltfInteractivityUnitExporterNode prevSelectNode = null;
+            int[] cases = new int[list.Capacity];
+            
             int index = 0;
-            int[] indices = new int[list.Capacity];
             for (int i = list.StartIndex; i <= list.EndIndex; i++)
             {
-                indices[index] = index;
+                cases[index] = index;
                 VariablesHelpers.GetVariable(unitExporter, i, out var valueOut);
-                var eq = unitExporter.CreateNode(new Math_EqNode());
-                if (indexInput == null)
-                    indexInput = eq.ValueIn("a");
-                else
-                    indexInput = indexInput.Link(eq.ValueIn("a"));
-                eq.ValueIn("b").SetValue(index);
+                switchNode.ValueIn(index.ToString()).ConnectToSource(valueOut).SetType(TypeRestriction.LimitToType(varType));
 
-                var sel = unitExporter.CreateNode(new Math_SelectNode());
-                sel.ValueIn(Math_SelectNode.IdCondition).ConnectToSource(eq.FirstValueOut());
-                sel.ValueIn(Math_SelectNode.IdValueA).ConnectToSource(valueOut);
-                if (prevSelectNode != null)
-                    sel.ValueIn(Math_SelectNode.IdValueB).ConnectToSource(prevSelectNode.FirstValueOut());
-                else
-                {
-                    // ?? This would be an outofrange error, for now we use the same value
-                    sel.ValueIn(Math_SelectNode.IdValueB).ConnectToSource(valueOut);
-                }
-
-                prevSelectNode = sel;
                 index++;
             }
-
-            valueOutput = prevSelectNode.FirstValueOut();
+            VariablesHelpers.GetVariable(unitExporter, list.StartIndex, out var firstValue);
+            switchNode.ValueIn(Math_SwitchNode.IdDefaultValue).ConnectToSource(firstValue).SetType(TypeRestriction.LimitToType(varType));
+            
+            switchNode.ConfigurationData[Math_SwitchNode.IdConfigCases].Value = cases;
         }
 
         public static void RemoveListItemAt(UnitExporter unitExporter, GltfInteractivityExportContext.VariableBasedList list, ValueInput index, ControlInput flowIn, ControlOutput flowOut)

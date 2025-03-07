@@ -778,13 +778,9 @@ namespace UnityGLTF.Interactivity
             GltfInteractivityGraph mainGraph = new GltfInteractivityGraph();
             extension.graphs = new GltfInteractivityGraph[] {mainGraph};
             mainGraph.Nodes = nodesToSerialize.ToArray();
-            
-            // !!!!!! Deactivated for now - not working in Authoring Tool, and also waiting for Spec Discussions about Types
-            //extension.Types = CollectAndFilterUsedTypes();
+            mainGraph.Types = CollectAndFilterUsedTypes();
             
             ValidateData();
-            
-            mainGraph.Types = GltfTypes.TypesMapping;
             
             mainGraph.Variables = variables.ToArray();
             mainGraph.CustomEvents = customEvents.ToArray();

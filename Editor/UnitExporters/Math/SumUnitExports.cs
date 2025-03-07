@@ -17,8 +17,6 @@ namespace UnityGLTF.Interactivity.Export
             UnitExporterRegistry.RegisterExporter(new SumUnitExports(typeof(Vector3Sum)));
             UnitExporterRegistry.RegisterExporter(new SumUnitExports(typeof(Vector4Sum)));
         }
-
-        public string gltfNodeName { get => "math/add"; }
         
         public Type unitType 
         {

@@ -1,3 +1,4 @@
+using UnityEngine;
 using Unity.VisualScripting;
 using UnityGLTF.Interactivity.Schema;
 

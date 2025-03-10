@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine;
-using UnityEditor.Animations;
 using Unity.VisualScripting;
 using UnityGLTF.Interactivity.Schema;
 

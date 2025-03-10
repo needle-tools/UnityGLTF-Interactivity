@@ -20,8 +20,7 @@
   "author": "Khronos Group",
   "license": "MIT",
   "dependencies": {
-    "com.unity.visualscripting": "1.9.4",
-    "org.khronos.unitygltf": "2.14.1"
+    "org.khronos.unitygltf": "2.15.0"
   },
   "samples": []
 }

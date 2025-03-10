@@ -16,8 +16,15 @@
     ],
     "autoReferenced": false,
     "defineConstraints": [
-        "UNITY_INCLUDE_TESTS"
+        "UNITY_INCLUDE_TESTS",
+        "HAS_VISUAL_SCRIPTING"
     ],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.visualscripting",
+            "expression": "1.9",
+            "define": "HAS_VISUAL_SCRIPTING"
+        }
+    ],
     "noEngineReferences": false
 }
